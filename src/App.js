@@ -2427,6 +2427,8 @@ const SAKURA = Array.from({length:6},(_,i)=>({
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;600;700;900&display=swap');
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap');
   *, *::before, *::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { margin:0; overflow:hidden; background:${C.void}; font-family:'Cormorant Garamond','Noto Sans JP',serif; -webkit-font-smoothing:antialiased; }
@@ -2778,7 +2780,7 @@ function SplashScreen({ onDone }) {
       <NatureBG rainMode={false} themeBg={THEMES.sky.bg}/>
       <div style={{ position:'relative', zIndex:1, textAlign:'center' }}>
         {/* Giant kanji */}
-        <div style={{ fontSize:140, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"', lineHeight:1,
+        <div style={{ fontSize:140, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', lineHeight:1,
           color:C.moonlight, marginBottom:16,
           textShadow:`0 0 60px #7BB8D490, 0 0 120px #60A5C860, 0 0 200px ${C.jade}30`,
           animation:'splashKanji 1.2s cubic-bezier(0.34,1.4,0.64,1) both',
@@ -3065,7 +3067,7 @@ function KanjiChar({ k, size, TC }) {
           textAnchor="middle"
           fontSize={size}
           fontWeight="900"
-          fontFamily='serif,"Noto Serif JP","Noto Sans JP"'
+          fontFamily='"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif'
           fill={`url(#${uid}_g)`}
         >{k}</text>
       </svg>
@@ -3228,7 +3230,7 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
                   boxShadow:`0 4px 14px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)`,
                   animation:`slideInUp 0.3s ${i*0.06}s ease both` }}>
                   <div style={{ color:C.moonlight, fontWeight:900,
-                    fontFamily:'"Noto Sans JP","Hiragino Sans",serif',
+                    fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Sans JP",serif',
                     fontSize:bp.isLarge?22:18,
                     textShadow:`0 0 20px ${st.color}`, lineHeight:1.2 }}>{ex.w}</div>
                 </div>
@@ -3299,7 +3301,7 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
                   boxShadow:`0 2px 10px ${C.teal}1F` }}>
                   <span style={{ fontSize:9, color:C.crimson, fontWeight:900, letterSpacing:1.5 }}>音 ON</span>
                   <span style={{ fontSize:bp.isLarge?15:14, color:'#FF9898', fontWeight:900,
-                    fontFamily:'"Noto Sans JP","Hiragino Sans",serif' }}>{card.on}</span>
+                    fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Sans JP",serif' }}>{card.on}</span>
                 </div>
               )}
               {card.ku && (
@@ -3308,7 +3310,7 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
                   boxShadow:`0 2px 10px ${C.aurora}1F` }}>
                   <span style={{ fontSize:9, color:'#60A5C8', fontWeight:900, letterSpacing:1.5 }}>訓 KUN</span>
                   <span style={{ fontSize:bp.isLarge?15:14, color:C.jadeL, fontWeight:900,
-                    fontFamily:'"Noto Sans JP","Hiragino Sans",serif' }}>{card.ku}</span>
+                    fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Sans JP",serif' }}>{card.ku}</span>
                 </div>
               )}
               <div style={{ background:`#7BB8D414`, border:`1px solid #7BB8D435`,
@@ -3339,7 +3341,7 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
                   <SpeakerBtn text={ex.w} lang="ja-JP" size={14} color={C.teal}/>
                   <div style={{ minWidth:60, flexShrink:0 }}>
                     <div style={{ fontSize:bp.isLarge?22:20, fontWeight:900, color:C.moonlight,
-                      fontFamily:'serif,"Noto Serif JP","Noto Sans JP"',
+                      fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
                       textShadow:`0 0 16px ${C.jade}55`, lineHeight:1.1 }}>{ex.w}</div>
                     <div style={{ fontSize:bp.isLarge?13:12, color:C.tealD, marginTop:3,
                       fontFamily:'serif,"Noto Sans JP"', fontWeight:800,
@@ -3820,7 +3822,7 @@ function QuizView({ bp }) {
         </div>
         {qMode!=='kanji' ? (
           <>
-            <div style={{ fontSize:bp.isLarge?130:bp.isTablet?108:88, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"',
+            <div style={{ fontSize:bp.isLarge?130:bp.isTablet?108:88, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
               color:C.moonlight, lineHeight:1,
               textShadow:`0 0 70px #7BB8D470, 0 0 140px #7BB8D425`, fontWeight:900,
               filter:`drop-shadow(0 0 30px #7BB8D460)` }}>{q.k}</div>
@@ -3926,7 +3928,7 @@ function WriteView({ bp }) {
           </div>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-          <div style={{ fontSize:72, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"', color:C.moonlight, lineHeight:1,
+          <div style={{ fontSize:72, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', color:C.moonlight, lineHeight:1,
             textShadow:`0 0 50px #7BB8D480` }}>{k.k}</div>
           <div>
             <div style={{ fontSize:20, fontWeight:900, color:C.moonlight }}>{k.m}</div>
@@ -3942,7 +3944,7 @@ function WriteView({ bp }) {
         {showGuide && (
           <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center',
             justifyContent:'center', pointerEvents:'none', userSelect:'none',
-            fontSize:cSz*0.72, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"', color:C.jade,
+            fontSize:cSz*0.72, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', color:C.jade,
             opacity:0.06, lineHeight:1, zIndex:1 }}>{k.k}</div>
         )}
         {/* Grid */}
@@ -4052,7 +4054,7 @@ function WriteView({ bp }) {
         <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           {k.ex.map((ex,i)=>(
             <div key={i} style={{ background:`${C.lifted}99`,borderRadius:9,padding:'5px 12px',border:`1px solid ${C.border}` }}>
-              <span style={{ color:C.moonlight,fontWeight:900,fontFamily:'serif,"Noto Serif JP","Noto Sans JP"',fontSize:13 }}>{ex.w}</span>
+              <span style={{ color:C.moonlight,fontWeight:900,fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',fontSize:13 }}>{ex.w}</span>
               <span style={{ color:C.nebula,fontSize:9,margin:'0 5px' }}>{ex.r}</span>
               <span style={{ color:C.jade,fontSize:11 }}>· {ex.e}</span>
             </div>
@@ -4105,7 +4107,7 @@ function SRSView({ cardStates, setCardStates, bp }) {
   if(!current||dueCards.length===0) return (
     <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
       justifyContent:'center', padding:20, gap:16 }}>
-      <div style={{ fontSize:80, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"',
+      <div style={{ fontSize:80, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
         textShadow:`0 0 40px ${C.jade}80` }}>🎉</div>
       <Glass style={{ padding:'28px 24px', textAlign:'center', maxWidth:320 }}>
         <div style={{ fontSize:20, fontWeight:900, color:C.jade, marginBottom:8 }}>All Caught Up!</div>
@@ -4257,7 +4259,7 @@ function BrowseView({ cardStates, bp }) {
                   boxShadow:isSel?`0 6px 24px ${kst.color}45,inset 0 0 0 1px ${kst.color}25`:'none',
                   animation:`slideInUp 0.3s ${ki*0.02}s ease both` }}>
                 {cs?.starred&&<span style={{ position:'absolute',top:3,right:5,fontSize:9,color:C.amber,textShadow:`0 0 8px ${C.amber}` }}>★</span>}
-                <span style={{ fontSize:32, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"', color:C.moonlight, lineHeight:1,
+                <span style={{ fontSize:32, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', color:C.moonlight, lineHeight:1,
                   textShadow:`0 0 16px ${kst.color}60` }}>{k.k}</span>
                 <span style={{ fontSize:8, color:C.starlight, maxWidth:'90%', overflow:'hidden',
                   textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{k.m.split('/')[0]}</span>
@@ -4296,7 +4298,7 @@ function BrowseView({ cardStates, bp }) {
               <div style={{ display:'flex',gap:7,flexWrap:'wrap' }}>
                 {selK.ex.map((ex,i)=>(
                   <div key={i} style={{ background:`${C.lifted}AA`,borderRadius:9,padding:'5px 12px',border:`1px solid ${C.border}` }}>
-                    <span style={{ color:C.moonlight,fontWeight:900,fontFamily:'serif,"Noto Serif JP","Noto Sans JP"',fontSize:13 }}>{ex.w}</span>
+                    <span style={{ color:C.moonlight,fontWeight:900,fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',fontSize:13 }}>{ex.w}</span>
                     <span style={{ color:C.nebula,fontSize:9,margin:'0 5px' }}>{ex.r}</span>
                     <span style={{ color:C.jade,fontSize:11 }}>{ex.e}</span>
                   </div>
@@ -4710,7 +4712,7 @@ function SettingsView({ shuffled, setShuffled, mode, setMode, setDeckIdx, setFli
         background:`linear-gradient(145deg,${C.card},${C.lifted})` }}>
         <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center',
           opacity:0.04, fontSize:240, fontFamily:'serif', color:C.jade, pointerEvents:'none' }}>漢</div>
-        <div style={{ fontSize:68, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"', position:'relative',
+        <div style={{ fontSize:68, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', position:'relative',
           color: C.jade,
           textShadow:`0 0 24px ${C.jade}99, 0 0 48px ${C.aurora}66`,
           filter:`drop-shadow(0 0 20px ${C.jade}80)` }}>漢字</div>
@@ -4898,7 +4900,7 @@ function Header({ known, total, sessionTime, seen, streak, bp }) {
       boxShadow:'0 2px 24px rgba(0,0,0,0.55)' }}>
       {/* Logo */}
       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-        <div style={{ fontSize:bp.isLarge?34:28, fontFamily:'serif,"Noto Serif JP","Noto Sans JP"', lineHeight:1,
+        <div style={{ fontSize:bp.isLarge?34:28, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', lineHeight:1,
           textShadow:`0 0 28px #7BB8D490,0 0 56px #60A5C850,0 0 80px ${C.jade}25`,
           color:C.moonlight, animation:'glowPulse 4s ease-in-out infinite' }}>漢字</div>
         <div>
