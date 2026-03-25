@@ -4888,7 +4888,7 @@ function SideNav({ tab, setTab, bp }) {
 /* ═══════════════════════════════════════════════════════════════════════════
    HEADER
 ═══════════════════════════════════════════════════════════════════════════ */
-function Header({ known, total, sessionTime, seen, streak, bp }) {
+function Header({ known, total, sessionTime, seen, streak, bp, onHome }) {
   const fmtT=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
   const pct=total>0?Math.round(known/total*100):0;
   const r=bp.isLarge?23:19, svgSz=r*2+8;
@@ -4900,6 +4900,14 @@ function Header({ known, total, sessionTime, seen, streak, bp }) {
       boxShadow:'0 2px 24px rgba(0,0,0,0.55)' }}>
       {/* Logo */}
       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        {onHome && (
+          <button onClick={onHome}
+            style={{ background:'rgba(138,175,212,0.12)', border:'1px solid rgba(138,175,212,0.25)',
+              borderRadius:8, padding:'5px 10px', color:C.nebula, cursor:'pointer',
+              fontSize:11, fontWeight:700, marginRight:2 }}>
+            🏠
+          </button>
+        )}
         <div style={{ fontSize:bp.isLarge?34:28, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif', lineHeight:1,
           textShadow:`0 0 28px #7BB8D490,0 0 56px #60A5C850,0 0 80px ${C.jade}25`,
           color:C.moonlight, animation:'glowPulse 4s ease-in-out infinite' }}>漢字</div>
@@ -5195,6 +5203,7 @@ export default function KanjiApp() {
   const _saved = loadSavedProgress();
 
   const [splash,       setSplash]      = useState(true);
+  const [appMode,      setAppMode]     = useState('home');
   const [tab,          setTab]         = useState(_saved?.tab || 'study');
   const [mode,         setMode]        = useState(_saved?.mode || 'all');
   const [shuffle,      setShuffle]     = useState(_saved?.shuffle || false);
@@ -5366,7 +5375,11 @@ export default function KanjiApp() {
 
   const totalKnown=Object.values(cardStates).filter(s=>s.status==='known').length;
 
-  if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>;
+  if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>
+
+  if(appMode==='home') return <HomeScreen onSelectKanji={()=>setAppMode('kanji')} onSelectVocab={()=>setAppMode('vocab')}/>;
+  if(appMode==='vocab') return <VocabApp onBack={()=>setAppMode('home')}/>;
+  
 
   return (
     <div key={theme} style={{ position:'relative', width:'100%', height:'100vh',
@@ -5390,7 +5403,7 @@ export default function KanjiApp() {
         maxWidth:bp.isLarge?1200:'100%', margin:'0 auto', width:'100%' }}>
 
         <Header known={totalKnown} total={KD.length}
-          sessionTime={sessionTime} seen={seen} streak={streak} bp={bp}/>
+          sessionTime={sessionTime} seen={seen} streak={streak} bp={bp} onHome={()=>setAppMode('home')}/>
 
         <div style={{ flex:1, display:'flex', overflow:'hidden' }}>
           {bp.isTablet&&<SideNav tab={tab} setTab={setTab} bp={bp}/>}
@@ -5419,6 +5432,1175 @@ export default function KanjiApp() {
         </div>
 
         {!bp.isTablet&&<BottomNav tab={tab} setTab={setTab}/>}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOCABULARY DATABASE — 100 words per JLPT level (N5-N1)
+═══════════════════════════════════════════════════════════════════════════ */
+const VD = {
+  N5: [
+    {id:1,w:'食べる',r:'たべる',m:'to eat',pos:'verb',ex:[{j:'ご飯を食べる。',e:'I eat rice.'},{j:'何を食べますか？',e:'What will you eat?'}]},
+    {id:2,w:'飲む',r:'のむ',m:'to drink',pos:'verb',ex:[{j:'水を飲む。',e:'I drink water.'},{j:'お茶を飲みますか？',e:'Will you drink tea?'}]},
+    {id:3,w:'見る',r:'みる',m:'to see / to look',pos:'verb',ex:[{j:'テレビを見る。',e:'I watch TV.'},{j:'映画を見ました。',e:'I watched a movie.'}]},
+    {id:4,w:'聞く',r:'きく',m:'to listen / to ask',pos:'verb',ex:[{j:'音楽を聞く。',e:'I listen to music.'},{j:'先生に聞いた。',e:'I asked the teacher.'}]},
+    {id:5,w:'話す',r:'はなす',m:'to speak / to talk',pos:'verb',ex:[{j:'日本語を話す。',e:'I speak Japanese.'},{j:'友達と話した。',e:'I talked with a friend.'}]},
+    {id:6,w:'読む',r:'よむ',m:'to read',pos:'verb',ex:[{j:'本を読む。',e:'I read a book.'},{j:'新聞を読みますか？',e:'Do you read the newspaper?'}]},
+    {id:7,w:'書く',r:'かく',m:'to write',pos:'verb',ex:[{j:'手紙を書く。',e:'I write a letter.'},{j:'名前を書いてください。',e:'Please write your name.'}]},
+    {id:8,w:'行く',r:'いく',m:'to go',pos:'verb',ex:[{j:'学校に行く。',e:'I go to school.'},{j:'どこへ行きますか？',e:'Where are you going?'}]},
+    {id:9,w:'来る',r:'くる',m:'to come',pos:'verb',ex:[{j:'友達が来る。',e:'A friend is coming.'},{j:'いつ来ますか？',e:'When will you come?'}]},
+    {id:10,w:'帰る',r:'かえる',m:'to return / go home',pos:'verb',ex:[{j:'家に帰る。',e:'I go home.'},{j:'何時に帰りますか？',e:'What time will you return?'}]},
+    {id:11,w:'買う',r:'かう',m:'to buy',pos:'verb',ex:[{j:'本を買う。',e:'I buy a book.'},{j:'スーパーで買った。',e:'I bought it at the supermarket.'}]},
+    {id:12,w:'売る',r:'うる',m:'to sell',pos:'verb',ex:[{j:'車を売る。',e:'I sell a car.'},{j:'花を売っている。',e:'They are selling flowers.'}]},
+    {id:13,w:'起きる',r:'おきる',m:'to wake up / get up',pos:'verb',ex:[{j:'七時に起きる。',e:'I wake up at 7.'},{j:'早く起きました。',e:'I woke up early.'}]},
+    {id:14,w:'寝る',r:'ねる',m:'to sleep / go to bed',pos:'verb',ex:[{j:'十時に寝る。',e:'I sleep at 10.'},{j:'もう寝ましたか？',e:'Have you gone to bed yet?'}]},
+    {id:15,w:'する',r:'する',m:'to do',pos:'verb',ex:[{j:'勉強する。',e:'I study.'},{j:'何をしますか？',e:'What will you do?'}]},
+    {id:16,w:'ある',r:'ある',m:'to exist (things)',pos:'verb',ex:[{j:'本がある。',e:'There is a book.'},{j:'お金がありますか？',e:'Do you have money?'}]},
+    {id:17,w:'いる',r:'いる',m:'to exist (people/animals)',pos:'verb',ex:[{j:'猫がいる。',e:'There is a cat.'},{j:'誰がいますか？',e:'Who is there?'}]},
+    {id:18,w:'わかる',r:'わかる',m:'to understand',pos:'verb',ex:[{j:'日本語がわかる。',e:'I understand Japanese.'},{j:'意味がわかりますか？',e:'Do you understand the meaning?'}]},
+    {id:19,w:'大きい',r:'おおきい',m:'big / large',pos:'adjective',ex:[{j:'大きい犬。',e:'A big dog.'},{j:'この部屋は大きい。',e:'This room is big.'}]},
+    {id:20,w:'小さい',r:'ちいさい',m:'small / little',pos:'adjective',ex:[{j:'小さい猫。',e:'A small cat.'},{j:'この箱は小さい。',e:'This box is small.'}]},
+    {id:21,w:'新しい',r:'あたらしい',m:'new',pos:'adjective',ex:[{j:'新しい車。',e:'A new car.'},{j:'新しいアパートに住む。',e:'I live in a new apartment.'}]},
+    {id:22,w:'古い',r:'ふるい',m:'old',pos:'adjective',ex:[{j:'古い建物。',e:'An old building.'},{j:'古い友達に会った。',e:'I met an old friend.'}]},
+    {id:23,w:'高い',r:'たかい',m:'expensive / tall / high',pos:'adjective',ex:[{j:'高い山。',e:'A tall mountain.'},{j:'この服は高い。',e:'These clothes are expensive.'}]},
+    {id:24,w:'安い',r:'やすい',m:'cheap / inexpensive',pos:'adjective',ex:[{j:'安いレストラン。',e:'A cheap restaurant.'},{j:'このりんごは安い。',e:'These apples are cheap.'}]},
+    {id:25,w:'いい',r:'いい',m:'good',pos:'adjective',ex:[{j:'いい天気。',e:'Good weather.'},{j:'それはいいですね。',e:'That is good.'}]},
+    {id:26,w:'悪い',r:'わるい',m:'bad',pos:'adjective',ex:[{j:'悪い夢。',e:'A bad dream.'},{j:'天気が悪い。',e:'The weather is bad.'}]},
+    {id:27,w:'多い',r:'おおい',m:'many / a lot',pos:'adjective',ex:[{j:'人が多い。',e:'There are many people.'},{j:'仕事が多い。',e:'There is a lot of work.'}]},
+    {id:28,w:'少ない',r:'すくない',m:'few / a little',pos:'adjective',ex:[{j:'お金が少ない。',e:'There is little money.'},{j:'時間が少ない。',e:'There is little time.'}]},
+    {id:29,w:'長い',r:'ながい',m:'long',pos:'adjective',ex:[{j:'長い道。',e:'A long road.'},{j:'髪が長い。',e:'The hair is long.'}]},
+    {id:30,w:'短い',r:'みじかい',m:'short',pos:'adjective',ex:[{j:'短い話。',e:'A short story.'},{j:'夏は夜が短い。',e:'In summer, the nights are short.'}]},
+    {id:31,w:'水',r:'みず',m:'water',pos:'noun',ex:[{j:'水を飲む。',e:'I drink water.'},{j:'水が冷たい。',e:'The water is cold.'}]},
+    {id:32,w:'ご飯',r:'ごはん',m:'rice / meal',pos:'noun',ex:[{j:'ご飯を食べる。',e:'I eat rice.'},{j:'朝ご飯は何ですか？',e:'What is breakfast?'}]},
+    {id:33,w:'魚',r:'さかな',m:'fish',pos:'noun',ex:[{j:'魚が好きです。',e:'I like fish.'},{j:'魚を買った。',e:'I bought fish.'}]},
+    {id:34,w:'肉',r:'にく',m:'meat',pos:'noun',ex:[{j:'肉を食べる。',e:'I eat meat.'},{j:'牛肉が好きです。',e:'I like beef.'}]},
+    {id:35,w:'野菜',r:'やさい',m:'vegetable',pos:'noun',ex:[{j:'野菜を食べる。',e:'I eat vegetables.'},{j:'野菜は体にいい。',e:'Vegetables are good for the body.'}]},
+    {id:36,w:'果物',r:'くだもの',m:'fruit',pos:'noun',ex:[{j:'果物が好きです。',e:'I like fruit.'},{j:'果物を買った。',e:'I bought fruit.'}]},
+    {id:37,w:'パン',r:'ぱん',m:'bread',pos:'noun',ex:[{j:'パンを食べる。',e:'I eat bread.'},{j:'毎朝パンを食べます。',e:'I eat bread every morning.'}]},
+    {id:38,w:'学校',r:'がっこう',m:'school',pos:'noun',ex:[{j:'学校に行く。',e:'I go to school.'},{j:'学校は楽しい。',e:'School is fun.'}]},
+    {id:39,w:'先生',r:'せんせい',m:'teacher',pos:'noun',ex:[{j:'先生に聞く。',e:'I ask the teacher.'},{j:'先生はやさしい。',e:'The teacher is kind.'}]},
+    {id:40,w:'学生',r:'がくせい',m:'student',pos:'noun',ex:[{j:'学生が多い。',e:'There are many students.'},{j:'私は学生です。',e:'I am a student.'}]},
+    {id:41,w:'友達',r:'ともだち',m:'friend',pos:'noun',ex:[{j:'友達と遊ぶ。',e:'I play with friends.'},{j:'友達がいる。',e:'I have friends.'}]},
+    {id:42,w:'家族',r:'かぞく',m:'family',pos:'noun',ex:[{j:'家族と住む。',e:'I live with family.'},{j:'家族が大切です。',e:'Family is important.'}]},
+    {id:43,w:'お父さん',r:'おとうさん',m:'father',pos:'noun',ex:[{j:'お父さんは会社員です。',e:'My father is a company employee.'},{j:'お父さんに聞いた。',e:'I asked my father.'}]},
+    {id:44,w:'お母さん',r:'おかあさん',m:'mother',pos:'noun',ex:[{j:'お母さんが作った。',e:'My mother made it.'},{j:'お母さんが好きです。',e:'I love my mother.'}]},
+    {id:45,w:'電車',r:'でんしゃ',m:'train',pos:'noun',ex:[{j:'電車で行く。',e:'I go by train.'},{j:'電車が来た。',e:'The train came.'}]},
+    {id:46,w:'バス',r:'ばす',m:'bus',pos:'noun',ex:[{j:'バスに乗る。',e:'I ride the bus.'},{j:'バスが遅い。',e:'The bus is late.'}]},
+    {id:47,w:'車',r:'くるま',m:'car',pos:'noun',ex:[{j:'車で行く。',e:'I go by car.'},{j:'車を買った。',e:'I bought a car.'}]},
+    {id:48,w:'駅',r:'えき',m:'station',pos:'noun',ex:[{j:'駅に着いた。',e:'I arrived at the station.'},{j:'駅はどこですか？',e:'Where is the station?'}]},
+    {id:49,w:'病院',r:'びょういん',m:'hospital',pos:'noun',ex:[{j:'病院に行く。',e:'I go to the hospital.'},{j:'病院は近い。',e:'The hospital is close.'}]},
+    {id:50,w:'銀行',r:'ぎんこう',m:'bank',pos:'noun',ex:[{j:'銀行でお金を下ろす。',e:'I withdraw money at the bank.'},{j:'銀行はどこですか？',e:'Where is the bank?'}]},
+    {id:51,w:'今日',r:'きょう',m:'today',pos:'noun',ex:[{j:'今日は月曜日です。',e:'Today is Monday.'},{j:'今日は何をしますか？',e:'What will you do today?'}]},
+    {id:52,w:'明日',r:'あした',m:'tomorrow',pos:'noun',ex:[{j:'明日学校がある。',e:'There is school tomorrow.'},{j:'明日また来ます。',e:'I will come again tomorrow.'}]},
+    {id:53,w:'昨日',r:'きのう',m:'yesterday',pos:'noun',ex:[{j:'昨日映画を見た。',e:'I watched a movie yesterday.'},{j:'昨日は忙しかった。',e:'Yesterday was busy.'}]},
+    {id:54,w:'毎日',r:'まいにち',m:'every day',pos:'adverb',ex:[{j:'毎日勉強する。',e:'I study every day.'},{j:'毎日運動します。',e:'I exercise every day.'}]},
+    {id:55,w:'今',r:'いま',m:'now',pos:'adverb',ex:[{j:'今どこにいますか？',e:'Where are you now?'},{j:'今すぐ来てください。',e:'Please come right now.'}]},
+    {id:56,w:'時間',r:'じかん',m:'time',pos:'noun',ex:[{j:'時間がない。',e:'There is no time.'},{j:'時間はありますか？',e:'Do you have time?'}]},
+    {id:57,w:'天気',r:'てんき',m:'weather',pos:'noun',ex:[{j:'天気がいい。',e:'The weather is nice.'},{j:'今日の天気は？',e:'What is the weather today?'}]},
+    {id:58,w:'名前',r:'なまえ',m:'name',pos:'noun',ex:[{j:'名前は何ですか？',e:'What is your name?'},{j:'名前を書いてください。',e:'Please write your name.'}]},
+    {id:59,w:'言葉',r:'ことば',m:'word / language',pos:'noun',ex:[{j:'新しい言葉を覚える。',e:'I learn new words.'},{j:'日本語の言葉は難しい。',e:'Japanese words are difficult.'}]},
+    {id:60,w:'意味',r:'いみ',m:'meaning',pos:'noun',ex:[{j:'意味がわからない。',e:'I don\'t understand the meaning.'},{j:'この言葉の意味は何？',e:'What is the meaning of this word?'}]},
+    {id:61,w:'仕事',r:'しごと',m:'work / job',pos:'noun',ex:[{j:'仕事が多い。',e:'There is a lot of work.'},{j:'仕事に行く。',e:'I go to work.'}]},
+    {id:62,w:'休み',r:'やすみ',m:'rest / holiday',pos:'noun',ex:[{j:'明日は休みです。',e:'Tomorrow is a day off.'},{j:'夏休みが楽しい。',e:'Summer vacation is fun.'}]},
+    {id:63,w:'勉強',r:'べんきょう',m:'study',pos:'noun',ex:[{j:'毎日勉強する。',e:'I study every day.'},{j:'日本語の勉強をする。',e:'I study Japanese.'}]},
+    {id:64,w:'音楽',r:'おんがく',m:'music',pos:'noun',ex:[{j:'音楽を聞く。',e:'I listen to music.'},{j:'音楽が好きです。',e:'I like music.'}]},
+    {id:65,w:'映画',r:'えいが',m:'movie',pos:'noun',ex:[{j:'映画を見る。',e:'I watch a movie.'},{j:'映画館に行く。',e:'I go to the cinema.'}]},
+    {id:66,w:'本',r:'ほん',m:'book',pos:'noun',ex:[{j:'本を読む。',e:'I read a book.'},{j:'本屋に行く。',e:'I go to the bookstore.'}]},
+    {id:67,w:'新聞',r:'しんぶん',m:'newspaper',pos:'noun',ex:[{j:'新聞を読む。',e:'I read the newspaper.'},{j:'毎朝新聞を読む。',e:'I read the newspaper every morning.'}]},
+    {id:68,w:'手紙',r:'てがみ',m:'letter',pos:'noun',ex:[{j:'手紙を書く。',e:'I write a letter.'},{j:'友達から手紙が来た。',e:'A letter came from a friend.'}]},
+    {id:69,w:'電話',r:'でんわ',m:'telephone',pos:'noun',ex:[{j:'電話をかける。',e:'I make a phone call.'},{j:'電話番号を教えてください。',e:'Please tell me your phone number.'}]},
+    {id:70,w:'テレビ',r:'てれび',m:'television',pos:'noun',ex:[{j:'テレビを見る。',e:'I watch television.'},{j:'テレビが面白い。',e:'The TV is interesting.'}]},
+    {id:71,w:'お金',r:'おかね',m:'money',pos:'noun',ex:[{j:'お金がない。',e:'I have no money.'},{j:'お金を使う。',e:'I spend money.'}]},
+    {id:72,w:'店',r:'みせ',m:'store / shop',pos:'noun',ex:[{j:'店に行く。',e:'I go to the store.'},{j:'この店は安い。',e:'This store is cheap.'}]},
+    {id:73,w:'部屋',r:'へや',m:'room',pos:'noun',ex:[{j:'部屋が広い。',e:'The room is spacious.'},{j:'部屋を掃除する。',e:'I clean the room.'}]},
+    {id:74,w:'家',r:'いえ',m:'house / home',pos:'noun',ex:[{j:'家に帰る。',e:'I go home.'},{j:'家が大きい。',e:'The house is big.'}]},
+    {id:75,w:'会社',r:'かいしゃ',m:'company',pos:'noun',ex:[{j:'会社に行く。',e:'I go to the company.'},{j:'会社で働く。',e:'I work at the company.'}]},
+    {id:76,w:'どこ',r:'どこ',m:'where',pos:'pronoun',ex:[{j:'どこに行きますか？',e:'Where are you going?'},{j:'トイレはどこですか？',e:'Where is the toilet?'}]},
+    {id:77,w:'何',r:'なに',m:'what',pos:'pronoun',ex:[{j:'何が好きですか？',e:'What do you like?'},{j:'それは何ですか？',e:'What is that?'}]},
+    {id:78,w:'誰',r:'だれ',m:'who',pos:'pronoun',ex:[{j:'誰が来ますか？',e:'Who is coming?'},{j:'誰と行きますか？',e:'Who are you going with?'}]},
+    {id:79,w:'いつ',r:'いつ',m:'when',pos:'pronoun',ex:[{j:'いつ来ますか？',e:'When will you come?'},{j:'いつ生まれましたか？',e:'When were you born?'}]},
+    {id:80,w:'なぜ',r:'なぜ',m:'why',pos:'pronoun',ex:[{j:'なぜ泣いていますか？',e:'Why are you crying?'},{j:'なぜ遅いですか？',e:'Why are you late?'}]},
+    {id:81,w:'とても',r:'とても',m:'very',pos:'adverb',ex:[{j:'とても嬉しい。',e:'I am very happy.'},{j:'とても美味しい。',e:'It is very delicious.'}]},
+    {id:82,w:'少し',r:'すこし',m:'a little / a bit',pos:'adverb',ex:[{j:'少し待ってください。',e:'Please wait a little.'},{j:'日本語が少しわかる。',e:'I understand a little Japanese.'}]},
+    {id:83,w:'もう',r:'もう',m:'already / soon',pos:'adverb',ex:[{j:'もう食べた。',e:'I already ate.'},{j:'もう行きます。',e:'I am going now.'}]},
+    {id:84,w:'まだ',r:'まだ',m:'still / not yet',pos:'adverb',ex:[{j:'まだ食べていない。',e:'I haven\'t eaten yet.'},{j:'まだここにいる。',e:'I am still here.'}]},
+    {id:85,w:'一緒に',r:'いっしょに',m:'together',pos:'adverb',ex:[{j:'一緒に行く。',e:'We go together.'},{j:'一緒に食べましょう。',e:'Let\'s eat together.'}]},
+    {id:86,w:'ひとり',r:'ひとり',m:'alone / one person',pos:'noun',ex:[{j:'ひとりで行く。',e:'I go alone.'},{j:'ひとりで住んでいる。',e:'I live alone.'}]},
+    {id:87,w:'右',r:'みぎ',m:'right (direction)',pos:'noun',ex:[{j:'右に曲がる。',e:'Turn right.'},{j:'右側に店がある。',e:'There is a shop on the right.'}]},
+    {id:88,w:'左',r:'ひだり',m:'left (direction)',pos:'noun',ex:[{j:'左に曲がる。',e:'Turn left.'},{j:'左側の建物。',e:'The building on the left.'}]},
+    {id:89,w:'前',r:'まえ',m:'front / before',pos:'noun',ex:[{j:'駅の前に立つ。',e:'I stand in front of the station.'},{j:'前に見た。',e:'I saw it before.'}]},
+    {id:90,w:'後ろ',r:'うしろ',m:'back / behind',pos:'noun',ex:[{j:'後ろを見る。',e:'I look behind.'},{j:'後ろに座る。',e:'I sit in the back.'}]},
+    {id:91,w:'上',r:'うえ',m:'above / up / on top',pos:'noun',ex:[{j:'机の上にある。',e:'It is on the desk.'},{j:'上を見る。',e:'I look up.'}]},
+    {id:92,w:'下',r:'した',m:'below / under',pos:'noun',ex:[{j:'机の下にある。',e:'It is under the desk.'},{j:'下を見る。',e:'I look down.'}]},
+    {id:93,w:'中',r:'なか',m:'inside / middle',pos:'noun',ex:[{j:'箱の中にある。',e:'It is inside the box.'},{j:'クラスの中で一番上手。',e:'Best in the class.'}]},
+    {id:94,w:'外',r:'そと',m:'outside',pos:'noun',ex:[{j:'外で遊ぶ。',e:'I play outside.'},{j:'外は寒い。',e:'It is cold outside.'}]},
+    {id:95,w:'元気',r:'げんき',m:'healthy / energetic',pos:'adjective',ex:[{j:'元気ですか？',e:'Are you well?'},{j:'今日は元気です。',e:'I am fine today.'}]},
+    {id:96,w:'好き',r:'すき',m:'to like / fond of',pos:'adjective',ex:[{j:'猫が好きです。',e:'I like cats.'},{j:'日本語が好きです。',e:'I like Japanese.'}]},
+    {id:97,w:'嫌い',r:'きらい',m:'to dislike',pos:'adjective',ex:[{j:'野菜が嫌いです。',e:'I dislike vegetables.'},{j:'虫が嫌いです。',e:'I dislike insects.'}]},
+    {id:98,w:'楽しい',r:'たのしい',m:'fun / enjoyable',pos:'adjective',ex:[{j:'旅行は楽しい。',e:'Travel is fun.'},{j:'学校が楽しい。',e:'School is fun.'}]},
+    {id:99,w:'難しい',r:'むずかしい',m:'difficult',pos:'adjective',ex:[{j:'試験が難しい。',e:'The exam is difficult.'},{j:'日本語は難しい。',e:'Japanese is difficult.'}]},
+    {id:100,w:'易しい',r:'やさしい',m:'easy / gentle',pos:'adjective',ex:[{j:'この問題は易しい。',e:'This problem is easy.'},{j:'易しい質問。',e:'An easy question.'}]},
+  ],
+  N4: [
+    {id:101,w:'集める',r:'あつめる',m:'to collect / gather',pos:'verb',ex:[{j:'切手を集める。',e:'I collect stamps.'},{j:'情報を集めた。',e:'I gathered information.'}]},
+    {id:102,w:'集まる',r:'あつまる',m:'to gather / come together',pos:'verb',ex:[{j:'公園に人が集まる。',e:'People gather in the park.'},{j:'みんなが集まった。',e:'Everyone gathered.'}]},
+    {id:103,w:'上がる',r:'あがる',m:'to go up / rise',pos:'verb',ex:[{j:'温度が上がる。',e:'The temperature rises.'},{j:'成績が上がった。',e:'My grades went up.'}]},
+    {id:104,w:'下がる',r:'さがる',m:'to go down / fall',pos:'verb',ex:[{j:'気温が下がる。',e:'The temperature falls.'},{j:'値段が下がった。',e:'The price went down.'}]},
+    {id:105,w:'送る',r:'おくる',m:'to send',pos:'verb',ex:[{j:'メールを送る。',e:'I send an email.'},{j:'荷物を送った。',e:'I sent the luggage.'}]},
+    {id:106,w:'受ける',r:'うける',m:'to receive / take (exam)',pos:'verb',ex:[{j:'試験を受ける。',e:'I take an exam.'},{j:'メールを受けた。',e:'I received an email.'}]},
+    {id:107,w:'変える',r:'かえる',m:'to change',pos:'verb',ex:[{j:'計画を変える。',e:'I change the plan.'},{j:'住所を変えた。',e:'I changed my address.'}]},
+    {id:108,w:'決める',r:'きめる',m:'to decide',pos:'verb',ex:[{j:'場所を決める。',e:'I decide the place.'},{j:'日程を決めた。',e:'I decided the schedule.'}]},
+    {id:109,w:'覚える',r:'おぼえる',m:'to remember / memorize',pos:'verb',ex:[{j:'単語を覚える。',e:'I memorize vocabulary.'},{j:'名前を覚えた。',e:'I remembered the name.'}]},
+    {id:110,w:'忘れる',r:'わすれる',m:'to forget',pos:'verb',ex:[{j:'宿題を忘れる。',e:'I forget my homework.'},{j:'傘を忘れた。',e:'I forgot my umbrella.'}]},
+    {id:111,w:'始める',r:'はじめる',m:'to begin / start',pos:'verb',ex:[{j:'仕事を始める。',e:'I start work.'},{j:'授業が始まった。',e:'The class started.'}]},
+    {id:112,w:'終わる',r:'おわる',m:'to end / finish',pos:'verb',ex:[{j:'仕事が終わる。',e:'Work ends.'},{j:'映画が終わった。',e:'The movie ended.'}]},
+    {id:113,w:'続ける',r:'つづける',m:'to continue',pos:'verb',ex:[{j:'勉強を続ける。',e:'I continue studying.'},{j:'走り続けた。',e:'I kept running.'}]},
+    {id:114,w:'止まる',r:'とまる',m:'to stop',pos:'verb',ex:[{j:'電車が止まる。',e:'The train stops.'},{j:'車が止まった。',e:'The car stopped.'}]},
+    {id:115,w:'動く',r:'うごく',m:'to move',pos:'verb',ex:[{j:'体を動かす。',e:'I move my body.'},{j:'機械が動かない。',e:'The machine doesn\'t move.'}]},
+    {id:116,w:'働く',r:'はたらく',m:'to work',pos:'verb',ex:[{j:'会社で働く。',e:'I work at a company.'},{j:'毎日働いている。',e:'I work every day.'}]},
+    {id:117,w:'遊ぶ',r:'あそぶ',m:'to play',pos:'verb',ex:[{j:'公園で遊ぶ。',e:'I play in the park.'},{j:'友達と遊んだ。',e:'I played with friends.'}]},
+    {id:118,w:'急ぐ',r:'いそぐ',m:'to hurry',pos:'verb',ex:[{j:'急いでください。',e:'Please hurry.'},{j:'駅まで急いだ。',e:'I hurried to the station.'}]},
+    {id:119,w:'泳ぐ',r:'およぐ',m:'to swim',pos:'verb',ex:[{j:'海で泳ぐ。',e:'I swim in the sea.'},{j:'毎日泳いでいる。',e:'I swim every day.'}]},
+    {id:120,w:'歩く',r:'あるく',m:'to walk',pos:'verb',ex:[{j:'公園を歩く。',e:'I walk in the park.'},{j:'駅まで歩いた。',e:'I walked to the station.'}]},
+    {id:121,w:'走る',r:'はしる',m:'to run',pos:'verb',ex:[{j:'毎朝走る。',e:'I run every morning.'},{j:'学校まで走った。',e:'I ran to school.'}]},
+    {id:122,w:'乗る',r:'のる',m:'to ride / get on',pos:'verb',ex:[{j:'電車に乗る。',e:'I get on the train.'},{j:'バスに乗った。',e:'I got on the bus.'}]},
+    {id:123,w:'降りる',r:'おりる',m:'to get off / descend',pos:'verb',ex:[{j:'電車を降りる。',e:'I get off the train.'},{j:'駅で降りた。',e:'I got off at the station.'}]},
+    {id:124,w:'渡る',r:'わたる',m:'to cross',pos:'verb',ex:[{j:'橋を渡る。',e:'I cross the bridge.'},{j:'道を渡った。',e:'I crossed the road.'}]},
+    {id:125,w:'曲がる',r:'まがる',m:'to turn / bend',pos:'verb',ex:[{j:'右に曲がる。',e:'Turn right.'},{j:'角で曲がった。',e:'I turned at the corner.'}]},
+    {id:126,w:'授業',r:'じゅぎょう',m:'class / lesson',pos:'noun',ex:[{j:'授業を受ける。',e:'I attend a class.'},{j:'授業が始まった。',e:'The class started.'}]},
+    {id:127,w:'試験',r:'しけん',m:'exam / test',pos:'noun',ex:[{j:'試験を受ける。',e:'I take an exam.'},{j:'試験に合格した。',e:'I passed the exam.'}]},
+    {id:128,w:'宿題',r:'しゅくだい',m:'homework',pos:'noun',ex:[{j:'宿題をする。',e:'I do homework.'},{j:'宿題を忘れた。',e:'I forgot my homework.'}]},
+    {id:129,w:'成績',r:'せいせき',m:'grades / results',pos:'noun',ex:[{j:'成績がいい。',e:'My grades are good.'},{j:'成績が上がった。',e:'My grades improved.'}]},
+    {id:130,w:'計画',r:'けいかく',m:'plan',pos:'noun',ex:[{j:'計画を立てる。',e:'I make a plan.'},{j:'計画を変えた。',e:'I changed the plan.'}]},
+    {id:131,w:'準備',r:'じゅんび',m:'preparation',pos:'noun',ex:[{j:'準備をする。',e:'I prepare.'},{j:'準備ができた。',e:'I am ready.'}]},
+    {id:132,w:'練習',r:'れんしゅう',m:'practice',pos:'noun',ex:[{j:'毎日練習する。',e:'I practice every day.'},{j:'発音の練習をした。',e:'I practiced pronunciation.'}]},
+    {id:133,w:'経験',r:'けいけん',m:'experience',pos:'noun',ex:[{j:'経験が大切です。',e:'Experience is important.'},{j:'いい経験になった。',e:'It became a good experience.'}]},
+    {id:134,w:'問題',r:'もんだい',m:'problem / question',pos:'noun',ex:[{j:'問題を解く。',e:'I solve a problem.'},{j:'問題がある。',e:'There is a problem.'}]},
+    {id:135,w:'答え',r:'こたえ',m:'answer',pos:'noun',ex:[{j:'答えを書く。',e:'I write the answer.'},{j:'答えがわからない。',e:'I don\'t know the answer.'}]},
+    {id:136,w:'理由',r:'りゆう',m:'reason',pos:'noun',ex:[{j:'理由を教えてください。',e:'Please tell me the reason.'},{j:'理由がわからない。',e:'I don\'t know the reason.'}]},
+    {id:137,w:'気持ち',r:'きもち',m:'feeling / mood',pos:'noun',ex:[{j:'気持ちがいい。',e:'It feels good.'},{j:'気持ちを伝える。',e:'I convey my feelings.'}]},
+    {id:138,w:'体',r:'からだ',m:'body',pos:'noun',ex:[{j:'体が痛い。',e:'My body hurts.'},{j:'体を大切にする。',e:'I take care of my body.'}]},
+    {id:139,w:'頭',r:'あたま',m:'head',pos:'noun',ex:[{j:'頭が痛い。',e:'My head hurts.'},{j:'頭がいい。',e:'They are smart.'}]},
+    {id:140,w:'顔',r:'かお',m:'face',pos:'noun',ex:[{j:'顔を洗う。',e:'I wash my face.'},{j:'顔が赤い。',e:'My face is red.'}]},
+    {id:141,w:'声',r:'こえ',m:'voice',pos:'noun',ex:[{j:'声が大きい。',e:'The voice is loud.'},{j:'きれいな声です。',e:'It\'s a beautiful voice.'}]},
+    {id:142,w:'空',r:'そら',m:'sky',pos:'noun',ex:[{j:'空が青い。',e:'The sky is blue.'},{j:'空を見る。',e:'I look at the sky.'}]},
+    {id:143,w:'海',r:'うみ',m:'sea / ocean',pos:'noun',ex:[{j:'海で泳ぐ。',e:'I swim in the sea.'},{j:'海が好きです。',e:'I like the sea.'}]},
+    {id:144,w:'山',r:'やま',m:'mountain',pos:'noun',ex:[{j:'山に登る。',e:'I climb the mountain.'},{j:'山が美しい。',e:'The mountain is beautiful.'}]},
+    {id:145,w:'川',r:'かわ',m:'river',pos:'noun',ex:[{j:'川で魚を捕る。',e:'I catch fish in the river.'},{j:'川が流れている。',e:'The river is flowing.'}]},
+    {id:146,w:'道',r:'みち',m:'road / way',pos:'noun',ex:[{j:'道を渡る。',e:'I cross the road.'},{j:'道がわからない。',e:'I don\'t know the way.'}]},
+    {id:147,w:'橋',r:'はし',m:'bridge',pos:'noun',ex:[{j:'橋を渡る。',e:'I cross the bridge.'},{j:'長い橋がある。',e:'There is a long bridge.'}]},
+    {id:148,w:'公園',r:'こうえん',m:'park',pos:'noun',ex:[{j:'公園で遊ぶ。',e:'I play in the park.'},{j:'公園を散歩する。',e:'I stroll in the park.'}]},
+    {id:149,w:'図書館',r:'としょかん',m:'library',pos:'noun',ex:[{j:'図書館で勉強する。',e:'I study at the library.'},{j:'図書館で本を借りた。',e:'I borrowed a book from the library.'}]},
+    {id:150,w:'郵便局',r:'ゆうびんきょく',m:'post office',pos:'noun',ex:[{j:'郵便局で手紙を出す。',e:'I mail a letter at the post office.'},{j:'郵便局はどこですか？',e:'Where is the post office?'}]},
+    {id:151,w:'嬉しい',r:'うれしい',m:'happy / glad',pos:'adjective',ex:[{j:'合格して嬉しい。',e:'I am happy I passed.'},{j:'会えて嬉しい。',e:'I am glad to see you.'}]},
+    {id:152,w:'悲しい',r:'かなしい',m:'sad',pos:'adjective',ex:[{j:'別れが悲しい。',e:'Parting is sad.'},{j:'悲しいニュース。',e:'Sad news.'}]},
+    {id:153,w:'怖い',r:'こわい',m:'scary / frightening',pos:'adjective',ex:[{j:'怖い夢を見た。',e:'I had a scary dream.'},{j:'暗い道が怖い。',e:'I am scared of dark roads.'}]},
+    {id:154,w:'忙しい',r:'いそがしい',m:'busy',pos:'adjective',ex:[{j:'今日は忙しい。',e:'I am busy today.'},{j:'毎日忙しい。',e:'I am busy every day.'}]},
+    {id:155,w:'暇',r:'ひま',m:'free time / not busy',pos:'noun',ex:[{j:'暇な時に読む。',e:'I read in my free time.'},{j:'今日は暇です。',e:'I am free today.'}]},
+    {id:156,w:'大切',r:'たいせつ',m:'important / precious',pos:'adjective',ex:[{j:'友達は大切です。',e:'Friends are important.'},{j:'大切なものを守る。',e:'I protect what is precious.'}]},
+    {id:157,w:'特別',r:'とくべつ',m:'special',pos:'adjective',ex:[{j:'特別な日。',e:'A special day.'},{j:'特別な人です。',e:'This person is special.'}]},
+    {id:158,w:'普通',r:'ふつう',m:'ordinary / normal',pos:'adjective',ex:[{j:'普通の生活。',e:'An ordinary life.'},{j:'普通でいい。',e:'Normal is fine.'}]},
+    {id:159,w:'同じ',r:'おなじ',m:'same',pos:'adjective',ex:[{j:'同じ意見です。',e:'I have the same opinion.'},{j:'同じ学校です。',e:'We are at the same school.'}]},
+    {id:160,w:'違う',r:'ちがう',m:'different / wrong',pos:'verb',ex:[{j:'意見が違う。',e:'The opinions are different.'},{j:'それは違います。',e:'That is wrong.'}]},
+    {id:161,w:'早い',r:'はやい',m:'early / fast',pos:'adjective',ex:[{j:'朝が早い。',e:'The morning is early.'},{j:'走るのが早い。',e:'I am fast at running.'}]},
+    {id:162,w:'遅い',r:'おそい',m:'late / slow',pos:'adjective',ex:[{j:'電車が遅い。',e:'The train is late.'},{j:'歩くのが遅い。',e:'I am slow at walking.'}]},
+    {id:163,w:'広い',r:'ひろい',m:'wide / spacious',pos:'adjective',ex:[{j:'部屋が広い。',e:'The room is spacious.'},{j:'公園が広い。',e:'The park is wide.'}]},
+    {id:164,w:'狭い',r:'せまい',m:'narrow / small',pos:'adjective',ex:[{j:'部屋が狭い。',e:'The room is small.'},{j:'道が狭い。',e:'The road is narrow.'}]},
+    {id:165,w:'重い',r:'おもい',m:'heavy',pos:'adjective',ex:[{j:'荷物が重い。',e:'The luggage is heavy.'},{j:'責任が重い。',e:'The responsibility is heavy.'}]},
+    {id:166,w:'軽い',r:'かるい',m:'light (weight)',pos:'adjective',ex:[{j:'荷物が軽い。',e:'The luggage is light.'},{j:'軽い気持ちで来た。',e:'I came with a light heart.'}]},
+    {id:167,w:'強い',r:'つよい',m:'strong',pos:'adjective',ex:[{j:'風が強い。',e:'The wind is strong.'},{j:'強い選手です。',e:'This player is strong.'}]},
+    {id:168,w:'弱い',r:'よわい',m:'weak',pos:'adjective',ex:[{j:'体が弱い。',e:'My body is weak.'},{j:'弱い心。',e:'A weak heart.'}]},
+    {id:169,w:'親切',r:'しんせつ',m:'kind / friendly',pos:'adjective',ex:[{j:'親切な人です。',e:'This person is kind.'},{j:'親切にしてくれた。',e:'They were kind to me.'}]},
+    {id:170,w:'丁寧',r:'ていねい',m:'polite / careful',pos:'adjective',ex:[{j:'丁寧な言葉を使う。',e:'I use polite words.'},{j:'丁寧に説明した。',e:'I explained carefully.'}]},
+    {id:171,w:'そして',r:'そして',m:'and then / and',pos:'conjunction',ex:[{j:'勉強した。そして寝た。',e:'I studied. And then I slept.'},{j:'おいしい、そして安い。',e:'Delicious and cheap.'}]},
+    {id:172,w:'でも',r:'でも',m:'but / however',pos:'conjunction',ex:[{j:'行きたい。でも忙しい。',e:'I want to go. But I am busy.'},{j:'難しい、でも楽しい。',e:'Difficult, but fun.'}]},
+    {id:173,w:'だから',r:'だから',m:'therefore / so',pos:'conjunction',ex:[{j:'遅い。だから急ぐ。',e:'I am late. So I hurry.'},{j:'好きだから買う。',e:'I buy it because I like it.'}]},
+    {id:174,w:'もし',r:'もし',m:'if',pos:'conjunction',ex:[{j:'もし時間があれば来てください。',e:'Please come if you have time.'},{j:'もし雨なら中止。',e:'If it rains, it will be cancelled.'}]},
+    {id:175,w:'〜から',r:'から',m:'because / from',pos:'particle',ex:[{j:'好きだから食べる。',e:'I eat because I like it.'},{j:'東京から来た。',e:'I came from Tokyo.'}]},
+    {id:176,w:'旅行',r:'りょこう',m:'travel / trip',pos:'noun',ex:[{j:'旅行に行く。',e:'I go on a trip.'},{j:'旅行が好きです。',e:'I like travel.'}]},
+    {id:177,w:'文化',r:'ぶんか',m:'culture',pos:'noun',ex:[{j:'日本の文化を学ぶ。',e:'I learn Japanese culture.'},{j:'文化が違う。',e:'The cultures are different.'}]},
+    {id:178,w:'生活',r:'せいかつ',m:'life / living',pos:'noun',ex:[{j:'日本での生活。',e:'Life in Japan.'},{j:'生活が変わった。',e:'Life has changed.'}]},
+    {id:179,w:'社会',r:'しゃかい',m:'society',pos:'noun',ex:[{j:'社会に出る。',e:'I enter society.'},{j:'社会の問題。',e:'Social problems.'}]},
+    {id:180,w:'世界',r:'せかい',m:'world',pos:'noun',ex:[{j:'世界を旅する。',e:'I travel the world.'},{j:'世界で一番大きい。',e:'The biggest in the world.'}]},
+    {id:181,w:'外国',r:'がいこく',m:'foreign country',pos:'noun',ex:[{j:'外国に行く。',e:'I go to a foreign country.'},{j:'外国語を学ぶ。',e:'I learn a foreign language.'}]},
+    {id:182,w:'言語',r:'げんご',m:'language',pos:'noun',ex:[{j:'言語を学ぶ。',e:'I learn a language.'},{j:'日本語は難しい言語です。',e:'Japanese is a difficult language.'}]},
+    {id:183,w:'文章',r:'ぶんしょう',m:'sentence / text',pos:'noun',ex:[{j:'文章を書く。',e:'I write a sentence.'},{j:'長い文章を読んだ。',e:'I read a long text.'}]},
+    {id:184,w:'単語',r:'たんご',m:'word / vocabulary',pos:'noun',ex:[{j:'単語を覚える。',e:'I memorize words.'},{j:'新しい単語を学んだ。',e:'I learned new words.'}]},
+    {id:185,w:'文法',r:'ぶんぽう',m:'grammar',pos:'noun',ex:[{j:'文法を勉強する。',e:'I study grammar.'},{j:'文法が難しい。',e:'Grammar is difficult.'}]},
+    {id:186,w:'発音',r:'はつおん',m:'pronunciation',pos:'noun',ex:[{j:'発音を練習する。',e:'I practice pronunciation.'},{j:'発音がいい。',e:'The pronunciation is good.'}]},
+    {id:187,w:'翻訳',r:'ほんやく',m:'translation',pos:'noun',ex:[{j:'翻訳をする。',e:'I do translation.'},{j:'翻訳が難しい。',e:'Translation is difficult.'}]},
+    {id:188,w:'辞書',r:'じしょ',m:'dictionary',pos:'noun',ex:[{j:'辞書を引く。',e:'I look up a dictionary.'},{j:'辞書で調べた。',e:'I looked it up in the dictionary.'}]},
+    {id:189,w:'天気予報',r:'てんきよほう',m:'weather forecast',pos:'noun',ex:[{j:'天気予報を見る。',e:'I check the weather forecast.'},{j:'天気予報では雨です。',e:'The forecast says rain.'}]},
+    {id:190,w:'季節',r:'きせつ',m:'season',pos:'noun',ex:[{j:'季節が変わる。',e:'The season changes.'},{j:'好きな季節は春です。',e:'My favorite season is spring.'}]},
+    {id:191,w:'春',r:'はる',m:'spring',pos:'noun',ex:[{j:'春になった。',e:'Spring has come.'},{j:'春が好きです。',e:'I like spring.'}]},
+    {id:192,w:'夏',r:'なつ',m:'summer',pos:'noun',ex:[{j:'夏は暑い。',e:'Summer is hot.'},{j:'夏休みが楽しい。',e:'Summer vacation is fun.'}]},
+    {id:193,w:'秋',r:'あき',m:'autumn / fall',pos:'noun',ex:[{j:'秋は涼しい。',e:'Autumn is cool.'},{j:'秋の葉が美しい。',e:'Autumn leaves are beautiful.'}]},
+    {id:194,w:'冬',r:'ふゆ',m:'winter',pos:'noun',ex:[{j:'冬は寒い。',e:'Winter is cold.'},{j:'冬にスキーをする。',e:'I ski in winter.'}]},
+    {id:195,w:'色',r:'いろ',m:'color',pos:'noun',ex:[{j:'好きな色は何ですか？',e:'What is your favorite color?'},{j:'色が美しい。',e:'The colors are beautiful.'}]},
+    {id:196,w:'形',r:'かたち',m:'shape / form',pos:'noun',ex:[{j:'丸い形。',e:'A round shape.'},{j:'形が変わった。',e:'The shape changed.'}]},
+    {id:197,w:'数',r:'かず',m:'number / quantity',pos:'noun',ex:[{j:'数が多い。',e:'The number is large.'},{j:'数を数える。',e:'I count the numbers.'}]},
+    {id:198,w:'量',r:'りょう',m:'amount / quantity',pos:'noun',ex:[{j:'量が多い。',e:'The amount is large.'},{j:'量を減らす。',e:'I reduce the amount.'}]},
+    {id:199,w:'値段',r:'ねだん',m:'price',pos:'noun',ex:[{j:'値段が高い。',e:'The price is high.'},{j:'値段を確認した。',e:'I checked the price.'}]},
+    {id:200,w:'質',r:'しつ',m:'quality',pos:'noun',ex:[{j:'質がいい。',e:'The quality is good.'},{j:'量より質が大切。',e:'Quality is more important than quantity.'}]},
+  ],
+  N3: [
+    {id:201,w:'影響',r:'えいきょう',m:'influence / effect',pos:'noun',ex:[{j:'環境への影響。',e:'Impact on the environment.'},{j:'大きな影響を与えた。',e:'It had a great influence.'}]},
+    {id:202,w:'関係',r:'かんけい',m:'relationship / connection',pos:'noun',ex:[{j:'関係がある。',e:'There is a connection.'},{j:'友好的な関係を築く。',e:'I build a friendly relationship.'}]},
+    {id:203,w:'状況',r:'じょうきょう',m:'situation / circumstances',pos:'noun',ex:[{j:'状況を確認する。',e:'I check the situation.'},{j:'状況が変わった。',e:'The situation changed.'}]},
+    {id:204,w:'環境',r:'かんきょう',m:'environment',pos:'noun',ex:[{j:'環境を守る。',e:'I protect the environment.'},{j:'職場の環境がいい。',e:'The work environment is good.'}]},
+    {id:205,w:'条件',r:'じょうけん',m:'condition / requirement',pos:'noun',ex:[{j:'条件を確認する。',e:'I check the conditions.'},{j:'条件が合わない。',e:'The conditions don\'t match.'}]},
+    {id:206,w:'目的',r:'もくてき',m:'purpose / goal',pos:'noun',ex:[{j:'目的を達成する。',e:'I achieve the goal.'},{j:'旅行の目的は観光です。',e:'The purpose of the trip is sightseeing.'}]},
+    {id:207,w:'方法',r:'ほうほう',m:'method / way',pos:'noun',ex:[{j:'方法を教えてください。',e:'Please teach me the method.'},{j:'いい方法がある。',e:'There is a good method.'}]},
+    {id:208,w:'結果',r:'けっか',m:'result / outcome',pos:'noun',ex:[{j:'結果が出た。',e:'The result came out.'},{j:'いい結果を出した。',e:'I produced a good result.'}]},
+    {id:209,w:'原因',r:'げんいん',m:'cause / reason',pos:'noun',ex:[{j:'原因を調べる。',e:'I investigate the cause.'},{j:'失敗の原因がわかった。',e:'I understood the cause of failure.'}]},
+    {id:210,w:'解決',r:'かいけつ',m:'solution / resolution',pos:'noun',ex:[{j:'問題を解決する。',e:'I solve the problem.'},{j:'解決策を探す。',e:'I look for a solution.'}]},
+    {id:211,w:'発展',r:'はってん',m:'development / growth',pos:'noun',ex:[{j:'経済が発展する。',e:'The economy develops.'},{j:'技術の発展。',e:'Technological development.'}]},
+    {id:212,w:'変化',r:'へんか',m:'change',pos:'noun',ex:[{j:'大きな変化があった。',e:'There was a big change.'},{j:'気候の変化。',e:'Climate change.'}]},
+    {id:213,w:'成長',r:'せいちょう',m:'growth',pos:'noun',ex:[{j:'子供の成長を見守る。',e:'I watch the child grow.'},{j:'会社が成長した。',e:'The company grew.'}]},
+    {id:214,w:'能力',r:'のうりょく',m:'ability / capacity',pos:'noun',ex:[{j:'能力を発揮する。',e:'I demonstrate ability.'},{j:'高い能力がある。',e:'They have high ability.'}]},
+    {id:215,w:'努力',r:'どりょく',m:'effort',pos:'noun',ex:[{j:'努力する。',e:'I make an effort.'},{j:'努力が実った。',e:'My efforts paid off.'}]},
+    {id:216,w:'成功',r:'せいこう',m:'success',pos:'noun',ex:[{j:'成功を収める。',e:'I achieve success.'},{j:'努力で成功した。',e:'I succeeded through effort.'}]},
+    {id:217,w:'失敗',r:'しっぱい',m:'failure',pos:'noun',ex:[{j:'失敗を恐れるな。',e:'Don\'t be afraid of failure.'},{j:'失敗から学ぶ。',e:'I learn from failure.'}]},
+    {id:218,w:'機会',r:'きかい',m:'opportunity / chance',pos:'noun',ex:[{j:'機会を生かす。',e:'I make use of the opportunity.'},{j:'いい機会です。',e:'It is a good opportunity.'}]},
+    {id:219,w:'必要',r:'ひつよう',m:'necessary / need',pos:'adjective',ex:[{j:'水は必要です。',e:'Water is necessary.'},{j:'必要なものを買う。',e:'I buy what is necessary.'}]},
+    {id:220,w:'重要',r:'じゅうよう',m:'important',pos:'adjective',ex:[{j:'重要な会議。',e:'An important meeting.'},{j:'重要な情報。',e:'Important information.'}]},
+    {id:221,w:'適切',r:'てきせつ',m:'appropriate / suitable',pos:'adjective',ex:[{j:'適切な対応をする。',e:'I respond appropriately.'},{j:'適切な言葉を選ぶ。',e:'I choose appropriate words.'}]},
+    {id:222,w:'正確',r:'せいかく',m:'accurate / precise',pos:'adjective',ex:[{j:'正確な情報が必要。',e:'Accurate information is needed.'},{j:'正確に書く。',e:'I write accurately.'}]},
+    {id:223,w:'複雑',r:'ふくざつ',m:'complex / complicated',pos:'adjective',ex:[{j:'複雑な問題。',e:'A complex problem.'},{j:'状況が複雑だ。',e:'The situation is complicated.'}]},
+    {id:224,w:'簡単',r:'かんたん',m:'simple / easy',pos:'adjective',ex:[{j:'簡単な問題。',e:'A simple problem.'},{j:'簡単に解けた。',e:'I solved it easily.'}]},
+    {id:225,w:'具体的',r:'ぐたいてき',m:'concrete / specific',pos:'adjective',ex:[{j:'具体的な例を挙げる。',e:'I give a specific example.'},{j:'具体的に説明する。',e:'I explain specifically.'}]},
+    {id:226,w:'一般的',r:'いっぱんてき',m:'general / common',pos:'adjective',ex:[{j:'一般的な意見。',e:'A general opinion.'},{j:'一般的に言えば。',e:'Generally speaking.'}]},
+    {id:227,w:'主に',r:'おもに',m:'mainly / primarily',pos:'adverb',ex:[{j:'主に東京に住む。',e:'I mainly live in Tokyo.'},{j:'主に英語で話す。',e:'I mainly speak in English.'}]},
+    {id:228,w:'特に',r:'とくに',m:'especially / particularly',pos:'adverb',ex:[{j:'特に好きな食べ物。',e:'Food I especially like.'},{j:'特に問題はない。',e:'There is no particular problem.'}]},
+    {id:229,w:'例えば',r:'たとえば',m:'for example',pos:'adverb',ex:[{j:'例えば、りんごや梨。',e:'For example, apples and pears.'},{j:'例えばどんな問題？',e:'For example, what kind of problem?'}]},
+    {id:230,w:'最近',r:'さいきん',m:'recently / lately',pos:'adverb',ex:[{j:'最近忙しい。',e:'I have been busy lately.'},{j:'最近どうですか？',e:'How have you been recently?'}]},
+    {id:231,w:'以前',r:'いぜん',m:'before / previously',pos:'adverb',ex:[{j:'以前住んでいた。',e:'I lived there before.'},{j:'以前より上手になった。',e:'I became better than before.'}]},
+    {id:232,w:'以後',r:'いご',m:'after / from now on',pos:'adverb',ex:[{j:'以後気をつける。',e:'I will be careful from now on.'},{j:'以後よろしくお願いします。',e:'I look forward to working with you from now on.'}]},
+    {id:233,w:'以上',r:'いじょう',m:'more than / above',pos:'adverb',ex:[{j:'三つ以上必要。',e:'Three or more are needed.'},{j:'以上で終わりです。',e:'That concludes it.'}]},
+    {id:234,w:'以下',r:'いか',m:'less than / below',pos:'adverb',ex:[{j:'三つ以下でいい。',e:'Three or fewer is fine.'},{j:'詳細は以下の通り。',e:'Details are as follows.'}]},
+    {id:235,w:'場合',r:'ばあい',m:'case / situation',pos:'noun',ex:[{j:'その場合は連絡する。',e:'In that case, I will contact you.'},{j:'緊急の場合。',e:'In case of emergency.'}]},
+    {id:236,w:'程度',r:'ていど',m:'degree / extent',pos:'noun',ex:[{j:'ある程度わかる。',e:'I understand to some degree.'},{j:'被害の程度。',e:'The extent of the damage.'}]},
+    {id:237,w:'割合',r:'わりあい',m:'ratio / proportion',pos:'noun',ex:[{j:'割合が高い。',e:'The proportion is high.'},{j:'男女の割合。',e:'The ratio of men to women.'}]},
+    {id:238,w:'順番',r:'じゅんばん',m:'order / turn',pos:'noun',ex:[{j:'順番を守る。',e:'I follow the order.'},{j:'順番を待つ。',e:'I wait my turn.'}]},
+    {id:239,w:'段階',r:'だんかい',m:'stage / step',pos:'noun',ex:[{j:'段階的に進める。',e:'I proceed step by step.'},{j:'次の段階へ進む。',e:'I move to the next stage.'}]},
+    {id:240,w:'過程',r:'かてい',m:'process',pos:'noun',ex:[{j:'学習の過程。',e:'The learning process.'},{j:'過程が大切です。',e:'The process is important.'}]},
+    {id:241,w:'行動',r:'こうどう',m:'action / behavior',pos:'noun',ex:[{j:'行動を起こす。',e:'I take action.'},{j:'行動が大切だ。',e:'Action is important.'}]},
+    {id:242,w:'態度',r:'たいど',m:'attitude',pos:'noun',ex:[{j:'態度を改める。',e:'I change my attitude.'},{j:'正直な態度。',e:'An honest attitude.'}]},
+    {id:243,w:'習慣',r:'しゅうかん',m:'habit / custom',pos:'noun',ex:[{j:'いい習慣をつける。',e:'I develop good habits.'},{j:'日本の習慣。',e:'Japanese customs.'}]},
+    {id:244,w:'規則',r:'きそく',m:'rule / regulation',pos:'noun',ex:[{j:'規則を守る。',e:'I follow the rules.'},{j:'規則を破った。',e:'I broke the rule.'}]},
+    {id:245,w:'責任',r:'せきにん',m:'responsibility',pos:'noun',ex:[{j:'責任を取る。',e:'I take responsibility.'},{j:'責任がある仕事。',e:'A job with responsibility.'}]},
+    {id:246,w:'権利',r:'けんり',m:'right',pos:'noun',ex:[{j:'権利を守る。',e:'I protect rights.'},{j:'平等な権利。',e:'Equal rights.'}]},
+    {id:247,w:'義務',r:'ぎむ',m:'duty / obligation',pos:'noun',ex:[{j:'義務を果たす。',e:'I fulfill my duty.'},{j:'税金を払う義務。',e:'The obligation to pay taxes.'}]},
+    {id:248,w:'許可',r:'きょか',m:'permission',pos:'noun',ex:[{j:'許可をもらう。',e:'I get permission.'},{j:'許可なく入ってはいけない。',e:'You must not enter without permission.'}]},
+    {id:249,w:'禁止',r:'きんし',m:'prohibition / ban',pos:'noun',ex:[{j:'喫煙禁止。',e:'Smoking is prohibited.'},{j:'使用禁止。',e:'Use is prohibited.'}]},
+    {id:250,w:'可能性',r:'かのうせい',m:'possibility',pos:'noun',ex:[{j:'可能性がある。',e:'There is a possibility.'},{j:'成功の可能性が高い。',e:'The possibility of success is high.'}]},
+    {id:251,w:'情報',r:'じょうほう',m:'information',pos:'noun',ex:[{j:'情報を集める。',e:'I gather information.'},{j:'正確な情報が必要。',e:'Accurate information is needed.'}]},
+    {id:252,w:'技術',r:'ぎじゅつ',m:'technology / skill',pos:'noun',ex:[{j:'技術を学ぶ。',e:'I learn the skill.'},{j:'最新技術。',e:'Latest technology.'}]},
+    {id:253,w:'研究',r:'けんきゅう',m:'research / study',pos:'noun',ex:[{j:'研究を進める。',e:'I advance my research.'},{j:'研究者になりたい。',e:'I want to become a researcher.'}]},
+    {id:254,w:'調査',r:'ちょうさ',m:'investigation / survey',pos:'noun',ex:[{j:'調査を行う。',e:'I conduct a survey.'},{j:'調査結果が出た。',e:'The survey results came out.'}]},
+    {id:255,w:'分析',r:'ぶんせき',m:'analysis',pos:'noun',ex:[{j:'データを分析する。',e:'I analyze data.'},{j:'分析結果を報告した。',e:'I reported the analysis results.'}]},
+    {id:256,w:'管理',r:'かんり',m:'management / control',pos:'noun',ex:[{j:'時間を管理する。',e:'I manage my time.'},{j:'健康管理が大切。',e:'Health management is important.'}]},
+    {id:257,w:'運営',r:'うんえい',m:'operation / management',pos:'noun',ex:[{j:'会社を運営する。',e:'I manage a company.'},{j:'効率よく運営する。',e:'I operate efficiently.'}]},
+    {id:258,w:'支援',r:'しえん',m:'support / assistance',pos:'noun',ex:[{j:'支援を求める。',e:'I ask for support.'},{j:'経済的支援。',e:'Financial assistance.'}]},
+    {id:259,w:'協力',r:'きょうりょく',m:'cooperation',pos:'noun',ex:[{j:'協力をお願いします。',e:'I ask for your cooperation.'},{j:'みんなで協力した。',e:'We all cooperated.'}]},
+    {id:260,w:'交流',r:'こうりゅう',m:'exchange / interaction',pos:'noun',ex:[{j:'文化交流。',e:'Cultural exchange.'},{j:'交流を深める。',e:'I deepen the exchange.'}]},
+    {id:261,w:'議論',r:'ぎろん',m:'discussion / debate',pos:'noun',ex:[{j:'議論を深める。',e:'I deepen the discussion.'},{j:'熱い議論。',e:'A heated debate.'}]},
+    {id:262,w:'交渉',r:'こうしょう',m:'negotiation',pos:'noun',ex:[{j:'交渉を行う。',e:'I conduct negotiations.'},{j:'交渉が難しい。',e:'Negotiation is difficult.'}]},
+    {id:263,w:'依頼',r:'いらい',m:'request',pos:'noun',ex:[{j:'依頼を受ける。',e:'I accept a request.'},{j:'翻訳を依頼した。',e:'I requested a translation.'}]},
+    {id:264,w:'承認',r:'しょうにん',m:'approval',pos:'noun',ex:[{j:'承認を得る。',e:'I obtain approval.'},{j:'計画が承認された。',e:'The plan was approved.'}]},
+    {id:265,w:'拒否',r:'きょひ',m:'refusal / rejection',pos:'noun',ex:[{j:'依頼を拒否した。',e:'I refused the request.'},{j:'拒否する権利がある。',e:'I have the right to refuse.'}]},
+    {id:266,w:'提案',r:'ていあん',m:'proposal / suggestion',pos:'noun',ex:[{j:'提案をする。',e:'I make a proposal.'},{j:'いい提案がある。',e:'I have a good suggestion.'}]},
+    {id:267,w:'意見',r:'いけん',m:'opinion',pos:'noun',ex:[{j:'意見を言う。',e:'I express my opinion.'},{j:'意見が違う。',e:'The opinions differ.'}]},
+    {id:268,w:'主張',r:'しゅちょう',m:'claim / assertion',pos:'noun',ex:[{j:'自分の主張をする。',e:'I make my claim.'},{j:'強い主張。',e:'A strong assertion.'}]},
+    {id:269,w:'批判',r:'ひはん',m:'criticism',pos:'noun',ex:[{j:'批判を受ける。',e:'I receive criticism.'},{j:'建設的な批判。',e:'Constructive criticism.'}]},
+    {id:270,w:'評価',r:'ひょうか',m:'evaluation / assessment',pos:'noun',ex:[{j:'高い評価を受ける。',e:'I receive high evaluation.'},{j:'公平な評価。',e:'A fair assessment.'}]},
+    {id:271,w:'比較',r:'ひかく',m:'comparison',pos:'noun',ex:[{j:'二つを比較する。',e:'I compare the two.'},{j:'比較して考える。',e:'I think by comparing.'}]},
+    {id:272,w:'対象',r:'たいしょう',m:'subject / target',pos:'noun',ex:[{j:'対象を絞る。',e:'I narrow down the target.'},{j:'調査の対象。',e:'The subject of the survey.'}]},
+    {id:273,w:'課題',r:'かだい',m:'task / issue',pos:'noun',ex:[{j:'課題を解決する。',e:'I solve the issue.'},{j:'重要な課題。',e:'An important task.'}]},
+    {id:274,w:'展開',r:'てんかい',m:'development / deployment',pos:'noun',ex:[{j:'話が展開する。',e:'The story develops.'},{j:'事業を展開する。',e:'I develop the business.'}]},
+    {id:275,w:'視点',r:'してん',m:'viewpoint / perspective',pos:'noun',ex:[{j:'別の視点から見る。',e:'I look from another perspective.'},{j:'様々な視点がある。',e:'There are various viewpoints.'}]},
+    {id:276,w:'印象',r:'いんしょう',m:'impression',pos:'noun',ex:[{j:'いい印象を与える。',e:'I give a good impression.'},{j:'強い印象を受けた。',e:'I received a strong impression.'}]},
+    {id:277,w:'感想',r:'かんそう',m:'thoughts / impressions',pos:'noun',ex:[{j:'感想を聞かせてください。',e:'Please tell me your thoughts.'},{j:'映画の感想。',e:'Impressions of the movie.'}]},
+    {id:278,w:'記憶',r:'きおく',m:'memory',pos:'noun',ex:[{j:'記憶がない。',e:'I have no memory.'},{j:'記憶に残る。',e:'It stays in my memory.'}]},
+    {id:279,w:'想像',r:'そうぞう',m:'imagination',pos:'noun',ex:[{j:'想像力がある。',e:'I have imagination.'},{j:'想像してみて。',e:'Try to imagine.'}]},
+    {id:280,w:'理解',r:'りかい',m:'understanding / comprehension',pos:'noun',ex:[{j:'理解が深まる。',e:'My understanding deepens.'},{j:'互いに理解し合う。',e:'We understand each other.'}]},
+    {id:281,w:'表現',r:'ひょうげん',m:'expression',pos:'noun',ex:[{j:'感情を表現する。',e:'I express emotions.'},{j:'豊かな表現。',e:'Rich expression.'}]},
+    {id:282,w:'伝える',r:'つたえる',m:'to convey / to tell',pos:'verb',ex:[{j:'気持ちを伝える。',e:'I convey my feelings.'},{j:'大切なことを伝えた。',e:'I conveyed something important.'}]},
+    {id:283,w:'示す',r:'しめす',m:'to show / indicate',pos:'verb',ex:[{j:'データが示す。',e:'The data indicates.'},{j:'方向を示す。',e:'I indicate the direction.'}]},
+    {id:284,w:'考える',r:'かんがえる',m:'to think / consider',pos:'verb',ex:[{j:'よく考える。',e:'I think carefully.'},{j:'解決策を考えた。',e:'I thought of a solution.'}]},
+    {id:285,w:'感じる',r:'かんじる',m:'to feel / sense',pos:'verb',ex:[{j:'幸せを感じる。',e:'I feel happiness.'},{j:'変化を感じた。',e:'I felt the change.'}]},
+    {id:286,w:'判断する',r:'はんだんする',m:'to judge / decide',pos:'verb',ex:[{j:'状況を判断する。',e:'I judge the situation.'},{j:'冷静に判断した。',e:'I judged calmly.'}]},
+    {id:287,w:'選ぶ',r:'えらぶ',m:'to choose / select',pos:'verb',ex:[{j:'好きなものを選ぶ。',e:'I choose what I like.'},{j:'最善を選んだ。',e:'I chose the best.'}]},
+    {id:288,w:'確認する',r:'かくにんする',m:'to confirm / verify',pos:'verb',ex:[{j:'情報を確認する。',e:'I verify the information.'},{j:'内容を確認した。',e:'I confirmed the content.'}]},
+    {id:289,w:'説明する',r:'せつめいする',m:'to explain',pos:'verb',ex:[{j:'理由を説明する。',e:'I explain the reason.'},{j:'丁寧に説明した。',e:'I explained carefully.'}]},
+    {id:290,w:'報告する',r:'ほうこくする',m:'to report',pos:'verb',ex:[{j:'結果を報告する。',e:'I report the result.'},{j:'上司に報告した。',e:'I reported to my boss.'}]},
+    {id:291,w:'参加する',r:'さんかする',m:'to participate',pos:'verb',ex:[{j:'会議に参加する。',e:'I participate in the meeting.'},{j:'イベントに参加した。',e:'I participated in the event.'}]},
+    {id:292,w:'利用する',r:'りようする',m:'to use / utilize',pos:'verb',ex:[{j:'図書館を利用する。',e:'I use the library.'},{j:'バスを利用した。',e:'I used the bus.'}]},
+    {id:293,w:'実現する',r:'じつげんする',m:'to realize / achieve',pos:'verb',ex:[{j:'夢を実現する。',e:'I realize my dream.'},{j:'目標を実現した。',e:'I achieved my goal.'}]},
+    {id:294,w:'維持する',r:'いじする',m:'to maintain',pos:'verb',ex:[{j:'健康を維持する。',e:'I maintain my health.'},{j:'関係を維持した。',e:'I maintained the relationship.'}]},
+    {id:295,w:'向上する',r:'こうじょうする',m:'to improve',pos:'verb',ex:[{j:'能力が向上する。',e:'My ability improves.'},{j:'成績が向上した。',e:'My grades improved.'}]},
+    {id:296,w:'減少する',r:'げんしょうする',m:'to decrease',pos:'verb',ex:[{j:'人口が減少する。',e:'The population decreases.'},{j:'売上が減少した。',e:'Sales decreased.'}]},
+    {id:297,w:'増加する',r:'ぞうかする',m:'to increase',pos:'verb',ex:[{j:'人口が増加する。',e:'The population increases.'},{j:'需要が増加した。',e:'Demand increased.'}]},
+    {id:298,w:'提供する',r:'ていきょうする',m:'to provide / offer',pos:'verb',ex:[{j:'サービスを提供する。',e:'I provide services.'},{j:'情報を提供した。',e:'I provided information.'}]},
+    {id:299,w:'活用する',r:'かつようする',m:'to make use of',pos:'verb',ex:[{j:'資源を活用する。',e:'I make use of resources.'},{j:'時間を活用した。',e:'I made use of the time.'}]},
+    {id:300,w:'対応する',r:'たいおうする',m:'to respond / deal with',pos:'verb',ex:[{j:'問題に対応する。',e:'I deal with the problem.'},{j:'迅速に対応した。',e:'I responded quickly.'}]},
+  ],
+  N2: [
+    {id:301,w:'概念',r:'がいねん',m:'concept / notion',pos:'noun',ex:[{j:'新しい概念を理解する。',e:'I understand a new concept.'},{j:'抽象的な概念。',e:'An abstract concept.'}]},
+    {id:302,w:'観念',r:'かんねん',m:'idea / sense',pos:'noun',ex:[{j:'時間の観念がない。',e:'I have no sense of time.'},{j:'固定観念を捨てる。',e:'I abandon fixed ideas.'}]},
+    {id:303,w:'構造',r:'こうぞう',m:'structure',pos:'noun',ex:[{j:'組織の構造。',e:'The structure of the organization.'},{j:'構造を分析する。',e:'I analyze the structure.'}]},
+    {id:304,w:'仕組み',r:'しくみ',m:'mechanism / system',pos:'noun',ex:[{j:'仕組みを理解する。',e:'I understand the mechanism.'},{j:'社会の仕組み。',e:'The structure of society.'}]},
+    {id:305,w:'体制',r:'たいせい',m:'system / regime',pos:'noun',ex:[{j:'新しい体制を作る。',e:'I create a new system.'},{j:'教育体制。',e:'Educational system.'}]},
+    {id:306,w:'制度',r:'せいど',m:'system / institution',pos:'noun',ex:[{j:'制度を改革する。',e:'I reform the system.'},{j:'社会保障制度。',e:'Social security system.'}]},
+    {id:307,w:'基盤',r:'きばん',m:'foundation / base',pos:'noun',ex:[{j:'基盤を築く。',e:'I build a foundation.'},{j:'経済基盤が弱い。',e:'The economic base is weak.'}]},
+    {id:308,w:'根拠',r:'こんきょ',m:'basis / ground',pos:'noun',ex:[{j:'根拠を示す。',e:'I show the basis.'},{j:'根拠がない主張。',e:'A claim without basis.'}]},
+    {id:309,w:'前提',r:'ぜんてい',m:'premise / prerequisite',pos:'noun',ex:[{j:'前提を確認する。',e:'I confirm the premise.'},{j:'前提が間違っている。',e:'The premise is wrong.'}]},
+    {id:310,w:'仮定',r:'かてい',m:'hypothesis / assumption',pos:'noun',ex:[{j:'仮定を立てる。',e:'I set up a hypothesis.'},{j:'仮定の話をする。',e:'I speak hypothetically.'}]},
+    {id:311,w:'矛盾',r:'むじゅん',m:'contradiction',pos:'noun',ex:[{j:'矛盾が生じる。',e:'A contradiction arises.'},{j:'主張に矛盾がある。',e:'There is a contradiction in the claim.'}]},
+    {id:312,w:'均衡',r:'きんこう',m:'balance / equilibrium',pos:'noun',ex:[{j:'均衡を保つ。',e:'I maintain balance.'},{j:'需要と供給の均衡。',e:'Balance between supply and demand.'}]},
+    {id:313,w:'格差',r:'かくさ',m:'gap / disparity',pos:'noun',ex:[{j:'所得格差が広がる。',e:'The income gap is widening.'},{j:'格差社会。',e:'A society with disparity.'}]},
+    {id:314,w:'優先',r:'ゆうせん',m:'priority',pos:'noun',ex:[{j:'安全を優先する。',e:'I prioritize safety.'},{j:'優先順位をつける。',e:'I set priorities.'}]},
+    {id:315,w:'妥当',r:'だとう',m:'reasonable / valid',pos:'adjective',ex:[{j:'妥当な判断。',e:'A reasonable judgment.'},{j:'その要求は妥当です。',e:'That request is valid.'}]},
+    {id:316,w:'曖昧',r:'あいまい',m:'vague / ambiguous',pos:'adjective',ex:[{j:'曖昧な返事。',e:'A vague reply.'},{j:'曖昧な表現を避ける。',e:'I avoid ambiguous expressions.'}]},
+    {id:317,w:'明確',r:'めいかく',m:'clear / definite',pos:'adjective',ex:[{j:'明確な目標を持つ。',e:'I have a clear goal.'},{j:'明確に答える。',e:'I answer clearly.'}]},
+    {id:318,w:'厳密',r:'げんみつ',m:'strict / precise',pos:'adjective',ex:[{j:'厳密に言えば。',e:'Strictly speaking.'},{j:'厳密な基準。',e:'Strict standards.'}]},
+    {id:319,w:'柔軟',r:'じゅうなん',m:'flexible',pos:'adjective',ex:[{j:'柔軟な対応。',e:'A flexible response.'},{j:'柔軟に考える。',e:'I think flexibly.'}]},
+    {id:320,w:'繊細',r:'せんさい',m:'delicate / sensitive',pos:'adjective',ex:[{j:'繊細な感受性。',e:'Delicate sensitivity.'},{j:'繊細な問題。',e:'A delicate matter.'}]},
+    {id:321,w:'斬新',r:'ざんしん',m:'novel / innovative',pos:'adjective',ex:[{j:'斬新なアイデア。',e:'An innovative idea.'},{j:'斬新なデザイン。',e:'A novel design.'}]},
+    {id:322,w:'抽象的',r:'ちゅうしょうてき',m:'abstract',pos:'adjective',ex:[{j:'抽象的な概念。',e:'An abstract concept.'},{j:'抽象的な絵画。',e:'Abstract painting.'}]},
+    {id:323,w:'論理的',r:'ろんりてき',m:'logical',pos:'adjective',ex:[{j:'論理的な説明。',e:'A logical explanation.'},{j:'論理的に考える。',e:'I think logically.'}]},
+    {id:324,w:'批判的',r:'ひはんてき',m:'critical',pos:'adjective',ex:[{j:'批判的に考える。',e:'I think critically.'},{j:'批判的な視点。',e:'A critical perspective.'}]},
+    {id:325,w:'合理的',r:'ごうりてき',m:'rational / reasonable',pos:'adjective',ex:[{j:'合理的な理由。',e:'A rational reason.'},{j:'合理的に判断する。',e:'I judge rationally.'}]},
+    {id:326,w:'見解',r:'けんかい',m:'view / opinion',pos:'noun',ex:[{j:'専門家の見解。',e:'An expert\'s view.'},{j:'見解が分かれる。',e:'Opinions differ.'}]},
+    {id:327,w:'論点',r:'ろんてん',m:'point of argument',pos:'noun',ex:[{j:'論点を明確にする。',e:'I clarify the point of argument.'},{j:'論点がずれている。',e:'The argument is off-point.'}]},
+    {id:328,w:'立場',r:'たちば',m:'standpoint / position',pos:'noun',ex:[{j:'立場を明確にする。',e:'I clarify my position.'},{j:'立場が異なる。',e:'Standpoints differ.'}]},
+    {id:329,w:'傾向',r:'けいこう',m:'tendency / trend',pos:'noun',ex:[{j:'最近の傾向。',e:'Recent trends.'},{j:'傾向を分析する。',e:'I analyze the tendency.'}]},
+    {id:330,w:'動向',r:'どうこう',m:'trend / movement',pos:'noun',ex:[{j:'市場の動向。',e:'Market trends.'},{j:'動向を把握する。',e:'I grasp the trend.'}]},
+    {id:331,w:'現象',r:'げんしょう',m:'phenomenon',pos:'noun',ex:[{j:'社会現象になった。',e:'It became a social phenomenon.'},{j:'自然現象を研究する。',e:'I research natural phenomena.'}]},
+    {id:332,w:'要因',r:'ようin',m:'factor',pos:'noun',ex:[{j:'成功の要因。',e:'Factors for success.'},{j:'複数の要因がある。',e:'There are multiple factors.'}]},
+    {id:333,w:'背景',r:'はいけい',m:'background / context',pos:'noun',ex:[{j:'歴史的背景を理解する。',e:'I understand the historical background.'},{j:'背景を説明する。',e:'I explain the background.'}]},
+    {id:334,w:'経緯',r:'けいい',m:'history / process',pos:'noun',ex:[{j:'経緯を説明する。',e:'I explain the process.'},{j:'事件の経緯。',e:'The sequence of events.'}]},
+    {id:335,w:'推移',r:'すいい',m:'transition / change over time',pos:'noun',ex:[{j:'人口の推移。',e:'Population transition.'},{j:'推移を追う。',e:'I trace the changes.'}]},
+    {id:336,w:'転換',r:'てんかん',m:'shift / change',pos:'noun',ex:[{j:'方針を転換する。',e:'I shift the policy.'},{j:'大きな転換点。',e:'A major turning point.'}]},
+    {id:337,w:'模索',r:'もさく',m:'search / groping',pos:'noun',ex:[{j:'解決策を模索する。',e:'I search for a solution.'},{j:'新しい方向を模索する。',e:'I search for a new direction.'}]},
+    {id:338,w:'葛藤',r:'かっとう',m:'conflict / inner struggle',pos:'noun',ex:[{j:'内面的な葛藤。',e:'Inner conflict.'},{j:'葛藤を抱える。',e:'I have an inner struggle.'}]},
+    {id:339,w:'懸念',r:'けねん',m:'concern / worry',pos:'noun',ex:[{j:'安全への懸念。',e:'Concern about safety.'},{j:'懸念を表明する。',e:'I express concern.'}]},
+    {id:340,w:'配慮',r:'はいりょ',m:'consideration / care',pos:'noun',ex:[{j:'相手への配慮。',e:'Consideration for others.'},{j:'環境への配慮。',e:'Care for the environment.'}]},
+    {id:341,w:'把握',r:'はあく',m:'grasp / understanding',pos:'noun',ex:[{j:'状況を把握する。',e:'I grasp the situation.'},{j:'全体像を把握する。',e:'I grasp the big picture.'}]},
+    {id:342,w:'察する',r:'さっする',m:'to sense / guess',pos:'verb',ex:[{j:'気持ちを察する。',e:'I sense feelings.'},{j:'状況を察した。',e:'I sensed the situation.'}]},
+    {id:343,w:'踏まえる',r:'ふまえる',m:'to take into account',pos:'verb',ex:[{j:'状況を踏まえて判断する。',e:'I judge taking the situation into account.'},{j:'前提を踏まえて話す。',e:'I speak based on the premise.'}]},
+    {id:344,w:'見直す',r:'みなおす',m:'to reconsider / revise',pos:'verb',ex:[{j:'計画を見直す。',e:'I reconsider the plan.'},{j:'概念を見直した。',e:'I revised the concept.'}]},
+    {id:345,w:'捉える',r:'とらえる',m:'to capture / perceive',pos:'verb',ex:[{j:'問題を正確に捉える。',e:'I accurately perceive the problem.'},{j:'チャンスを捉えた。',e:'I captured the chance.'}]},
+    {id:346,w:'取り組む',r:'とりくむ',m:'to tackle / work on',pos:'verb',ex:[{j:'課題に取り組む。',e:'I tackle the task.'},{j:'真剣に取り組んだ。',e:'I worked on it seriously.'}]},
+    {id:347,w:'促す',r:'うながす',m:'to urge / promote',pos:'verb',ex:[{j:'行動を促す。',e:'I urge action.'},{j:'変化を促す。',e:'I promote change.'}]},
+    {id:348,w:'妨げる',r:'さまたげる',m:'to hinder / obstruct',pos:'verb',ex:[{j:'進歩を妨げる。',e:'I hinder progress.'},{j:'成功を妨げた。',e:'It obstructed success.'}]},
+    {id:349,w:'補う',r:'おぎなう',m:'to supplement / compensate',pos:'verb',ex:[{j:'不足を補う。',e:'I compensate for the shortage.'},{j:'互いの弱点を補う。',e:'We compensate for each other\'s weaknesses.'}]},
+    {id:350,w:'導く',r:'みちびく',m:'to lead / guide',pos:'verb',ex:[{j:'成功へ導く。',e:'I lead to success.'},{j:'生徒を正しい方向へ導いた。',e:'I guided the students in the right direction.'}]},
+    {id:351,w:'際立つ',r:'きわだつ',m:'to stand out',pos:'verb',ex:[{j:'才能が際立つ。',e:'The talent stands out.'},{j:'彼女の美しさが際立っていた。',e:'Her beauty stood out.'}]},
+    {id:352,w:'見込む',r:'みこむ',m:'to anticipate / expect',pos:'verb',ex:[{j:'成功を見込む。',e:'I anticipate success.'},{j:'利益を見込んでいる。',e:'I am expecting profits.'}]},
+    {id:353,w:'見渡す',r:'みわたす',m:'to look out over / survey',pos:'verb',ex:[{j:'景色を見渡す。',e:'I survey the scenery.'},{j:'全体を見渡した。',e:'I looked over the whole thing.'}]},
+    {id:354,w:'生み出す',r:'うみだす',m:'to create / produce',pos:'verb',ex:[{j:'新しい価値を生み出す。',e:'I create new value.'},{j:'革新的な製品を生み出した。',e:'I produced an innovative product.'}]},
+    {id:355,w:'打ち出す',r:'うちだす',m:'to put forward / launch',pos:'verb',ex:[{j:'新しい政策を打ち出す。',e:'I put forward a new policy.'},{j:'戦略を打ち出した。',e:'I launched a strategy.'}]},
+    {id:356,w:'成り立つ',r:'なりたつ',m:'to be established / consist of',pos:'verb',ex:[{j:'社会は人々で成り立つ。',e:'Society consists of people.'},{j:'理論が成り立つ。',e:'The theory holds.'}]},
+    {id:357,w:'見合わせる',r:'みあわせる',m:'to postpone / refrain from',pos:'verb',ex:[{j:'計画を見合わせる。',e:'I postpone the plan.'},{j:'発表を見合わせた。',e:'I refrained from announcing.'}]},
+    {id:358,w:'踏み切る',r:'ふみきる',m:'to take the plunge / decide to',pos:'verb',ex:[{j:'転職に踏み切る。',e:'I take the plunge and change jobs.'},{j:'新事業に踏み切った。',e:'I decided to start a new business.'}]},
+    {id:359,w:'行き渡る',r:'いきわたる',m:'to spread throughout',pos:'verb',ex:[{j:'情報が行き渡る。',e:'Information spreads throughout.'},{j:'支援が行き渡った。',e:'The support spread throughout.'}]},
+    {id:360,w:'積み重ねる',r:'つみかさねる',m:'to accumulate / build up',pos:'verb',ex:[{j:'経験を積み重ねる。',e:'I accumulate experience.'},{j:'努力を積み重ねた。',e:'I built up efforts.'}]},
+    {id:361,w:'やむを得ない',r:'やむをえない',m:'unavoidable / inevitable',pos:'adjective',ex:[{j:'やむを得ない事情がある。',e:'There are unavoidable circumstances.'},{j:'やむを得ない選択。',e:'An inevitable choice.'}]},
+    {id:362,w:'やむなく',r:'やむなく',m:'unwillingly / inevitably',pos:'adverb',ex:[{j:'やむなく断った。',e:'I unwillingly declined.'},{j:'やむなく計画を変更した。',e:'I inevitably changed the plan.'}]},
+    {id:363,w:'いわば',r:'いわば',m:'so to speak',pos:'adverb',ex:[{j:'彼はいわば天才だ。',e:'He is, so to speak, a genius.'},{j:'いわば失敗と言える。',e:'So to speak, it can be called a failure.'}]},
+    {id:364,w:'むしろ',r:'むしろ',m:'rather / instead',pos:'adverb',ex:[{j:'むしろ難しくなった。',e:'It rather became more difficult.'},{j:'むしろ賛成です。',e:'I am rather in favor.'}]},
+    {id:365,w:'かえって',r:'かえって',m:'on the contrary / instead',pos:'adverb',ex:[{j:'かえって悪くなった。',e:'It became worse instead.'},{j:'かえって逆効果だ。',e:'It is counterproductive.'}]},
+    {id:366,w:'あくまで',r:'あくまで',m:'to the last / stubbornly',pos:'adverb',ex:[{j:'あくまで個人の意見です。',e:'This is entirely my personal opinion.'},{j:'あくまで原則を守る。',e:'I adhere to the principle to the last.'}]},
+    {id:367,w:'いずれ',r:'いずれ',m:'eventually / either',pos:'adverb',ex:[{j:'いずれわかる。',e:'It will eventually be understood.'},{j:'いずれにせよ。',e:'Either way.'}]},
+    {id:368,w:'おそらく',r:'おそらく',m:'probably / likely',pos:'adverb',ex:[{j:'おそらく雨が降る。',e:'It will probably rain.'},{j:'おそらく正しい。',e:'It is likely correct.'}]},
+    {id:369,w:'必ずしも',r:'かならずしも',m:'not necessarily',pos:'adverb',ex:[{j:'必ずしも正しくない。',e:'It is not necessarily correct.'},{j:'高いものが必ずしもいいとは限らない。',e:'Expensive things are not necessarily good.'}]},
+    {id:370,w:'概して',r:'がいして',m:'generally / on the whole',pos:'adverb',ex:[{j:'概して成功した。',e:'On the whole, it was successful.'},{j:'概して言えば問題ない。',e:'Generally speaking, there is no problem.'}]},
+    {id:371,w:'慎重',r:'しんちょう',m:'careful / cautious',pos:'adjective',ex:[{j:'慎重に判断する。',e:'I judge carefully.'},{j:'慎重な態度。',e:'A cautious attitude.'}]},
+    {id:372,w:'冷静',r:'れいせい',m:'calm / composed',pos:'adjective',ex:[{j:'冷静に対応する。',e:'I respond calmly.'},{j:'冷静な判断。',e:'A calm judgment.'}]},
+    {id:373,w:'真摯',r:'しんし',m:'sincere / earnest',pos:'adjective',ex:[{j:'真摯な態度で臨む。',e:'I approach with a sincere attitude.'},{j:'真摯に向き合う。',e:'I face earnestly.'}]},
+    {id:374,w:'誠実',r:'せいじつ',m:'honest / sincere',pos:'adjective',ex:[{j:'誠実な人です。',e:'This person is honest.'},{j:'誠実に対応する。',e:'I respond sincerely.'}]},
+    {id:375,w:'謙虚',r:'けんきょ',m:'humble / modest',pos:'adjective',ex:[{j:'謙虚な姿勢。',e:'A humble attitude.'},{j:'謙虚に学ぶ。',e:'I learn humbly.'}]},
+    {id:376,w:'積極的',r:'せっきょくてき',m:'proactive / positive',pos:'adjective',ex:[{j:'積極的に参加する。',e:'I participate proactively.'},{j:'積極的な姿勢。',e:'A proactive attitude.'}]},
+    {id:377,w:'消極的',r:'しょうきょくてき',m:'passive / negative',pos:'adjective',ex:[{j:'消極的な対応。',e:'A passive response.'},{j:'消極的になった。',e:'I became passive.'}]},
+    {id:378,w:'包括的',r:'ほうかつてき',m:'comprehensive / inclusive',pos:'adjective',ex:[{j:'包括的な対策。',e:'A comprehensive measure.'},{j:'包括的に検討する。',e:'I consider comprehensively.'}]},
+    {id:379,w:'革新的',r:'かくしんてき',m:'innovative / revolutionary',pos:'adjective',ex:[{j:'革新的な技術。',e:'Innovative technology.'},{j:'革新的なアプローチ。',e:'A revolutionary approach.'}]},
+    {id:380,w:'持続的',r:'じぞくてき',m:'sustainable / continuous',pos:'adjective',ex:[{j:'持続的な成長。',e:'Sustainable growth.'},{j:'持続的な努力が必要。',e:'Continuous effort is necessary.'}]},
+    {id:381,w:'実態',r:'じったい',m:'actual state / reality',pos:'noun',ex:[{j:'実態を把握する。',e:'I grasp the actual state.'},{j:'実態調査を行う。',e:'I conduct a reality survey.'}]},
+    {id:382,w:'実績',r:'じっせき',m:'track record / achievement',pos:'noun',ex:[{j:'実績を積む。',e:'I build a track record.'},{j:'優れた実績がある。',e:'There is an excellent track record.'}]},
+    {id:383,w:'実施',r:'じっし',m:'implementation / execution',pos:'noun',ex:[{j:'計画を実施する。',e:'I implement the plan.'},{j:'施策を実施した。',e:'I executed the policy.'}]},
+    {id:384,w:'施策',r:'しさく',m:'policy / measure',pos:'noun',ex:[{j:'新しい施策を打つ。',e:'I implement a new measure.'},{j:'効果的な施策。',e:'An effective policy.'}]},
+    {id:385,w:'方針',r:'ほうしん',m:'policy / direction',pos:'noun',ex:[{j:'方針を決める。',e:'I decide the policy.'},{j:'方針を変更した。',e:'I changed the direction.'}]},
+    {id:386,w:'指針',r:'ししん',m:'guidelines',pos:'noun',ex:[{j:'指針に従う。',e:'I follow the guidelines.'},{j:'行動指針を作る。',e:'I create behavioral guidelines.'}]},
+    {id:387,w:'基準',r:'きじゅん',m:'standard / criterion',pos:'noun',ex:[{j:'基準を設ける。',e:'I set standards.'},{j:'基準を満たす。',e:'I meet the standards.'}]},
+    {id:388,w:'水準',r:'すいじゅん',m:'level / standard',pos:'noun',ex:[{j:'生活水準が上がった。',e:'The standard of living has risen.'},{j:'高い水準を保つ。',e:'I maintain a high level.'}]},
+    {id:389,w:'限界',r:'げんかい',m:'limit / boundary',pos:'noun',ex:[{j:'限界を超える。',e:'I exceed the limit.'},{j:'体力の限界。',e:'The limit of physical strength.'}]},
+    {id:390,w:'余地',r:'よち',m:'room / margin',pos:'noun',ex:[{j:'改善の余地がある。',e:'There is room for improvement.'},{j:'議論の余地なし。',e:'No room for discussion.'}]},
+    {id:391,w:'兆候',r:'ちょうこう',m:'sign / symptom',pos:'noun',ex:[{j:'回復の兆候が見える。',e:'Signs of recovery are visible.'},{j:'危険の兆候。',e:'Signs of danger.'}]},
+    {id:392,w:'懸案',r:'けんあん',m:'pending issue',pos:'noun',ex:[{j:'懸案を解決する。',e:'I resolve the pending issue.'},{j:'長年の懸案。',e:'A long-standing issue.'}]},
+    {id:393,w:'課題',r:'かだい',m:'issue / assignment',pos:'noun',ex:[{j:'課題を克服する。',e:'I overcome the issue.'},{j:'社会的な課題。',e:'Social issues.'}]},
+    {id:394,w:'局面',r:'きょくめん',m:'situation / phase',pos:'noun',ex:[{j:'難しい局面に入った。',e:'I entered a difficult phase.'},{j:'局面を打開する。',e:'I break through the situation.'}]},
+    {id:395,w:'節目',r:'ふしめ',m:'turning point / milestone',pos:'noun',ex:[{j:'節目を迎える。',e:'I reach a turning point.'},{j:'人生の節目。',e:'A milestone in life.'}]},
+    {id:396,w:'岐路',r:'きろ',m:'crossroads',pos:'noun',ex:[{j:'岐路に立つ。',e:'I stand at a crossroads.'},{j:'人生の岐路。',e:'A crossroads in life.'}]},
+    {id:397,w:'突破口',r:'とっぱこう',m:'breakthrough',pos:'noun',ex:[{j:'突破口を見つける。',e:'I find a breakthrough.'},{j:'突破口を開く。',e:'I open a breakthrough.'}]},
+    {id:398,w:'転機',r:'てんき',m:'turning point',pos:'noun',ex:[{j:'転機を迎える。',e:'I reach a turning point.'},{j:'大きな転機になった。',e:'It became a major turning point.'}]},
+    {id:399,w:'契機',r:'けいき',m:'opportunity / trigger',pos:'noun',ex:[{j:'これを契機に変わる。',e:'This will be a trigger for change.'},{j:'転換の契機となった。',e:'It became the trigger for a shift.'}]},
+    {id:400,w:'端緒',r:'たんしょ',m:'beginning / starting point',pos:'noun',ex:[{j:'端緒を開く。',e:'I make a beginning.'},{j:'問題解決の端緒。',e:'The starting point for problem-solving.'}]},
+  ],
+  N1: [
+    {id:401,w:'敷衍',r:'ふえん',m:'elaboration / expansion',pos:'noun',ex:[{j:'概念を敷衍する。',e:'I elaborate on the concept.'},{j:'論点を敷衍して説明した。',e:'I elaborated on the argument.'}]},
+    {id:402,w:'逡巡',r:'しゅんじゅん',m:'hesitation',pos:'noun',ex:[{j:'逡巡せずに決める。',e:'I decide without hesitation.'},{j:'逡巡の末に答えた。',e:'I answered after much hesitation.'}]},
+    {id:403,w:'忖度',r:'そんたく',m:'reading the air / deference',pos:'noun',ex:[{j:'忖度して行動する。',e:'I act by reading the air.'},{j:'忖度が働いた。',e:'Deference was at play.'}]},
+    {id:404,w:'齟齬',r:'そご',m:'discrepancy / mismatch',pos:'noun',ex:[{j:'認識に齟齬がある。',e:'There is a discrepancy in understanding.'},{j:'計画との齟齬が生じた。',e:'A mismatch with the plan arose.'}]},
+    {id:405,w:'乖離',r:'かいり',m:'divergence / gap',pos:'noun',ex:[{j:'理想と現実の乖離。',e:'Divergence between ideal and reality.'},{j:'大きな乖離がある。',e:'There is a large gap.'}]},
+    {id:406,w:'瑕疵',r:'かし',m:'defect / flaw',pos:'noun',ex:[{j:'瑕疵を発見した。',e:'I discovered a defect.'},{j:'法的な瑕疵がある。',e:'There is a legal flaw.'}]},
+    {id:407,w:'忌避',r:'きひ',m:'avoidance / evasion',pos:'noun',ex:[{j:'リスクを忌避する。',e:'I avoid risk.'},{j:'忌避感がある。',e:'There is a sense of avoidance.'}]},
+    {id:408,w:'逸脱',r:'いつだつ',m:'deviation / departure',pos:'noun',ex:[{j:'規範からの逸脱。',e:'Deviation from norms.'},{j:'本題から逸脱した。',e:'I departed from the main topic.'}]},
+    {id:409,w:'頓挫',r:'とんざ',m:'stalling / setback',pos:'noun',ex:[{j:'計画が頓挫した。',e:'The plan stalled.'},{j:'交渉が頓挫した。',e:'The negotiations hit a setback.'}]},
+    {id:410,w:'難航',r:'なんこう',m:'rough going / difficulty',pos:'noun',ex:[{j:'交渉が難航している。',e:'Negotiations are going poorly.'},{j:'プロジェクトが難航した。',e:'The project had a difficult time.'}]},
+    {id:411,w:'停滞',r:'ていたい',m:'stagnation',pos:'noun',ex:[{j:'経済が停滞する。',e:'The economy stagnates.'},{j:'停滞を打破する。',e:'I break through the stagnation.'}]},
+    {id:412,w:'膠着',r:'こうちゃく',m:'deadlock / stalemate',pos:'noun',ex:[{j:'交渉が膠着した。',e:'Negotiations reached a deadlock.'},{j:'膠着状態を打開する。',e:'I break the stalemate.'}]},
+    {id:413,w:'隘路',r:'あいろ',m:'bottleneck / narrow path',pos:'noun',ex:[{j:'改革の隘路。',e:'A bottleneck in reform.'},{j:'隘路を突破する。',e:'I break through the bottleneck.'}]},
+    {id:414,w:'桎梏',r:'しっこく',m:'shackles / constraint',pos:'noun',ex:[{j:'桎梏を断つ。',e:'I break the shackles.'},{j:'制度の桎梏。',e:'Constraints of the system.'}]},
+    {id:415,w:'帰趨',r:'きすう',m:'outcome / result',pos:'noun',ex:[{j:'勝敗の帰趨。',e:'The outcome of victory and defeat.'},{j:'選挙の帰趨。',e:'The outcome of the election.'}]},
+    {id:416,w:'趨勢',r:'すうせい',m:'trend / tendency',pos:'noun',ex:[{j:'時代の趨勢。',e:'The trend of the times.'},{j:'趨勢に従う。',e:'I follow the trend.'}]},
+    {id:417,w:'様相',r:'ようそう',m:'aspect / appearance',pos:'noun',ex:[{j:'新たな様相を呈する。',e:'It takes on a new aspect.'},{j:'複雑な様相。',e:'A complex appearance.'}]},
+    {id:418,w:'醸成',r:'じょうせい',m:'cultivation / fostering',pos:'noun',ex:[{j:'信頼関係を醸成する。',e:'I cultivate trust.'},{j:'雰囲気を醸成した。',e:'I fostered the atmosphere.'}]},
+    {id:419,w:'惹起',r:'じゃっき',m:'causing / giving rise to',pos:'noun',ex:[{j:'問題を惹起する。',e:'I give rise to a problem.'},{j:'論争を惹起した。',e:'It gave rise to a controversy.'}]},
+    {id:420,w:'帰着',r:'きちゃく',m:'coming down to / arriving at',pos:'noun',ex:[{j:'結論に帰着する。',e:'It comes down to a conclusion.'},{j:'問題の帰着点。',e:'The point where the problem arrives.'}]},
+    {id:421,w:'敷設',r:'ふせつ',m:'laying / installation',pos:'noun',ex:[{j:'線路を敷設する。',e:'I lay tracks.'},{j:'パイプラインを敷設した。',e:'I installed a pipeline.'}]},
+    {id:422,w:'概括',r:'がいかつ',m:'summary / generalization',pos:'noun',ex:[{j:'要点を概括する。',e:'I summarize the key points.'},{j:'議論を概括した。',e:'I summarized the discussion.'}]},
+    {id:423,w:'拮抗',r:'きっこう',m:'rivalry / opposition',pos:'noun',ex:[{j:'拮抗した試合。',e:'A closely contested match.'},{j:'二者が拮抗している。',e:'The two are in rivalry.'}]},
+    {id:424,w:'鑑みる',r:'かんがみる',m:'to consider in light of',pos:'verb',ex:[{j:'状況を鑑みて決断する。',e:'I decide in light of the situation.'},{j:'過去の失敗を鑑みた。',e:'I considered past failures.'}]},
+    {id:425,w:'勘案する',r:'かんあんする',m:'to take into consideration',pos:'verb',ex:[{j:'様々な要素を勘案する。',e:'I take various factors into consideration.'},{j:'コストを勘案した。',e:'I took cost into consideration.'}]},
+    {id:426,w:'見据える',r:'みすえる',m:'to aim at / keep in sight',pos:'verb',ex:[{j:'将来を見据える。',e:'I keep the future in sight.'},{j:'目標を見据えた計画。',e:'A plan that keeps the goal in sight.'}]},
+    {id:427,w:'踏襲する',r:'とうしゅうする',m:'to follow / inherit',pos:'verb',ex:[{j:'前任者の方針を踏襲する。',e:'I follow my predecessor\'s policy.'},{j:'伝統を踏襲した。',e:'I inherited the tradition.'}]},
+    {id:428,w:'敷く',r:'しく',m:'to lay / spread',pos:'verb',ex:[{j:'布団を敷く。',e:'I spread out the futon.'},{j:'政策を敷いた。',e:'I laid out the policy.'}]},
+    {id:429,w:'喚起する',r:'かんきする',m:'to evoke / arouse',pos:'verb',ex:[{j:'注意を喚起する。',e:'I arouse attention.'},{j:'記憶を喚起した。',e:'I evoked memories.'}]},
+    {id:430,w:'内包する',r:'ないほうする',m:'to contain / imply',pos:'verb',ex:[{j:'リスクを内包する。',e:'I contain risks.'},{j:'矛盾を内包した概念。',e:'A concept that implies contradiction.'}]},
+    {id:431,w:'孕む',r:'はらむ',m:'to contain / harbor',pos:'verb',ex:[{j:'問題を孕んでいる。',e:'It harbors problems.'},{j:'リスクを孕んだ計画。',e:'A plan that contains risks.'}]},
+    {id:432,w:'看過する',r:'かんかする',m:'to overlook / ignore',pos:'verb',ex:[{j:'問題を看過できない。',e:'I cannot overlook the problem.'},{j:'事態を看過した。',e:'I ignored the situation.'}]},
+    {id:433,w:'凌駕する',r:'りょうがする',m:'to surpass / exceed',pos:'verb',ex:[{j:'期待を凌駕した。',e:'It surpassed expectations.'},{j:'競合他社を凌駕する。',e:'I surpass competing companies.'}]},
+    {id:434,w:'払拭する',r:'ふっしょくする',m:'to dispel / wipe out',pos:'verb',ex:[{j:'不安を払拭する。',e:'I dispel anxiety.'},{j:'誤解を払拭した。',e:'I wiped out the misunderstanding.'}]},
+    {id:435,w:'醸す',r:'かもす',m:'to brew / create',pos:'verb',ex:[{j:'雰囲気を醸す。',e:'I create an atmosphere.'},{j:'問題を醸した。',e:'It brewed a problem.'}]},
+    {id:436,w:'帰する',r:'きする',m:'to attribute to / result in',pos:'verb',ex:[{j:'成功は努力に帰する。',e:'Success is attributed to effort.'},{j:'失敗の原因はここに帰する。',e:'The cause of failure is attributed here.'}]},
+    {id:437,w:'際する',r:'さいする',m:'to occasion / be at the time of',pos:'verb',ex:[{j:'出発に際して。',e:'At the time of departure.'},{j:'試験に際して注意する。',e:'I am cautious at exam time.'}]},
+    {id:438,w:'準ずる',r:'じゅんずる',m:'to follow / conform to',pos:'verb',ex:[{j:'規定に準ずる。',e:'I conform to regulations.'},{j:'前例に準じた。',e:'I followed the precedent.'}]},
+    {id:439,w:'即する',r:'そくする',m:'to conform to / be in line with',pos:'verb',ex:[{j:'現状に即した対応。',e:'A response in line with the current situation.'},{j:'実態に即して考える。',e:'I think in line with reality.'}]},
+    {id:440,w:'資する',r:'しする',m:'to contribute to',pos:'verb',ex:[{j:'発展に資する。',e:'I contribute to development.'},{j:'社会に資する研究。',e:'Research that contributes to society.'}]},
+    {id:441,w:'係る',r:'かかる',m:'to relate to / concern',pos:'verb',ex:[{j:'教育に係る問題。',e:'Problems relating to education.'},{j:'費用に係る事項。',e:'Matters concerning costs.'}]},
+    {id:442,w:'伴う',r:'ともなう',m:'to accompany / entail',pos:'verb',ex:[{j:'リスクを伴う。',e:'It entails risks.'},{j:'変化に伴う問題。',e:'Problems accompanying change.'}]},
+    {id:443,w:'もたらす',r:'もたらす',m:'to bring about / cause',pos:'verb',ex:[{j:'変化をもたらす。',e:'It brings about change.'},{j:'革新をもたらした。',e:'It caused innovation.'}]},
+    {id:444,w:'こうむる',r:'こうむる',m:'to suffer / sustain',pos:'verb',ex:[{j:'被害をこうむる。',e:'I suffer damage.'},{j:'損失をこうむった。',e:'I sustained a loss.'}]},
+    {id:445,w:'被る',r:'こうむる',m:'to suffer / to wear',pos:'verb',ex:[{j:'損害を被る。',e:'I suffer damage.'},{j:'帽子を被る。',e:'I wear a hat.'}]},
+    {id:446,w:'矜持',r:'きょうじ',m:'pride / dignity',pos:'noun',ex:[{j:'矜持を持って仕事をする。',e:'I work with pride.'},{j:'職人としての矜持。',e:'The pride of a craftsman.'}]},
+    {id:447,w:'矜恃',r:'きょうじ',m:'self-esteem / pride',pos:'noun',ex:[{j:'矜恃を保つ。',e:'I maintain my self-esteem.'},{j:'矜恃を傷つける。',e:'I wound someone\'s pride.'}]},
+    {id:448,w:'含蓄',r:'がんちく',m:'implication / depth',pos:'noun',ex:[{j:'含蓄のある言葉。',e:'Words with depth.'},{j:'含蓄に富む表現。',e:'An expression rich in implication.'}]},
+    {id:449,w:'哲学',r:'てつがく',m:'philosophy',pos:'noun',ex:[{j:'哲学を学ぶ。',e:'I study philosophy.'},{j:'人生の哲学。',e:'Philosophy of life.'}]},
+    {id:450,w:'倫理',r:'りんり',m:'ethics / morality',pos:'noun',ex:[{j:'倫理を重んじる。',e:'I respect ethics.'},{j:'倫理的な問題。',e:'An ethical problem.'}]},
+    {id:451,w:'良識',r:'りょうしき',m:'good sense / wisdom',pos:'noun',ex:[{j:'良識ある判断。',e:'A judgment with good sense.'},{j:'良識に従う。',e:'I follow good sense.'}]},
+    {id:452,w:'識見',r:'しきけん',m:'insight / discernment',pos:'noun',ex:[{j:'識見を深める。',e:'I deepen my insight.'},{j:'広い識見を持つ。',e:'I have broad discernment.'}]},
+    {id:453,w:'省察',r:'せいさつ',m:'reflection / introspection',pos:'noun',ex:[{j:'自己省察をする。',e:'I self-reflect.'},{j:'深い省察が必要。',e:'Deep reflection is necessary.'}]},
+    {id:454,w:'逍遥',r:'しょうよう',m:'wandering / strolling',pos:'noun',ex:[{j:'公園を逍遥する。',e:'I stroll through the park.'},{j:'思想の逍遥。',e:'Wandering of thought.'}]},
+    {id:455,w:'逡巡する',r:'しゅんじゅんする',m:'to hesitate',pos:'verb',ex:[{j:'決断を逡巡する。',e:'I hesitate in my decision.'},{j:'逡巡せずに進む。',e:'I proceed without hesitation.'}]},
+    {id:456,w:'蹉跌',r:'さてつ',m:'stumble / failure',pos:'noun',ex:[{j:'蹉跌を経験した。',e:'I experienced a stumble.'},{j:'人生の蹉跌。',e:'A stumble in life.'}]},
+    {id:457,w:'雌伏',r:'しふく',m:'lying low / biding time',pos:'noun',ex:[{j:'雌伏の時期を過ごす。',e:'I spend a period of lying low.'},{j:'雌伏して機会を待つ。',e:'I bide my time and wait for an opportunity.'}]},
+    {id:458,w:'雄飛',r:'ゆうひ',m:'taking a great leap',pos:'noun',ex:[{j:'世界に雄飛する。',e:'I take a great leap into the world.'},{j:'雄飛の機会を掴む。',e:'I seize the opportunity to take a great leap.'}]},
+    {id:459,w:'俯瞰',r:'ふかん',m:'bird\'s eye view / overview',pos:'noun',ex:[{j:'全体を俯瞰する。',e:'I get an overview of the whole.'},{j:'俯瞰的な視点。',e:'A bird\'s eye perspective.'}]},
+    {id:460,w:'通暁',r:'つうぎょう',m:'thorough knowledge',pos:'noun',ex:[{j:'通暁した専門家。',e:'An expert with thorough knowledge.'},{j:'歴史に通暁する。',e:'I have thorough knowledge of history.'}]},
+    {id:461,w:'博識',r:'はくしき',m:'erudition / wide knowledge',pos:'noun',ex:[{j:'博識な人。',e:'An erudite person.'},{j:'博識を誇る。',e:'I pride myself on wide knowledge.'}]},
+    {id:462,w:'泰然',r:'たいぜん',m:'imperturbable / calm',pos:'adjective',ex:[{j:'泰然と構える。',e:'I remain imperturbable.'},{j:'泰然自若。',e:'Perfectly calm and composed.'}]},
+    {id:463,w:'従容',r:'しょうよう',m:'calm / composed',pos:'adjective',ex:[{j:'従容として立ち向かう。',e:'I face it calmly.'},{j:'従容とした態度。',e:'A composed attitude.'}]},
+    {id:464,w:'豁然',r:'かつぜん',m:'suddenly clear',pos:'adjective',ex:[{j:'豁然と理解できた。',e:'I suddenly understood clearly.'},{j:'豁然として開けた。',e:'It suddenly became clear.'}]},
+    {id:465,w:'闊達',r:'かったつ',m:'broad-minded / frank',pos:'adjective',ex:[{j:'闊達な性格。',e:'A broad-minded character.'},{j:'闊達に議論する。',e:'I discuss frankly.'}]},
+    {id:466,w:'精緻',r:'せいち',m:'elaborate / detailed',pos:'adjective',ex:[{j:'精緻な分析。',e:'An elaborate analysis.'},{j:'精緻な計画。',e:'A detailed plan.'}]},
+    {id:467,w:'綿密',r:'めんみつ',m:'careful / thorough',pos:'adjective',ex:[{j:'綿密な調査。',e:'A thorough investigation.'},{j:'綿密に計画する。',e:'I plan carefully.'}]},
+    {id:468,w:'精妙',r:'せいみょう',m:'exquisite / subtle',pos:'adjective',ex:[{j:'精妙な技術。',e:'Exquisite technique.'},{j:'精妙な判断。',e:'A subtle judgment.'}]},
+    {id:469,w:'卓越',r:'たくえつ',m:'excellence / superiority',pos:'noun',ex:[{j:'卓越した才能。',e:'Excellent talent.'},{j:'卓越した技術を持つ。',e:'I have superior technique.'}]},
+    {id:470,w:'造詣',r:'ぞうけい',m:'attainment / deep knowledge',pos:'noun',ex:[{j:'造詣が深い。',e:'I have deep attainment.'},{j:'芸術への造詣。',e:'Attainment in art.'}]},
+    {id:471,w:'薀蓄',r:'うんちく',m:'vast knowledge / lore',pos:'noun',ex:[{j:'薀蓄を語る。',e:'I talk about vast knowledge.'},{j:'薀蓄のある話。',e:'A talk full of lore.'}]},
+    {id:472,w:'蘊奥',r:'うんのう',m:'inner secrets / depths',pos:'noun',ex:[{j:'学問の蘊奥に迫る。',e:'I approach the depths of scholarship.'},{j:'蘊奥を極める。',e:'I master the depths.'}]},
+    {id:473,w:'窮極',r:'きゅうきょく',m:'ultimate',pos:'adjective',ex:[{j:'窮極の目標。',e:'The ultimate goal.'},{j:'窮極の真理を求める。',e:'I seek the ultimate truth.'}]},
+    {id:474,w:'不可避',r:'ふかひ',m:'inevitable / unavoidable',pos:'adjective',ex:[{j:'不可避な変化。',e:'Inevitable change.'},{j:'不可避の結果。',e:'An unavoidable result.'}]},
+    {id:475,w:'不可欠',r:'ふかけつ',m:'indispensable',pos:'adjective',ex:[{j:'不可欠な要素。',e:'An indispensable element.'},{j:'成功に不可欠です。',e:'It is indispensable for success.'}]},
+    {id:476,w:'不可分',r:'ふかぶん',m:'inseparable',pos:'adjective',ex:[{j:'不可分の関係。',e:'An inseparable relationship.'},{j:'二つは不可分だ。',e:'The two are inseparable.'}]},
+    {id:477,w:'不可思議',r:'ふかしぎ',m:'mysterious / inexplicable',pos:'adjective',ex:[{j:'不可思議な現象。',e:'A mysterious phenomenon.'},{j:'不可思議な力。',e:'An inexplicable power.'}]},
+    {id:478,w:'天衣無縫',r:'てんいむほう',m:'natural and unaffected',pos:'noun',ex:[{j:'天衣無縫な性格。',e:'A natural and unaffected character.'},{j:'天衣無縫の文章。',e:'Natural and unaffected writing.'}]},
+    {id:479,w:'温故知新',r:'おんこちしん',m:'learning from the past',pos:'noun',ex:[{j:'温故知新の精神。',e:'The spirit of learning from the past.'},{j:'温故知新を実践する。',e:'I practice learning from the past.'}]},
+    {id:480,w:'切磋琢磨',r:'せっさたくま',m:'mutual improvement through competition',pos:'noun',ex:[{j:'切磋琢磨して成長する。',e:'I grow through mutual improvement.'},{j:'仲間と切磋琢磨する。',e:'I improve mutually with peers.'}]},
+    {id:481,w:'臥薪嘗胆',r:'がしんしょうたん',m:'enduring hardship for future success',pos:'noun',ex:[{j:'臥薪嘗胆の精神で挑む。',e:'I challenge with the spirit of enduring hardship.'},{j:'臥薪嘗胆の日々。',e:'Days of enduring hardship.'}]},
+    {id:482,w:'一期一会',r:'いちごいちえ',m:'once-in-a-lifetime encounter',pos:'noun',ex:[{j:'一期一会を大切にする。',e:'I cherish the once-in-a-lifetime encounter.'},{j:'一期一会の精神。',e:'The spirit of one encounter, one chance.'}]},
+    {id:483,w:'以心伝心',r:'いしんでんしん',m:'tacit understanding',pos:'noun',ex:[{j:'以心伝心で伝わる。',e:'It is conveyed through tacit understanding.'},{j:'以心伝心の仲。',e:'A relationship of tacit understanding.'}]},
+    {id:484,w:'七転八起',r:'しちてんはっき',m:'perseverance through hardship',pos:'noun',ex:[{j:'七転八起の精神。',e:'The spirit of perseverance through hardship.'},{j:'七転八起で諦めない。',e:'I do not give up through hardship.'}]},
+    {id:485,w:'捲土重来',r:'けんどちょうらい',m:'comeback / renewed assault',pos:'noun',ex:[{j:'捲土重来を期する。',e:'I aim for a comeback.'},{j:'捲土重来の機会を待つ。',e:'I wait for the opportunity to make a comeback.'}]},
+    {id:486,w:'百折不撓',r:'ひゃくせつふとう',m:'indomitable / never giving up',pos:'noun',ex:[{j:'百折不撓の精神。',e:'The indomitable spirit.'},{j:'百折不撓で挑み続ける。',e:'I keep challenging indomitably.'}]},
+    {id:487,w:'獅子奮迅',r:'ししふんじん',m:'fierce and energetic action',pos:'noun',ex:[{j:'獅子奮迅の活躍。',e:'Fierce and energetic performance.'},{j:'獅子奮迅の勢いで進む。',e:'I advance with fierce energy.'}]},
+    {id:488,w:'韋駄天',r:'いだてん',m:'swift runner / fast mover',pos:'noun',ex:[{j:'韋駄天のような速さ。',e:'Speed like a swift runner.'},{j:'韋駄天走りを見せた。',e:'I showed running like a swift runner.'}]},
+    {id:489,w:'縦横無尽',r:'じゅうおうむじん',m:'freely and without restraint',pos:'noun',ex:[{j:'縦横無尽に活躍する。',e:'I perform freely and without restraint.'},{j:'縦横無尽な発想。',e:'An idea free and without restraint.'}]},
+    {id:490,w:'融通無碍',r:'ゆうずうむげ',m:'complete freedom and flexibility',pos:'noun',ex:[{j:'融通無碍な発想。',e:'Completely free thinking.'},{j:'融通無碍に対応する。',e:'I respond with complete flexibility.'}]},
+    {id:491,w:'闇雲',r:'やみくも',m:'recklessly / blindly',pos:'adverb',ex:[{j:'闇雲に進む。',e:'I advance recklessly.'},{j:'闇雲に諦めない。',e:'I don\'t give up blindly.'}]},
+    {id:492,w:'脈絡',r:'みゃくらく',m:'context / coherence',pos:'noun',ex:[{j:'脈絡のない話。',e:'An incoherent story.'},{j:'脈絡を理解する。',e:'I understand the context.'}]},
+    {id:493,w:'余韻',r:'よいん',m:'lingering sound / aftertaste',pos:'noun',ex:[{j:'余韻を楽しむ。',e:'I enjoy the lingering aftertaste.'},{j:'感動の余韻。',e:'The lingering emotion.'}]},
+    {id:494,w:'趣旨',r:'しゅし',m:'gist / purport',pos:'noun',ex:[{j:'趣旨を説明する。',e:'I explain the gist.'},{j:'趣旨が伝わった。',e:'The purport was conveyed.'}]},
+    {id:495,w:'概要',r:'がいよう',m:'summary / outline',pos:'noun',ex:[{j:'概要を説明する。',e:'I explain the summary.'},{j:'概要をまとめた。',e:'I summarized the outline.'}]},
+    {id:496,w:'骨子',r:'こっし',m:'main points / essence',pos:'noun',ex:[{j:'骨子を説明する。',e:'I explain the main points.'},{j:'計画の骨子。',e:'The main points of the plan.'}]},
+    {id:497,w:'要諦',r:'ようたい',m:'key point / essential',pos:'noun',ex:[{j:'成功の要諦。',e:'The key point of success.'},{j:'要諦を押さえる。',e:'I grasp the essential point.'}]},
+    {id:498,w:'醍醐味',r:'だいごみ',m:'real pleasure / essence',pos:'noun',ex:[{j:'旅の醍醐味。',e:'The real pleasure of travel.'},{j:'仕事の醍醐味。',e:'The essence of the job.'}]},
+    {id:499,w:'本懐',r:'ほんかい',m:'true ambition / heart\'s desire',pos:'noun',ex:[{j:'本懐を遂げる。',e:'I fulfill my true ambition.'},{j:'本懐を達成した。',e:'I achieved my heart\'s desire.'}]},
+    {id:500,w:'悲願',r:'ひがん',m:'long-cherished wish',pos:'noun',ex:[{j:'悲願を達成する。',e:'I achieve my long-cherished wish.'},{j:'悲願の優勝。',e:'The long-cherished championship.'}]},
+  ]
+};
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOCAB STORAGE HELPERS
+═══════════════════════════════════════════════════════════════════════════ */
+function loadVocabProgress(level) {
+  try {
+    const raw = localStorage.getItem(`vocab_progress_${level}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveVocabProgress(level, data) {
+  try { localStorage.setItem(`vocab_progress_${level}`, JSON.stringify(data)); } catch {}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOME SCREEN — Choose Kanji or Vocabulary
+═══════════════════════════════════════════════════════════════════════════ */
+function HomeScreen({ onSelectKanji, onSelectVocab }) {
+  const [hover, setHover] = useState(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setTimeout(() => setMounted(true), 50); }, []);
+
+  const cardStyle = (key) => ({
+    flex: 1,
+    maxWidth: 280,
+    borderRadius: 24,
+    padding: '40px 28px',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 16,
+    transition: 'all 0.35s cubic-bezier(0.34,1.5,0.64,1)',
+    transform: hover === key ? 'translateY(-10px) scale(1.03)' : mounted ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
+    opacity: mounted ? 1 : 0,
+    transitionDelay: key === 'kanji' ? '0.1s' : '0.25s',
+    background: hover === key
+      ? 'linear-gradient(155deg,rgba(255,255,255,0.97),rgba(240,248,255,0.97))'
+      : 'linear-gradient(155deg,rgba(255,255,255,0.88),rgba(224,242,255,0.88))',
+    border: `2px solid ${hover === key ? 'rgba(56,189,248,0.6)' : 'rgba(56,189,248,0.25)'}`,
+    boxShadow: hover === key
+      ? '0 32px 80px rgba(56,189,248,0.3), 0 8px 32px rgba(0,0,0,0.12)'
+      : '0 8px 32px rgba(56,189,248,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+    backdropFilter: 'blur(20px)',
+    userSelect: 'none',
+  });
+
+  return (
+    <div style={{
+      width: '100%', height: '100vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      fontFamily: '"Noto Sans JP","SF Pro Display",system-ui,sans-serif',
+      overflow: 'hidden', position: 'relative',
+      background: 'linear-gradient(160deg, #e8f4fd 0%, #dbeeff 40%, #e8f6ff 70%, #f0f9ff 100%)',
+    }}>
+      {/* Animated background blobs */}
+      <div style={{ position:'absolute', inset:0, overflow:'hidden', pointerEvents:'none' }}>
+        {[
+          { w:400,h:400,top:'-10%',left:'-8%',c:'rgba(96,165,200,0.15)',d:'12s' },
+          { w:350,h:350,top:'60%',right:'-5%',c:'rgba(123,184,212,0.12)',d:'15s' },
+          { w:300,h:300,top:'30%',left:'50%',c:'rgba(138,175,212,0.1)',d:'18s' },
+        ].map((b,i) => (
+          <div key={i} style={{
+            position:'absolute', width:b.w, height:b.h,
+            top:b.top, left:b.left, right:b.right,
+            borderRadius:'50%', background:b.c,
+            animation:`float ${b.d} ease-in-out infinite alternate`,
+            filter:'blur(40px)',
+          }}/>
+        ))}
+      </div>
+
+      {/* Title */}
+      <div style={{
+        textAlign: 'center', marginBottom: 48,
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? 'translateY(0)' : 'translateY(-20px)',
+        transition: 'all 0.6s ease',
+      }}>
+        <div style={{ fontSize: 56, lineHeight: 1, marginBottom: 8,
+          fontFamily: '"Zen Old Mincho","Shippori Mincho",serif',
+          background: 'linear-gradient(135deg,#2563eb,#0ea5e9,#06b6d4)',
+          WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+          漢字 · 語彙
+        </div>
+        <div style={{ fontSize: 15, color: '#64748b', fontWeight: 600, letterSpacing: 3, textTransform:'uppercase' }}>
+          JLPT Study App
+        </div>
+      </div>
+
+      {/* Cards row */}
+      <div style={{ display:'flex', gap: 24, padding: '0 24px', justifyContent:'center', flexWrap:'wrap', zIndex:1 }}>
+        {/* Kanji Card */}
+        <div
+          style={cardStyle('kanji')}
+          onMouseEnter={() => setHover('kanji')}
+          onMouseLeave={() => setHover(null)}
+          onTouchStart={() => setHover('kanji')}
+          onTouchEnd={() => { setHover(null); onSelectKanji(); }}
+          onClick={onSelectKanji}
+        >
+          <div style={{ fontSize: 72, lineHeight:1,
+            fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
+            background:'linear-gradient(135deg,#2563eb,#0ea5e9)',
+            WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+            filter:'drop-shadow(0 4px 12px rgba(37,99,235,0.3))' }}>
+            漢
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, color:'#1e3a5f', letterSpacing:1 }}>KANJI</div>
+          <div style={{ fontSize: 13, color:'#64748b', textAlign:'center', lineHeight:1.6 }}>
+            2,135 characters<br/>N5 → N1
+          </div>
+          <div style={{
+            marginTop: 8,
+            background: 'linear-gradient(135deg,#2563eb,#0ea5e9)',
+            color:'white', borderRadius:12, padding:'10px 28px',
+            fontSize:13, fontWeight:700, letterSpacing:1,
+            boxShadow:'0 4px 16px rgba(37,99,235,0.3)',
+          }}>
+            START →
+          </div>
+        </div>
+
+        {/* Vocab Card */}
+        <div
+          style={cardStyle('vocab')}
+          onMouseEnter={() => setHover('vocab')}
+          onMouseLeave={() => setHover(null)}
+          onTouchStart={() => setHover('vocab')}
+          onTouchEnd={() => { setHover(null); onSelectVocab(); }}
+          onClick={onSelectVocab}
+        >
+          <div style={{ fontSize: 72, lineHeight:1,
+            fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
+            background:'linear-gradient(135deg,#7c3aed,#a855f7)',
+            WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+            filter:'drop-shadow(0 4px 12px rgba(124,58,237,0.3))' }}>
+            語
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, color:'#2d1b5f', letterSpacing:1 }}>VOCABULARY</div>
+          <div style={{ fontSize: 13, color:'#64748b', textAlign:'center', lineHeight:1.6 }}>
+            500 words<br/>N5 → N1
+          </div>
+          <div style={{
+            marginTop: 8,
+            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+            color:'white', borderRadius:12, padding:'10px 28px',
+            fontSize:13, fontWeight:700, letterSpacing:1,
+            boxShadow:'0 4px 16px rgba(124,58,237,0.3)',
+          }}>
+            START →
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes float {
+          from { transform: translateY(0) scale(1); }
+          to { transform: translateY(-30px) scale(1.05); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOCAB WORD CARD
+═══════════════════════════════════════════════════════════════════════════ */
+function VocabCard({ word, cs, flipped, onFlip, onStar }) {
+  const cardH = 360;
+  const faceBase = {
+    position:'absolute', inset:0, borderRadius:24, overflow:'hidden',
+    backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden',
+    display:'flex', flexDirection:'column',
+  };
+  const st = STATUS[cs?.status] || STATUS.new;
+
+  return (
+    <div style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative', perspective:1400 }}
+      onClick={e => { if(e.target.closest('button')) return; onFlip(); }}>
+      <div style={{
+        width:'100%', height:'100%', position:'relative',
+        transformStyle:'preserve-3d',
+        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        transition:'transform 0.55s cubic-bezier(0.4,0.2,0.2,1)',
+      }}>
+        {/* FRONT */}
+        <div style={{ ...faceBase,
+          background:'linear-gradient(155deg,#f0f9ff 0%,#e0f2fe 50%,#bae6fd 100%)',
+          border:`2px solid ${st.color}60`,
+          boxShadow:`0 20px 60px rgba(37,99,235,0.12), inset 0 1px 0 rgba(255,255,255,0.8)`,
+        }}>
+          {/* Header */}
+          <div style={{ height:44, display:'flex', alignItems:'center', justifyContent:'space-between',
+            padding:'0 16px', background:`${st.color}18`, borderBottom:`1px solid ${st.color}30` }}>
+            <span style={{ background:`${st.color}22`, color:st.color, borderRadius:8,
+              padding:'3px 10px', fontSize:11, fontWeight:800 }}>
+              {st.emoji} {st.label}
+            </span>
+            <div style={{display:'flex',gap:8,alignItems:'center'}}>
+              <span style={{ fontSize:11, color:'#7c3aed', fontWeight:700,
+                background:'#7c3aed15', borderRadius:8, padding:'3px 10px' }}>
+                {word?.pos}
+              </span>
+              <button onClick={e=>{e.stopPropagation();onStar();}}
+                style={{ background:cs?.starred?'#fef3c720':'transparent',
+                  color:cs?.starred?'#f59e0b':'#94a3b8',
+                  border:`1px solid ${cs?.starred?'#f59e0b60':'transparent'}`,
+                  borderRadius:8, padding:'4px 8px', fontSize:18, cursor:'pointer' }}>
+                {cs?.starred?'★':'☆'}
+              </button>
+            </div>
+          </div>
+          {/* Main — Japanese word */}
+          <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
+            justifyContent:'center', gap:12, padding:'20px 24px' }}>
+            <div style={{ fontSize:64, fontWeight:900, lineHeight:1,
+              fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
+              background:'linear-gradient(135deg,#1e3a8a,#2563eb,#0ea5e9)',
+              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+              filter:'drop-shadow(0 2px 8px rgba(37,99,235,0.2))',
+              textAlign:'center' }}>
+              {word?.w}
+            </div>
+            <div style={{ fontSize:18, color:'#64748b', fontFamily:'"Noto Sans JP",serif',
+              letterSpacing:2, fontWeight:500 }}>
+              {word?.r}
+            </div>
+          </div>
+          <div style={{ textAlign:'center', padding:'8px 0 14px', fontSize:10,
+            color:'#94a3b8', letterSpacing:2 }}>
+            ◉ TAP TO REVEAL MEANING
+          </div>
+        </div>
+
+        {/* BACK */}
+        <div style={{ ...faceBase, transform:'rotateY(180deg)',
+          background:'linear-gradient(155deg,#faf5ff 0%,#f3e8ff 50%,#e9d5ff 100%)',
+          border:'2px solid rgba(124,58,237,0.3)',
+          boxShadow:'0 20px 60px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
+        }}>
+          {/* Back header */}
+          <div style={{ height:44, display:'flex', alignItems:'center', justifyContent:'space-between',
+            padding:'0 16px', background:'rgba(124,58,237,0.1)', borderBottom:'1px solid rgba(124,58,237,0.2)' }}>
+            <span style={{ background:'rgba(124,58,237,0.15)', color:'#7c3aed', borderRadius:8,
+              padding:'3px 10px', fontSize:11, fontWeight:800, letterSpacing:1 }}>✦ ANSWER</span>
+            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+              <SpeakerBtn text={word?.w} lang="ja-JP" size={15} color="#7c3aed"/>
+              <SpeakerBtn text={word?.m} lang="en-US" size={15} color="#0ea5e9"/>
+            </div>
+          </div>
+          {/* Meaning */}
+          <div style={{ padding:'16px 20px', flex:1, overflowY:'auto',
+            WebkitOverflowScrolling:'touch', scrollbarWidth:'none' }}>
+            <div style={{ fontSize:28, fontWeight:800, color:'#4c1d95',
+              fontFamily:'"Zen Old Mincho",serif', marginBottom:6, textAlign:'center' }}>
+              {word?.w}
+            </div>
+            <div style={{ fontSize:14, color:'#6d28d9', textAlign:'center',
+              marginBottom:4, letterSpacing:1 }}>{word?.r}</div>
+            <div style={{ fontSize:12, color:'#7c3aed', textAlign:'center',
+              fontStyle:'italic', marginBottom:16,
+              background:'rgba(124,58,237,0.1)', borderRadius:8, padding:'4px 12px',
+              display:'inline-block' }}>{word?.pos}</div>
+            <div style={{ fontSize:22, fontWeight:900, color:'#1e1b4b',
+              textAlign:'center', marginBottom:20 }}>
+              {word?.m}
+            </div>
+            {/* Examples */}
+            <div style={{ fontSize:10, color:'#7c3aed', fontWeight:700,
+              letterSpacing:2, marginBottom:8, textAlign:'center' }}>— EXAMPLES —</div>
+            {word?.ex?.map((ex, i) => (
+              <div key={i} style={{ background:'rgba(124,58,237,0.08)',
+                borderRadius:12, padding:'10px 14px', marginBottom:8,
+                border:'1px solid rgba(124,58,237,0.15)' }}>
+                <div style={{ fontSize:14, fontWeight:700, color:'#4c1d95',
+                  fontFamily:'"Noto Sans JP",serif', marginBottom:3 }}>{ex.j}</div>
+                <div style={{ fontSize:12, color:'#6d28d9' }}>{ex.e}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOCAB APP
+═══════════════════════════════════════════════════════════════════════════ */
+const JLPT_LEVELS = ['N5','N4','N3','N2','N1'];
+
+function VocabApp({ onBack }) {
+  const bp = useBreakpoint();
+  const [level, setLevel] = useState('N5');
+  const [tab, setTab] = useState('study');
+  const [flipped, setFlipped] = useState(false);
+  const [idx, setIdx] = useState(0);
+  const [showLevelSelect, setShowLevelSelect] = useState(true);
+  const [levelComplete, setLevelComplete] = useState(false);
+
+  const words = VD[level] || [];
+
+  const initStates = useCallback((lv) => {
+    const saved = loadVocabProgress(lv);
+    if (saved?.cardStates) return saved.cardStates;
+    const s = {};
+    (VD[lv]||[]).forEach(w => { s[w.id] = { starred:false, status:'new' }; });
+    return s;
+  }, []);
+
+  const [cardStates, setCardStates] = useState(() => initStates('N5'));
+  const [sessCorrect, setSessCorrect] = useState(0);
+  const [sessWrong, setSessWrong] = useState(0);
+
+  // Save progress when cardStates change
+  useEffect(() => {
+    saveVocabProgress(level, { cardStates });
+  }, [cardStates, level]);
+
+  // Switch level
+  const switchLevel = (lv) => {
+    setLevel(lv);
+    setIdx(0);
+    setFlipped(false);
+    setCardStates(initStates(lv));
+    setShowLevelSelect(false);
+    setLevelComplete(false);
+    setSessCorrect(0);
+    setSessWrong(0);
+    setTab('study');
+  };
+
+  const card = words[idx];
+  const cs = card ? (cardStates[card.id] || { starred:false, status:'new' }) : null;
+
+  const mark = (status) => {
+    if (!card) return;
+    setCardStates(p => ({ ...p, [card.id]: { ...p[card.id], status } }));
+    if (status === 'known') setSessCorrect(c => c+1);
+    if (status === 'hard') setSessWrong(c => c+1);
+    setFlipped(false);
+    if (idx < words.length - 1) {
+      setIdx(i => i + 1);
+    } else {
+      setLevelComplete(true);
+    }
+  };
+
+  const totalKnown = Object.values(cardStates).filter(s => s.status==='known').length;
+  const prog = words.length > 0 ? idx / words.length : 0;
+
+  const VTABS = [
+    { id:'study', label:'Study', icon:'📖' },
+    { id:'quiz',  label:'Quiz',  icon:'🧠' },
+    { id:'srs',   label:'SRS',   icon:'📋' },
+    { id:'browse',label:'Browse',icon:'🗂' },
+    { id:'stats', label:'Stats', icon:'📊' },
+    { id:'awards',label:'Awards',icon:'🏆' },
+  ];
+
+  // Level Complete Popup
+  if (levelComplete) {
+    const nextIdx = JLPT_LEVELS.indexOf(level) + 1;
+    const nextLevel = JLPT_LEVELS[nextIdx];
+    return (
+      <div style={{ width:'100%', height:'100vh', display:'flex', alignItems:'center',
+        justifyContent:'center', background:'linear-gradient(160deg,#faf5ff,#f3e8ff)',
+        fontFamily:'"Noto Sans JP",system-ui,sans-serif' }}>
+        <div style={{ background:'white', borderRadius:24, padding:'40px 36px',
+          maxWidth:360, width:'90%', textAlign:'center',
+          boxShadow:'0 32px 80px rgba(124,58,237,0.2)' }}>
+          <div style={{ fontSize:64 }}>🎉</div>
+          <div style={{ fontSize:24, fontWeight:900, color:'#4c1d95', margin:'12px 0 8px' }}>
+            {level} Complete!
+          </div>
+          <div style={{ fontSize:14, color:'#6d28d9', marginBottom:24 }}>
+            Your progress is saved. {nextLevel ? `Ready for ${nextLevel}?` : 'You\'ve mastered all levels!'}
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            {nextLevel && (
+              <button onClick={() => switchLevel(nextLevel)}
+                style={{ background:'linear-gradient(135deg,#7c3aed,#a855f7)',
+                  color:'white', border:'none', borderRadius:12, padding:'14px',
+                  fontSize:15, fontWeight:800, cursor:'pointer' }}>
+                Start {nextLevel} →
+              </button>
+            )}
+            <button onClick={() => { setLevelComplete(false); setIdx(0); setFlipped(false); }}
+              style={{ background:'#f3e8ff', color:'#7c3aed', border:'none',
+                borderRadius:12, padding:'12px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+              Review {level} Again
+            </button>
+            <button onClick={() => setShowLevelSelect(true)}
+              style={{ background:'#f1f5f9', color:'#64748b', border:'none',
+                borderRadius:12, padding:'12px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+              Choose Level
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Level select screen
+  if (showLevelSelect) {
+    return (
+      <div style={{ width:'100%', height:'100vh', display:'flex', flexDirection:'column',
+        background:'linear-gradient(160deg,#faf5ff,#e9d5ff)',
+        fontFamily:'"Noto Sans JP",system-ui,sans-serif' }}>
+        {/* Back */}
+        <div style={{ padding:'16px 20px', display:'flex', alignItems:'center', gap:12 }}>
+          <button onClick={onBack}
+            style={{ background:'rgba(124,58,237,0.1)', border:'none', borderRadius:10,
+              padding:'8px 16px', fontSize:13, color:'#7c3aed', cursor:'pointer', fontWeight:700 }}>
+            ← Home
+          </button>
+          <span style={{ fontSize:18, fontWeight:800, color:'#4c1d95' }}>語彙 Vocabulary</span>
+        </div>
+        <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
+          justifyContent:'center', padding:'20px' }}>
+          <div style={{ fontSize:16, fontWeight:800, color:'#4c1d95', marginBottom:24,
+            letterSpacing:2 }}>SELECT LEVEL</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:12, width:'100%', maxWidth:320 }}>
+            {JLPT_LEVELS.map(lv => {
+              const saved = loadVocabProgress(lv);
+              const states = saved?.cardStates || {};
+              const known = Object.values(states).filter(s=>s.status==='known').length;
+              const total = (VD[lv]||[]).length;
+              const pct = total > 0 ? Math.round(known/total*100) : 0;
+              return (
+                <button key={lv} onClick={() => switchLevel(lv)}
+                  style={{ background:'white', border:`2px solid rgba(124,58,237,${lv===level?0.6:0.2})`,
+                    borderRadius:16, padding:'16px 20px', cursor:'pointer',
+                    display:'flex', alignItems:'center', justifyContent:'space-between',
+                    boxShadow:'0 4px 16px rgba(124,58,237,0.1)',
+                    transition:'all 0.2s ease' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                    <span style={{ fontSize:20, fontWeight:900, color:'#7c3aed' }}>{lv}</span>
+                    <span style={{ fontSize:12, color:'#94a3b8' }}>{total} words</span>
+                  </div>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:60, height:6, background:'#e9d5ff', borderRadius:3 }}>
+                      <div style={{ width:`${pct}%`, height:'100%',
+                        background:'linear-gradient(90deg,#7c3aed,#a855f7)', borderRadius:3 }}/>
+                    </div>
+                    <span style={{ fontSize:11, color:'#7c3aed', fontWeight:700 }}>{pct}%</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Main vocab study view
+  return (
+    <div style={{ width:'100%', height:'100vh', display:'flex', flexDirection:'column',
+      background:'linear-gradient(160deg,#faf5ff,#f3e8ff)',
+      fontFamily:'"Noto Sans JP",system-ui,sans-serif', overflow:'hidden' }}>
+
+      {/* Header */}
+      <div style={{ padding:'10px 16px', display:'flex', alignItems:'center',
+        justifyContent:'space-between', background:'rgba(255,255,255,0.85)',
+        backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(124,58,237,0.15)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <button onClick={() => setShowLevelSelect(true)}
+            style={{ background:'rgba(124,58,237,0.1)', border:'none', borderRadius:8,
+              padding:'6px 12px', fontSize:12, color:'#7c3aed', cursor:'pointer', fontWeight:700 }}>
+            ← {level}
+          </button>
+          <button onClick={onBack}
+            style={{ background:'transparent', border:'none', borderRadius:8,
+              padding:'6px 10px', fontSize:12, color:'#94a3b8', cursor:'pointer' }}>
+            🏠
+          </button>
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontSize:11, color:'#7c3aed', fontWeight:700, letterSpacing:1 }}>VOCABULARY {level}</div>
+          <div style={{ fontSize:10, color:'#94a3b8' }}>{totalKnown}/{words.length} known</div>
+        </div>
+        <div style={{ fontSize:13, fontWeight:800, color:'#7c3aed' }}>
+          {idx+1}/{words.length}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ height:4, background:'#e9d5ff' }}>
+        <div style={{ height:'100%', width:`${prog*100}%`,
+          background:'linear-gradient(90deg,#7c3aed,#a855f7)',
+          transition:'width 0.4s ease', borderRadius:2 }}/>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+        {tab === 'study' && card && (
+          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+            <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center',
+              padding:'16px', overflow:'hidden' }}>
+              <div style={{ width:'100%', maxWidth:460 }}>
+                <VocabCard word={card} cs={cs} flipped={flipped}
+                  onFlip={() => setFlipped(f=>!f)}
+                  onStar={() => setCardStates(p=>({...p,[card.id]:{...p[card.id],starred:!p[card.id].starred}}))}/>
+              </div>
+            </div>
+            {/* Controls */}
+            <div style={{ padding:'12px 16px', background:'rgba(255,255,255,0.9)',
+              borderTop:'1px solid rgba(124,58,237,0.15)' }}>
+              <div style={{ display:'flex', gap:8, marginBottom:8, maxWidth:460, margin:'0 auto 8px' }}>
+                <button onClick={() => { setIdx(i=>Math.max(0,i-1)); setFlipped(false); }}
+                  style={{ flex:1, background:'rgba(124,58,237,0.08)', color:'#7c3aed',
+                    border:'1px solid rgba(124,58,237,0.3)', borderRadius:10, padding:'12px',
+                    fontSize:13, fontWeight:700, cursor:'pointer' }}>◀ PREV</button>
+                <button onClick={() => setFlipped(f=>!f)}
+                  style={{ flex:2, background:'linear-gradient(135deg,#7c3aed,#a855f7)',
+                    color:'white', border:'none', borderRadius:10, padding:'12px',
+                    fontSize:13, fontWeight:800, cursor:'pointer', letterSpacing:1 }}>
+                  {flipped ? '↩ FRONT' : '↻ FLIP CARD'}
+                </button>
+                <button onClick={() => { setIdx(i=>Math.min(words.length-1,i+1)); setFlipped(false); }}
+                  style={{ flex:1, background:'rgba(124,58,237,0.08)', color:'#7c3aed',
+                    border:'1px solid rgba(124,58,237,0.3)', borderRadius:10, padding:'12px',
+                    fontSize:13, fontWeight:700, cursor:'pointer' }}>NEXT ▶</button>
+              </div>
+              <div style={{ display:'flex', gap:8, maxWidth:460, margin:'0 auto' }}>
+                {[['hard','✗ Hard','#ef4444'],['ok','≈ Review','#f59e0b'],['known','✓ Easy','#10b981']].map(([s,l,c])=>(
+                  <button key={s} onClick={() => mark(s)}
+                    style={{ flex:1, background:`${c}15`, color:c, border:`1px solid ${c}40`,
+                      borderRadius:10, padding:'11px', fontSize:12, fontWeight:800, cursor:'pointer' }}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'browse' && (
+          <div style={{ flex:1, overflowY:'auto', padding:'16px',
+            WebkitOverflowScrolling:'touch' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))',
+              gap:10, maxWidth:600, margin:'0 auto' }}>
+              {words.map((w,i) => {
+                const wcs = cardStates[w.id] || { status:'new', starred:false };
+                const st = STATUS[wcs.status];
+                return (
+                  <div key={w.id} style={{ background:'white', borderRadius:12, padding:'12px',
+                    border:`1px solid ${st.color}40`,
+                    boxShadow:'0 2px 8px rgba(124,58,237,0.08)' }}>
+                    <div style={{ fontSize:22, fontWeight:900, color:'#4c1d95',
+                      fontFamily:'"Zen Old Mincho",serif', marginBottom:2 }}>{w.w}</div>
+                    <div style={{ fontSize:11, color:'#7c3aed', marginBottom:4 }}>{w.r}</div>
+                    <div style={{ fontSize:11, color:'#64748b' }}>{w.m}</div>
+                    <div style={{ fontSize:9, color:st.color, marginTop:4,
+                      fontWeight:700 }}>{st.emoji} {st.label}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {tab === 'stats' && (
+          <div style={{ flex:1, overflowY:'auto', padding:'20px' }}>
+            <div style={{ maxWidth:400, margin:'0 auto' }}>
+              {[['Known','known','#10b981'],['Review','ok','#f59e0b'],['Hard','hard','#ef4444'],['New','new','#94a3b8']].map(([label,status,color])=>{
+                const count = Object.values(cardStates).filter(s=>s.status===status).length;
+                const pct = words.length > 0 ? Math.round(count/words.length*100) : 0;
+                return (
+                  <div key={status} style={{ background:'white', borderRadius:14, padding:'16px 20px',
+                    marginBottom:10, display:'flex', alignItems:'center', justifyContent:'space-between',
+                    border:`1px solid ${color}30`, boxShadow:'0 2px 8px rgba(124,58,237,0.08)' }}>
+                    <div>
+                      <div style={{ fontSize:14, fontWeight:800, color }}>{label}</div>
+                      <div style={{ fontSize:22, fontWeight:900, color:'#1e1b4b' }}>{count}</div>
+                    </div>
+                    <div style={{ textAlign:'right' }}>
+                      <div style={{ width:80, height:8, background:'#f3e8ff', borderRadius:4 }}>
+                        <div style={{ width:`${pct}%`, height:'100%',
+                          background:color, borderRadius:4 }}/>
+                      </div>
+                      <div style={{ fontSize:12, color:'#7c3aed', marginTop:4, fontWeight:700 }}>{pct}%</div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div style={{ background:'linear-gradient(135deg,#7c3aed,#a855f7)',
+                borderRadius:14, padding:'16px 20px', color:'white', marginTop:10 }}>
+                <div style={{ fontSize:14, fontWeight:700, opacity:0.8 }}>Session</div>
+                <div style={{ display:'flex', gap:20, marginTop:4 }}>
+                  <div><div style={{ fontSize:22, fontWeight:900 }}>{sessCorrect}</div><div style={{ fontSize:11, opacity:0.7 }}>correct</div></div>
+                  <div><div style={{ fontSize:22, fontWeight:900 }}>{sessWrong}</div><div style={{ fontSize:11, opacity:0.7 }}>hard</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'quiz' && (
+          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+            <div style={{ textAlign:'center', color:'#7c3aed' }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>🧠</div>
+              <div style={{ fontSize:16, fontWeight:700 }}>Quiz mode coming soon!</div>
+              <div style={{ fontSize:13, color:'#94a3b8', marginTop:8 }}>Use Study mode for now.</div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'srs' && (
+          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+            <div style={{ textAlign:'center', color:'#7c3aed' }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>📋</div>
+              <div style={{ fontSize:16, fontWeight:700 }}>SRS coming soon!</div>
+              <div style={{ fontSize:13, color:'#94a3b8', marginTop:8 }}>Progress is tracked in Stats.</div>
+            </div>
+          </div>
+        )}
+
+        {tab === 'awards' && (
+          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+            <div style={{ textAlign:'center', color:'#7c3aed' }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>🏆</div>
+              <div style={{ fontSize:16, fontWeight:700 }}>Achievements coming soon!</div>
+              <div style={{ fontSize:13, color:'#94a3b8', marginTop:8 }}>Keep studying to unlock awards.</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Nav */}
+      <div style={{ display:'flex', background:'rgba(255,255,255,0.95)',
+        borderTop:'1px solid rgba(124,58,237,0.15)', backdropFilter:'blur(12px)' }}>
+        {VTABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            style={{ flex:1, padding:'8px 4px', border:'none', cursor:'pointer',
+              background:'transparent', display:'flex', flexDirection:'column',
+              alignItems:'center', gap:2,
+              borderTop: tab===t.id ? '2px solid #7c3aed' : '2px solid transparent' }}>
+            <span style={{ fontSize:18 }}>{t.icon}</span>
+            <span style={{ fontSize:9, fontWeight:700,
+              color: tab===t.id ? '#7c3aed' : '#94a3b8', letterSpacing:0.5 }}>
+              {t.label.toUpperCase()}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );
