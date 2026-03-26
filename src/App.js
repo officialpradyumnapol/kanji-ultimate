@@ -3428,14 +3428,14 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               {card.ex.map((ex,i)=>(
-                <div key={i} style={{ display:'flex', alignItems:'center', gap:10,
+                <div key={i} data-speaker="1" style={{ display:'flex', alignItems:'center', gap:10,
                   padding:'10px 14px',
                   background:`linear-gradient(135deg,${C.lifted}E6,${C.abyss}D9)`,
                   borderRadius:14, border:`1px solid ${C.jade}28`,
                   animation:`slideInUp 0.35s ${0.08+i*0.07}s ease both`,
                   boxShadow:`0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05)` }}>
                   {/* Speaker for the example word */}
-                  <SpeakerBtn text={ex.w} lang="ja-JP" size={14} color={C.teal}/>
+                  <SpeakerBtn text={ex.w} lang="ja-JP" size={18} color={C.teal}/>
                   <div style={{ minWidth:60, flexShrink:0 }}>
                     <div style={{ fontSize:bp.isLarge?22:20, fontWeight:900, color:C.moonlight,
                       fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
@@ -5611,10 +5611,11 @@ function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
       style={{
         background: active ? `${color||'#60A5C8'}30` : 'transparent',
         border: `1px solid ${active ? (color||'#60A5C8')+'80' : 'transparent'}`,
-        borderRadius: 7, padding: '3px 5px', cursor: 'pointer',
+        borderRadius: 10, padding: '8px 10px', cursor: 'pointer',
         fontSize: size, lineHeight: 1, transition: 'all 0.2s ease',
-        transform: active ? 'scale(1.25)' : 'scale(1)',
+        transform: active ? 'scale(1.2)' : 'scale(1)',
         boxShadow: active ? `0 0 10px ${color||'#60A5C8'}60` : 'none',
+        minWidth: 40, minHeight: 40,
         flexShrink: 0, display:'inline-flex', alignItems:'center', justifyContent:'center',
         ...style
       }}
@@ -5832,7 +5833,7 @@ export default function KanjiApp() {
 
   if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>
 
-  if(appMode==='home') return <HomeScreen onSelectKanji={()=>setAppMode('kanji')} onSelectVocab={()=>setAppMode('vocab')}/>;
+  if(appMode==='home') return <HomeScreen onSelectKanji={()=>setAppMode('kanji')} onSelectVocab={()=>setAppMode('vocab')} theme={theme}/>;
   if(appMode==='vocab') return <VocabApp onBack={()=>setAppMode('home')}/>;
   
 
@@ -7253,150 +7254,543 @@ function saveVocabProgress(level, data) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   HOME SCREEN — Choose Kanji or Vocabulary
+   HOME SCREEN — Choose Kanji or Vocabulary  (fully theme-aware Mt Fuji scene)
 ═══════════════════════════════════════════════════════════════════════════ */
-function HomeScreen({ onSelectKanji, onSelectVocab }) {
+function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
   const [hover, setHover] = useState(null);
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setTimeout(() => setMounted(true), 50); }, []);
+  useEffect(() => { setTimeout(() => setMounted(true), 60); }, []);
 
+  const T = THEMES[theme] || THEMES.sky;
+  const isDark = T.dark;
+
+  /* ── Per-theme visual palette ─────────────────────────────────────────── */
+  const SCENES = {
+    sky: {
+      /* Sky */
+      skyTop:'#3A82C8', skyMid:'#6BBEEC', skyHorizon:'#B8E4F5', skyBase:'#E8F6FD',
+      /* Sun / Moon */
+      hasCelestial:true, celestialX:180, celestialY:72, celestialR:42,
+      celestialColor:'#FFFDE0', celestialGlow:'rgba(255,230,60,0.32)', isMoon:false,
+      hasCrescent:false,
+      /* Fuji */
+      fujiTop:'#6A9EC0', fujiMid:'#4A7EA0', fujiBot:'#284F6A',
+      /* Snow */
+      snowA:'#FFFFFF', snowB:'rgba(220,245,255,0)',
+      /* Atmosphere */
+      fogA:'rgba(255,255,255,0.55)', fogB:'rgba(210,240,255,0.4)',
+      /* Water */
+      waterFill:'rgba(90,160,210,0.28)', waterSheen:'rgba(170,220,248,0.5)',
+      /* Trees */
+      treeA:'#3A7D44', treeB:'#2D6235',
+      /* Clouds */
+      hasClouds:true, cloudColor:'rgba(255,255,255,0.88)',
+      /* Stars */
+      hasStars:false,
+      /* Particles */
+      hasPetals:false, hasEmbers:false,
+      /* Cards */
+      cardBgH:'linear-gradient(155deg,rgba(255,255,255,0.96),rgba(224,244,255,0.93))',
+      cardBg: 'linear-gradient(155deg,rgba(255,255,255,0.82),rgba(210,238,255,0.78))',
+      cardBorderH:'rgba(56,189,248,0.72)', cardBorder:'rgba(56,189,248,0.28)',
+      cardShadowH:'0 28px 68px rgba(14,120,180,0.28),0 8px 24px rgba(0,0,0,0.08)',
+      cardShadow: '0 8px 28px rgba(56,189,248,0.14)',
+      /* Kanji card */
+      kanjiGrad:'linear-gradient(135deg,#1D4ED8,#0EA5E9)', kanjiBtn:'linear-gradient(135deg,#1D4ED8,#0EA5E9)',
+      kanjiBtnShadow:'0 4px 18px rgba(37,99,235,0.35)',
+      kanjiText:'#1E3A5F', kanjiSub:'#475569',
+      /* Vocab card */
+      vocabGrad:'linear-gradient(135deg,#7C3AED,#A855F7)', vocabBtn:'linear-gradient(135deg,#7C3AED,#A855F7)',
+      vocabBtnShadow:'0 4px 18px rgba(124,58,237,0.35)',
+      vocabText:'#2D1B5F', vocabSub:'#475569',
+      /* Title */
+      titleGrad:'linear-gradient(135deg,#1D4ED8,#0EA5E9,#06B6D4)',
+      titleGlow:null, subtitleColor:'#334155',
+      /* Nebula */
+      hasNebula:false,
+    },
+    midnight: {
+      skyTop:'#040912', skyMid:'#0A1428', skyHorizon:'#142244', skyBase:'#1E3060',
+      hasCelestial:true, celestialX:260, celestialY:70, celestialR:26,
+      celestialColor:'#C8DCF0', celestialGlow:'rgba(90,138,210,0.28)', isMoon:true, hasCrescent:true,
+      fujiTop:'#152038', fujiMid:'#0E1828', fujiBot:'#080F1C',
+      snowA:'#B0C8E0', snowB:'rgba(80,110,150,0)',
+      fogA:'rgba(89,138,210,0.2)', fogB:'rgba(170,111,168,0.14)',
+      waterFill:'rgba(8,14,28,0.88)', waterSheen:'rgba(89,138,210,0.38)',
+      treeA:'#080F1C', treeB:'#060C16',
+      hasClouds:false, cloudColor:'rgba(30,50,100,0.3)',
+      hasStars:true, starCols:['#8aafd4','#c899c8','#dde8f0','#7BB8D4','#a090d8'],
+      hasPetals:false, hasEmbers:false,
+      cardBgH:'linear-gradient(155deg,rgba(22,34,65,0.97),rgba(38,54,98,0.95))',
+      cardBg: 'linear-gradient(155deg,rgba(16,25,48,0.88),rgba(24,38,72,0.84))',
+      cardBorderH:'rgba(138,175,212,0.65)', cardBorder:'rgba(89,138,210,0.3)',
+      cardShadowH:'0 28px 68px rgba(0,8,35,0.75),0 0 40px rgba(89,138,210,0.22)',
+      cardShadow: '0 8px 28px rgba(0,8,35,0.55)',
+      kanjiGrad:'linear-gradient(135deg,#598ad2,#8aafd4)', kanjiBtn:'linear-gradient(135deg,#2e285d,#598ad2)',
+      kanjiBtnShadow:'0 4px 18px rgba(0,8,40,0.6)',
+      kanjiText:'#C8E0F5', kanjiSub:'rgba(160,200,230,0.75)',
+      vocabGrad:'linear-gradient(135deg,#aa6fa8,#c899c8)', vocabBtn:'linear-gradient(135deg,#6b3868,#aa6fa8)',
+      vocabBtnShadow:'0 4px 18px rgba(0,8,40,0.6)',
+      vocabText:'#D4B8D0', vocabSub:'rgba(190,160,200,0.75)',
+      titleGrad:'linear-gradient(135deg,#8aafd4,#c899c8,#dde8f0)',
+      titleGlow:'rgba(89,138,210,0.45)', subtitleColor:'rgba(180,210,238,0.75)',
+      hasNebula:false,
+    },
+    oldmoney: {
+      skyTop:'#050C06', skyMid:'#091008', skyHorizon:'#0E1A0C', skyBase:'#162414',
+      hasCelestial:true, celestialX:1250, celestialY:68, celestialR:24,
+      celestialColor:'#D4A83C', celestialGlow:'rgba(201,168,76,0.28)', isMoon:true, hasCrescent:true,
+      fujiTop:'#0A1A0A', fujiMid:'#071208', fujiBot:'#050D05',
+      snowA:'#C9A84C', snowB:'rgba(100,140,80,0)',
+      fogA:'rgba(201,168,76,0.12)', fogB:'rgba(143,175,114,0.09)',
+      waterFill:'rgba(5,10,5,0.92)', waterSheen:'rgba(201,168,76,0.22)',
+      treeA:'#060E06', treeB:'#040A04',
+      hasClouds:false, cloudColor:'rgba(201,168,76,0.15)',
+      hasStars:true, starCols:['#C9A84C','#8FAF72','#E8C96A','#D4BC8C','#A09060'],
+      hasPetals:false, hasEmbers:false,
+      cardBgH:'linear-gradient(155deg,rgba(16,42,28,0.97),rgba(24,58,36,0.95))',
+      cardBg: 'linear-gradient(155deg,rgba(10,28,18,0.9),rgba(16,38,24,0.87))',
+      cardBorderH:'rgba(201,168,76,0.7)', cardBorder:'rgba(201,168,76,0.28)',
+      cardShadowH:'0 28px 68px rgba(0,0,0,0.8),0 0 40px rgba(201,168,76,0.2)',
+      cardShadow: '0 8px 28px rgba(0,0,0,0.6)',
+      kanjiGrad:'linear-gradient(135deg,#C9A84C,#E8C96A)', kanjiBtn:'linear-gradient(135deg,#7A6020,#C9A84C)',
+      kanjiBtnShadow:'0 4px 18px rgba(0,0,0,0.65)',
+      kanjiText:'#E8D8A0', kanjiSub:'rgba(196,178,130,0.78)',
+      vocabGrad:'linear-gradient(135deg,#8FAF72,#AECF8E)', vocabBtn:'linear-gradient(135deg,#4A6038,#8FAF72)',
+      vocabBtnShadow:'0 4px 18px rgba(0,0,0,0.65)',
+      vocabText:'#B8D090', vocabSub:'rgba(160,195,130,0.75)',
+      titleGrad:'linear-gradient(135deg,#C9A84C,#E8C96A,#F4ECD8)',
+      titleGlow:'rgba(201,168,76,0.4)', subtitleColor:'rgba(196,178,134,0.82)',
+      hasNebula:false,
+    },
+    space: {
+      skyTop:'#010208', skyMid:'#030714', skyHorizon:'#060D22', skyBase:'#0A1235',
+      hasCelestial:false, celestialX:0, celestialY:0, celestialR:0,
+      celestialColor:'#fff', celestialGlow:'transparent', isMoon:false, hasCrescent:false,
+      fujiTop:'#0C1530', fujiMid:'#080F22', fujiBot:'#050B18',
+      snowA:'#A78BFA', snowB:'rgba(80,50,160,0)',
+      fogA:'rgba(167,139,250,0.14)', fogB:'rgba(0,212,245,0.09)',
+      waterFill:'rgba(3,6,20,0.94)', waterSheen:'rgba(167,139,250,0.28)',
+      treeA:'#06091A', treeB:'#040716',
+      hasClouds:false, cloudColor:'transparent',
+      hasStars:true, starCols:['#A78BFA','#00F5A0','#00D4F5','#E8F0FF','#FF7EB3'],
+      hasPetals:false, hasEmbers:false,
+      cardBgH:'linear-gradient(155deg,rgba(14,22,55,0.97),rgba(20,30,75,0.95))',
+      cardBg: 'linear-gradient(155deg,rgba(10,16,42,0.9),rgba(15,24,62,0.87))',
+      cardBorderH:'rgba(167,139,250,0.7)', cardBorder:'rgba(100,120,240,0.28)',
+      cardShadowH:'0 28px 68px rgba(0,0,20,0.88),0 0 50px rgba(167,139,250,0.3)',
+      cardShadow: '0 8px 28px rgba(0,0,20,0.65)',
+      kanjiGrad:'linear-gradient(135deg,#A78BFA,#00D4F5)', kanjiBtn:'linear-gradient(135deg,#4C3A8A,#A78BFA)',
+      kanjiBtnShadow:'0 4px 18px rgba(0,0,20,0.7)',
+      kanjiText:'#C4D0FF', kanjiSub:'rgba(180,200,235,0.75)',
+      vocabGrad:'linear-gradient(135deg,#00F5A0,#00D4F5)', vocabBtn:'linear-gradient(135deg,#00704A,#00F5A0)',
+      vocabBtnShadow:'0 4px 18px rgba(0,0,20,0.7)',
+      vocabText:'#7AFFD8', vocabSub:'rgba(100,240,200,0.75)',
+      titleGrad:'linear-gradient(135deg,#A78BFA,#00D4F5,#E8F0FF)',
+      titleGlow:'rgba(167,139,250,0.5)', subtitleColor:'rgba(180,200,230,0.78)',
+      hasNebula:true,
+    },
+    sakura: {
+      skyTop:'#F4B8D8', skyMid:'#FAD4E8', skyHorizon:'#FDEAF4', skyBase:'#FFF5FA',
+      hasCelestial:true, celestialX:1150, celestialY:95, celestialR:40,
+      celestialColor:'#FFCCE6', celestialGlow:'rgba(255,160,210,0.28)', isMoon:false, hasCrescent:false,
+      fujiTop:'#D070A0', fujiMid:'#B85888', fujiBot:'#963870',
+      snowA:'#FFFFFF', snowB:'rgba(255,230,245,0)',
+      fogA:'rgba(255,215,238,0.58)', fogB:'rgba(255,195,228,0.42)',
+      waterFill:'rgba(252,218,238,0.45)', waterSheen:'rgba(249,168,212,0.42)',
+      treeA:'#B03070', treeB:'#8C2460',
+      hasClouds:true, cloudColor:'rgba(255,255,255,0.75)',
+      hasStars:false,
+      hasPetals:true, hasEmbers:false,
+      cardBgH:'linear-gradient(155deg,rgba(255,255,255,0.96),rgba(255,228,244,0.93))',
+      cardBg: 'linear-gradient(155deg,rgba(255,255,255,0.85),rgba(255,218,238,0.8))',
+      cardBorderH:'rgba(236,72,153,0.68)', cardBorder:'rgba(249,168,212,0.38)',
+      cardShadowH:'0 28px 68px rgba(160,30,80,0.22),0 8px 24px rgba(236,72,153,0.16)',
+      cardShadow: '0 8px 28px rgba(236,72,153,0.12)',
+      kanjiGrad:'linear-gradient(135deg,#9D174D,#EC4899)', kanjiBtn:'linear-gradient(135deg,#9D174D,#EC4899)',
+      kanjiBtnShadow:'0 4px 18px rgba(157,23,77,0.32)',
+      kanjiText:'#831843', kanjiSub:'#9D174D',
+      vocabGrad:'linear-gradient(135deg,#7C3AED,#C084FC)', vocabBtn:'linear-gradient(135deg,#7C3AED,#C084FC)',
+      vocabBtnShadow:'0 4px 18px rgba(124,58,237,0.3)',
+      vocabText:'#6B21A8', vocabSub:'#7C3AED',
+      titleGrad:'linear-gradient(135deg,#831843,#BE185D,#EC4899)',
+      titleGlow:null, subtitleColor:'#9D174D',
+      hasNebula:false,
+    },
+    ember: {
+      skyTop:'#0C0400', skyMid:'#200900', skyHorizon:'#381200', skyBase:'#501A00',
+      hasCelestial:false, celestialX:0, celestialY:0, celestialR:0,
+      celestialColor:'#fff', celestialGlow:'transparent', isMoon:false, hasCrescent:false,
+      fujiTop:'#3C1A06', fujiMid:'#2C1304', fujiBot:'#1C0B02',
+      snowA:'#F59E0B', snowB:'rgba(180,80,0,0)',
+      fogA:'rgba(245,158,11,0.11)', fogB:'rgba(239,68,68,0.08)',
+      waterFill:'rgba(10,3,0,0.94)', waterSheen:'rgba(245,158,11,0.22)',
+      treeA:'#280E02', treeB:'#1A0902',
+      hasClouds:false, cloudColor:'transparent',
+      hasStars:false,
+      hasPetals:false, hasEmbers:true,
+      cardBgH:'linear-gradient(155deg,rgba(60,22,5,0.97),rgba(78,30,7,0.95))',
+      cardBg: 'linear-gradient(155deg,rgba(40,16,4,0.9),rgba(54,24,6,0.87))',
+      cardBorderH:'rgba(245,158,11,0.7)', cardBorder:'rgba(180,83,9,0.35)',
+      cardShadowH:'0 28px 68px rgba(0,0,0,0.85),0 0 40px rgba(245,158,11,0.25)',
+      cardShadow: '0 8px 28px rgba(0,0,0,0.65)',
+      kanjiGrad:'linear-gradient(135deg,#F59E0B,#FBBF24)', kanjiBtn:'linear-gradient(135deg,#B45309,#F59E0B)',
+      kanjiBtnShadow:'0 4px 18px rgba(0,0,0,0.7)',
+      kanjiText:'#FEF3C7', kanjiSub:'rgba(252,211,77,0.78)',
+      vocabGrad:'linear-gradient(135deg,#FB923C,#FBBF24)', vocabBtn:'linear-gradient(135deg,#C2410C,#F97316)',
+      vocabBtnShadow:'0 4px 18px rgba(0,0,0,0.7)',
+      vocabText:'#FED7AA', vocabSub:'rgba(251,191,36,0.75)',
+      titleGrad:'linear-gradient(135deg,#F59E0B,#FBBF24,#FEF3C7)',
+      titleGlow:'rgba(245,158,11,0.45)', subtitleColor:'rgba(251,191,36,0.82)',
+      hasNebula:false,
+    },
+  };
+
+  const sc = SCENES[theme] || SCENES.sky;
+
+  /* ── Card style factory ───────────────────────────────────────────────── */
   const cardStyle = (key) => ({
-    flex: 1,
-    maxWidth: 280,
-    borderRadius: 24,
-    padding: '40px 28px',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 16,
+    flex: 1, maxWidth: 280, borderRadius: 24, padding: '36px 26px',
+    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+    alignItems: 'center', gap: 14,
     transition: 'all 0.35s cubic-bezier(0.34,1.5,0.64,1)',
-    transform: hover === key ? 'translateY(-10px) scale(1.03)' : mounted ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
+    transform: hover===key ? 'translateY(-12px) scale(1.04)' : mounted ? 'translateY(0) scale(1)' : 'translateY(32px) scale(0.94)',
     opacity: mounted ? 1 : 0,
-    transitionDelay: key === 'kanji' ? '0.1s' : '0.25s',
-    background: hover === key
-      ? 'linear-gradient(155deg,rgba(255,255,255,0.97),rgba(240,248,255,0.97))'
-      : 'linear-gradient(155deg,rgba(255,255,255,0.88),rgba(224,242,255,0.88))',
-    border: `2px solid ${hover === key ? 'rgba(56,189,248,0.6)' : 'rgba(56,189,248,0.25)'}`,
-    boxShadow: hover === key
-      ? '0 32px 80px rgba(56,189,248,0.3), 0 8px 32px rgba(0,0,0,0.12)'
-      : '0 8px 32px rgba(56,189,248,0.12), 0 2px 8px rgba(0,0,0,0.06)',
-    backdropFilter: 'blur(20px)',
+    transitionDelay: key==='kanji' ? '0.1s' : '0.25s',
+    background: hover===key ? sc.cardBgH : sc.cardBg,
+    border: `2px solid ${hover===key ? sc.cardBorderH : sc.cardBorder}`,
+    boxShadow: hover===key ? sc.cardShadowH : sc.cardShadow,
+    backdropFilter: 'blur(22px)', WebkitBackdropFilter:'blur(22px)',
     userSelect: 'none',
   });
 
+  /* ── SVG paths ─────────────────────────────────────────────────────────── */
+  // Classic Mt Fuji silhouette — wide symmetric base, concave upper slopes
+  const fujiFull = "M720,78 C706,110 675,152 638,198 C596,252 528,302 438,355 C336,415 212,460 20,498 L0,540 L1440,540 L1420,498 C1228,460 1104,415 1002,355 C912,302 844,252 802,198 C765,152 734,110 720,78 Z";
+
+  // Snow cap — realistic Fuji shape: wide enough to cover upper cone
+  const fujiSnow = "M720,78 C710,96 698,114 688,132 C700,140 712,144 720,143 C728,144 740,140 752,132 C742,114 730,96 720,78 Z M720,78 C700,108 670,140 650,164 C668,176 696,182 720,180 C744,182 772,176 790,164 C770,140 740,108 720,78 Z M720,78 C694,116 655,158 626,192 C652,206 690,215 720,213 C750,215 788,206 814,192 C785,158 746,116 720,78 Z";
+
   return (
     <div style={{
-      width: '100%', height: '100vh', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center',
-      fontFamily: '"Noto Sans JP","SF Pro Display",system-ui,sans-serif',
-      overflow: 'hidden', position: 'relative',
-      background: 'linear-gradient(160deg, #e8f4fd 0%, #dbeeff 40%, #e8f6ff 70%, #f0f9ff 100%)',
+      width:'100%', height:'100vh', display:'flex', flexDirection:'column',
+      alignItems:'center', justifyContent:'center',
+      fontFamily:'"Noto Sans JP","SF Pro Display",system-ui,sans-serif',
+      overflow:'hidden', position:'relative',
+      background: sc.skyTop,
     }}>
-      {/* Animated background blobs */}
-      <div style={{ position:'absolute', inset:0, overflow:'hidden', pointerEvents:'none' }}>
-        {[
-          { w:400,h:400,top:'-10%',left:'-8%',c:'rgba(96,165,200,0.15)',d:'12s' },
-          { w:350,h:350,top:'60%',right:'-5%',c:'rgba(123,184,212,0.12)',d:'15s' },
-          { w:300,h:300,top:'30%',left:'50%',c:'rgba(138,175,212,0.1)',d:'18s' },
-        ].map((b,i) => (
-          <div key={i} style={{
-            position:'absolute', width:b.w, height:b.h,
-            top:b.top, left:b.left, right:b.right,
-            borderRadius:'50%', background:b.c,
-            animation:`float ${b.d} ease-in-out infinite alternate`,
-            filter:'blur(40px)',
-          }}/>
-        ))}
-      </div>
 
-      {/* Title */}
+      {/* ── Full-screen SVG scene ────────────────────────────────────────── */}
+      <svg viewBox="0 0 1440 540" preserveAspectRatio="xMidYMid slice"
+        style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none' }}>
+        <defs>
+          <linearGradient id={`hSky_${theme}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor={sc.skyTop}/>
+            <stop offset="35%"  stopColor={sc.skyMid}/>
+            <stop offset="72%"  stopColor={sc.skyHorizon}/>
+            <stop offset="100%" stopColor={sc.skyBase}/>
+          </linearGradient>
+          <linearGradient id={`hFuji_${theme}`} x1="0.3" y1="0" x2="0.7" y2="1">
+            <stop offset="0%"   stopColor={sc.fujiTop}/>
+            <stop offset="55%"  stopColor={sc.fujiMid}/>
+            <stop offset="100%" stopColor={sc.fujiBot}/>
+          </linearGradient>
+          <linearGradient id={`hFuji2_${theme}`} x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%"   stopColor={sc.fujiTop} stopOpacity="0.35"/>
+            <stop offset="100%" stopColor={sc.fujiBot} stopOpacity="0.6"/>
+          </linearGradient>
+          <linearGradient id={`hSnow_${theme}`} x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%"   stopColor={sc.snowA}/>
+            <stop offset="100%" stopColor={sc.snowB}/>
+          </linearGradient>
+          <linearGradient id={`hWater_${theme}`} x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%"   stopColor={sc.waterSheen}/>
+            <stop offset="100%" stopColor={sc.waterFill}/>
+          </linearGradient>
+          <radialGradient id={`hSun_${theme}`} cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor={sc.celestialColor}/>
+            <stop offset="65%"  stopColor={sc.celestialColor}/>
+            <stop offset="100%" stopColor={sc.celestialColor} stopOpacity="0"/>
+          </radialGradient>
+          <radialGradient id={`hVolcanic_${theme}`} cx="50%" cy="0%" r="80%">
+            <stop offset="0%"   stopColor="rgba(239,68,68,0.18)"/>
+            <stop offset="100%" stopColor="transparent"/>
+          </radialGradient>
+          <filter id="hBlur3"><feGaussianBlur stdDeviation="3"/></filter>
+          <filter id="hBlur6"><feGaussianBlur stdDeviation="6"/></filter>
+          <filter id="hBlur12"><feGaussianBlur stdDeviation="12"/></filter>
+          <clipPath id={`hFujiClip_${theme}`}><path d={fujiFull}/></clipPath>
+        </defs>
+
+        {/* Sky */}
+        <rect x="0" y="0" width="1440" height="540" fill={`url(#hSky_${theme})`}/>
+
+        {/* Space nebula glow */}
+        {sc.hasNebula && <>
+          <ellipse cx="320" cy="160" rx="280" ry="150" fill="rgba(167,139,250,0.1)" filter="url(#hBlur12)"/>
+          <ellipse cx="1150" cy="130" rx="240" ry="120" fill="rgba(0,212,245,0.08)" filter="url(#hBlur12)"/>
+          <ellipse cx="720" cy="80" rx="200" ry="100" fill="rgba(255,126,179,0.06)" filter="url(#hBlur12)"/>
+        </>}
+
+        {/* Ember volcanic horizon glow */}
+        {theme==='ember' && <>
+          <ellipse cx="720" cy="540" rx="700" ry="160" fill="rgba(239,68,68,0.18)" filter="url(#hBlur12)"/>
+          <ellipse cx="720" cy="480" rx="500" ry="80"  fill="rgba(245,158,11,0.14)" filter="url(#hBlur6)"/>
+        </>}
+
+        {/* Sun / Moon */}
+        {sc.hasCelestial && <>
+          {/* Glow halo */}
+          <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+28}
+            fill={sc.celestialGlow} filter="url(#hBlur12)"/>
+          <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+10}
+            fill={sc.celestialGlow} filter="url(#hBlur6)"/>
+          {/* Body */}
+          <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR}
+            fill={sc.celestialColor}/>
+          {/* Sun rays (light themes) */}
+          {!sc.isMoon && theme!=='sakura' && [0,30,60,90,120,150,180,210,240,270,300,330].map((a,i)=>(
+            <line key={i}
+              x1={sc.celestialX + Math.cos(a*Math.PI/180)*(sc.celestialR+3)}
+              y1={sc.celestialY + Math.sin(a*Math.PI/180)*(sc.celestialR+3)}
+              x2={sc.celestialX + Math.cos(a*Math.PI/180)*(sc.celestialR+12+((i%3)*4))}
+              y2={sc.celestialY + Math.sin(a*Math.PI/180)*(sc.celestialR+12+((i%3)*4))}
+              stroke={sc.celestialColor} strokeWidth="2" opacity="0.5"/>
+          ))}
+          {/* Moon crescent shadow */}
+          {sc.hasCrescent && (
+            <circle cx={sc.celestialX+8} cy={sc.celestialY-5} r={sc.celestialR-2}
+              fill={sc.skyMid} opacity="0.7"/>
+          )}
+          {/* Sakura sun soft ring */}
+          {theme==='sakura' && <>
+            <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+8}
+              fill="none" stroke="rgba(255,180,220,0.4)" strokeWidth="3"/>
+            <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+16}
+              fill="none" stroke="rgba(255,180,220,0.2)" strokeWidth="2"/>
+          </>}
+        </>}
+
+        {/* Clouds (sky + sakura) */}
+        {sc.hasClouds && [
+          {cx:200, cy:130, rx:90,  ry:30},
+          {cx:360, cy:112, rx:70,  ry:24},
+          {cx:260, cy:108, rx:60,  ry:20},
+          {cx:1080,cy:145, rx:100, ry:32},
+          {cx:1220,cy:128, rx:75,  ry:26},
+          {cx:1150,cy:120, rx:65,  ry:22},
+          {cx:620, cy:100, rx:55,  ry:18},
+          {cx:850, cy:118, rx:65,  ry:22},
+        ].map((c,i) => (
+          <ellipse key={i} cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry}
+            fill={sc.cloudColor} filter="url(#hBlur3)"/>
+        ))}
+
+        {/* Distant haze range */}
+        <path fill={sc.fujiTop} opacity="0.22" filter="url(#hBlur6)"
+          d="M0,380 C180,340 360,368 540,348 C720,328 900,295 1080,320 C1260,345 1380,355 1440,342 L1440,540 L0,540 Z"/>
+
+        {/* Mid mountain range */}
+        <path fill={sc.fujiMid} opacity="0.4" filter="url(#hBlur3)"
+          d="M0,428 C120,398 248,418 380,402 C512,386 608,370 740,388 C872,406 980,388 1120,400 C1260,412 1360,405 1440,392 L1440,540 L0,540 Z"/>
+
+        {/* ── Mt Fuji main body ───────────────────────────────────────── */}
+        <path d={fujiFull} fill={`url(#hFuji_${theme})`}/>
+
+        {/* Subtle left-face highlight */}
+        <path d="M720,78 C706,110 675,152 638,198 C596,252 528,302 438,355 L460,355 C548,302 614,252 654,200 C690,154 718,114 720,78 Z"
+          fill="rgba(255,255,255,0.05)" clipPath={`url(#hFujiClip_${theme})`}/>
+
+        {/* Snow cap */}
+        <path d={fujiSnow} fill={`url(#hSnow_${theme})`}
+          clipPath={`url(#hFujiClip_${theme})`}/>
+        {/* Snow soft-glow edge */}
+        <path d={fujiSnow} fill={sc.snowA} opacity="0.55"
+          clipPath={`url(#hFujiClip_${theme})`} filter="url(#hBlur3)"/>
+
+        {/* Lava / ember glow at base of Fuji */}
+        {theme==='ember' && (
+          <ellipse cx="720" cy="498" rx="340" ry="22"
+            fill="rgba(239,68,68,0.22)" filter="url(#hBlur6)"/>
+        )}
+
+        {/* Water / lake strip */}
+        <rect x="0" y="490" width="1440" height="50" fill={`url(#hWater_${theme})`} opacity="0.85"/>
+        {/* Lake reflections */}
+        <path d="M720,540 C700,526 655,515 595,510 C520,505 430,503 320,506 C200,509 100,514 0,518 L0,540 Z"
+          fill={sc.waterSheen} opacity="0.4"/>
+        <path d="M720,540 C740,526 785,515 845,510 C920,505 1010,503 1120,506 C1240,509 1340,514 1440,518 L1440,540 Z"
+          fill={sc.waterSheen} opacity="0.4"/>
+        {/* Fuji reflection shimmer */}
+        <ellipse cx="720" cy="515" rx="80" ry="6"
+          fill={sc.snowA} opacity="0.18" filter="url(#hBlur3)"/>
+
+        {/* Mist bands */}
+        <ellipse cx="720" cy="492" rx="680" ry="36"
+          fill={sc.fogA} filter="url(#hBlur12)"/>
+        <ellipse cx="380" cy="500" rx="320" ry="24"
+          fill={sc.fogB} filter="url(#hBlur6)"/>
+        <ellipse cx="1060" cy="500" rx="320" ry="24"
+          fill={sc.fogB} filter="url(#hBlur6)"/>
+
+        {/* Pine tree silhouettes — left cluster */}
+        {[52,90,130,175,218,262,300,340].map((x,i) => {
+          const h = 46+i%3*10; const w = 10+i%3*4;
+          const yb = 494-i%2*4;
+          return (<g key={i}>
+            <polygon points={`${x},${yb-h} ${x-w},${yb} ${x+w},${yb}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.9"/>
+            <polygon points={`${x},${yb-h*0.65} ${x-w*0.8},${yb-h*0.28} ${x+w*0.8},${yb-h*0.28}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.7"/>
+          </g>);
+        })}
+        {/* Pine tree silhouettes — right cluster */}
+        {[1100,1140,1178,1220,1260,1300,1352,1392].map((x,i) => {
+          const h = 46+i%3*10; const w = 10+i%3*4;
+          const yb = 494-i%2*4;
+          return (<g key={i}>
+            <polygon points={`${x},${yb-h} ${x-w},${yb} ${x+w},${yb}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.9"/>
+            <polygon points={`${x},${yb-h*0.65} ${x-w*0.8},${yb-h*0.28} ${x+w*0.8},${yb-h*0.28}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.7"/>
+          </g>);
+        })}
+      </svg>
+
+      {/* ── Stars (dark themes) ─────────────────────────────────────────── */}
+      {sc.hasStars && (
+        <div style={{ position:'absolute', inset:0, pointerEvents:'none', overflow:'hidden' }}>
+          {Array.from({length:65}).map((_,i) => {
+            const x = (i*137.508+11)%100;
+            const y = (i*97.333+7)%58;
+            const sz = i%6===0?2.8:i%3===0?1.6:0.9;
+            const col = sc.starCols[i%sc.starCols.length];
+            const del = (i*0.22)%4;
+            return (
+              <div key={i} style={{
+                position:'absolute', left:`${x}%`, top:`${y}%`,
+                width:sz, height:sz, borderRadius:'50%', background:col,
+                animation:`twinkle ${2.5+del}s ease-in-out infinite`,
+                animationDelay:`${del}s`,
+              }}/>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Sakura petals ───────────────────────────────────────────────── */}
+      {sc.hasPetals && (
+        <div style={{ position:'absolute', inset:0, pointerEvents:'none', overflow:'hidden' }}>
+          {Array.from({length:14}).map((_,i) => (
+            <div key={i} style={{
+              position:'absolute',
+              left:`${(i*7.3+4)%94}%`, top:'-18px',
+              width:7+i%3*3, height:7+i%3*3,
+              borderRadius:'60% 40% 60% 40%',
+              background: i%3===0?'#FDA4C8':i%3===1?'#F9A8D4':'#FBCFE8',
+              opacity:0.78,
+              animation:`petalFall ${11+i*1.4}s linear infinite`,
+              animationDelay:`${i*1.1}s`,
+              transform:`rotate(${i*26}deg)`,
+            }}/>
+          ))}
+        </div>
+      )}
+
+      {/* ── Embers ──────────────────────────────────────────────────────── */}
+      {sc.hasEmbers && (
+        <div style={{ position:'absolute', inset:0, pointerEvents:'none', overflow:'hidden' }}>
+          {Array.from({length:16}).map((_,i) => (
+            <div key={i} style={{
+              position:'absolute',
+              left:`${(i*6.4+4)%88}%`, bottom:'18%',
+              width:2+i%3, height:2+i%3, borderRadius:'50%',
+              background:i%3===0?'#F59E0B':i%3===1?'#EF4444':'#FB923C',
+              opacity:0.85,
+              animation:`emberRise ${2.8+i*0.55}s ease-out infinite`,
+              animationDelay:`${i*0.42}s`,
+            }}/>
+          ))}
+        </div>
+      )}
+
+      {/* ── Title ───────────────────────────────────────────────────────── */}
       <div style={{
-        textAlign: 'center', marginBottom: 48,
-        opacity: mounted ? 1 : 0,
-        transform: mounted ? 'translateY(0)' : 'translateY(-20px)',
-        transition: 'all 0.6s ease',
+        textAlign:'center', marginBottom:38, zIndex:3, position:'relative',
+        opacity: mounted?1:0,
+        transform: mounted?'translateY(0)':'translateY(-22px)',
+        transition:'all 0.65s ease',
       }}>
-        <div style={{ fontSize: 56, lineHeight: 1, marginBottom: 8,
-          fontFamily: '"Zen Old Mincho","Shippori Mincho",serif',
-          background: 'linear-gradient(135deg,#2563eb,#0ea5e9,#06b6d4)',
-          WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
+        <div style={{
+          fontSize:52, lineHeight:1, marginBottom:10,
+          fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
+          background: sc.titleGrad,
+          WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+          filter: sc.titleGlow ? `drop-shadow(0 0 18px ${sc.titleGlow})` : undefined,
+        }}>
           漢字 · 語彙
         </div>
-        <div style={{ fontSize: 15, color: '#64748b', fontWeight: 600, letterSpacing: 3, textTransform:'uppercase' }}>
+        <div style={{
+          fontSize:12, color: sc.subtitleColor,
+          fontWeight:700, letterSpacing:5, textTransform:'uppercase',
+        }}>
           JLPT Study App
         </div>
       </div>
 
-      {/* Cards row */}
-      <div style={{ display:'flex', gap: 24, padding: '0 24px', justifyContent:'center', flexWrap:'wrap', zIndex:1 }}>
-        {/* Kanji Card */}
-        <div
-          style={cardStyle('kanji')}
-          onMouseEnter={() => setHover('kanji')}
-          onMouseLeave={() => setHover(null)}
-          onTouchStart={() => setHover('kanji')}
-          onTouchEnd={() => { setHover(null); onSelectKanji(); }}
-          onClick={onSelectKanji}
-        >
-          <div style={{ fontSize: 72, lineHeight:1,
+      {/* ── Cards ───────────────────────────────────────────────────────── */}
+      <div style={{ display:'flex', gap:22, padding:'0 22px', justifyContent:'center', flexWrap:'wrap', zIndex:3, position:'relative' }}>
+
+        {/* Kanji */}
+        <div style={cardStyle('kanji')}
+          onMouseEnter={()=>setHover('kanji')} onMouseLeave={()=>setHover(null)}
+          onTouchStart={()=>setHover('kanji')} onTouchEnd={()=>{setHover(null);onSelectKanji();}}
+          onClick={onSelectKanji}>
+          <div style={{
+            fontSize:70, lineHeight:1,
             fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
-            background:'linear-gradient(135deg,#2563eb,#0ea5e9)',
+            background: sc.kanjiGrad,
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-            filter:'drop-shadow(0 4px 12px rgba(37,99,235,0.3))' }}>
-            漢
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 800, color:'#1e3a5f', letterSpacing:1 }}>KANJI</div>
-          <div style={{ fontSize: 13, color:'#64748b', textAlign:'center', lineHeight:1.6 }}>
+            filter:`drop-shadow(0 3px 10px ${sc.cardBorderH})`,
+          }}>漢</div>
+          <div style={{ fontSize:20, fontWeight:800, color:sc.kanjiText, letterSpacing:1.5 }}>KANJI</div>
+          <div style={{ fontSize:12, color:sc.kanjiSub, textAlign:'center', lineHeight:1.7 }}>
             2,135 characters<br/>N5 → N1
           </div>
           <div style={{
-            marginTop: 8,
-            background: 'linear-gradient(135deg,#2563eb,#0ea5e9)',
-            color:'white', borderRadius:12, padding:'10px 28px',
-            fontSize:13, fontWeight:700, letterSpacing:1,
-            boxShadow:'0 4px 16px rgba(37,99,235,0.3)',
-          }}>
-            START →
-          </div>
+            marginTop:6, background:sc.kanjiBtn, color:'white',
+            borderRadius:12, padding:'10px 26px',
+            fontSize:12, fontWeight:800, letterSpacing:1.5,
+            boxShadow: sc.kanjiBtnShadow,
+          }}>START →</div>
         </div>
 
-        {/* Vocab Card */}
-        <div
-          style={cardStyle('vocab')}
-          onMouseEnter={() => setHover('vocab')}
-          onMouseLeave={() => setHover(null)}
-          onTouchStart={() => setHover('vocab')}
-          onTouchEnd={() => { setHover(null); onSelectVocab(); }}
-          onClick={onSelectVocab}
-        >
-          <div style={{ fontSize: 72, lineHeight:1,
+        {/* Vocabulary */}
+        <div style={cardStyle('vocab')}
+          onMouseEnter={()=>setHover('vocab')} onMouseLeave={()=>setHover(null)}
+          onTouchStart={()=>setHover('vocab')} onTouchEnd={()=>{setHover(null);onSelectVocab();}}
+          onClick={onSelectVocab}>
+          <div style={{
+            fontSize:70, lineHeight:1,
             fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
-            background:'linear-gradient(135deg,#7c3aed,#a855f7)',
+            background: sc.vocabGrad,
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-            filter:'drop-shadow(0 4px 12px rgba(124,58,237,0.3))' }}>
-            語
-          </div>
-          <div style={{ fontSize: 22, fontWeight: 800, color:'#2d1b5f', letterSpacing:1 }}>VOCABULARY</div>
-          <div style={{ fontSize: 13, color:'#64748b', textAlign:'center', lineHeight:1.6 }}>
+            filter:`drop-shadow(0 3px 10px ${sc.cardBorderH})`,
+          }}>語</div>
+          <div style={{ fontSize:20, fontWeight:800, color:sc.vocabText, letterSpacing:1.5 }}>VOCABULARY</div>
+          <div style={{ fontSize:12, color:sc.vocabSub, textAlign:'center', lineHeight:1.7 }}>
             500 words<br/>N5 → N1
           </div>
           <div style={{
-            marginTop: 8,
-            background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
-            color:'white', borderRadius:12, padding:'10px 28px',
-            fontSize:13, fontWeight:700, letterSpacing:1,
-            boxShadow:'0 4px 16px rgba(124,58,237,0.3)',
-          }}>
-            START →
-          </div>
+            marginTop:6, background:sc.vocabBtn, color:'white',
+            borderRadius:12, padding:'10px 26px',
+            fontSize:12, fontWeight:800, letterSpacing:1.5,
+            boxShadow: sc.vocabBtnShadow,
+          }}>START →</div>
         </div>
+
       </div>
 
       <style>{`
         @keyframes float {
           from { transform: translateY(0) scale(1); }
-          to { transform: translateY(-30px) scale(1.05); }
+          to   { transform: translateY(-28px) scale(1.04); }
         }
       `}</style>
     </div>
