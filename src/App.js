@@ -3092,6 +3092,7 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
   };
   return (
     <div ref={outerRef}
+      data-flashcard="1"
       style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative',
         perspective:1400,
         willChange:'transform,opacity' }}>
@@ -3514,13 +3515,13 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
 
     // ── TAP: short movement = flip card ──
     if(ax < 18 && ay < 18) {
-      // e.preventDefault() stops the browser from synthesising a click event
-      // after touchend, which would call onClick below and flip the card AGAIN,
-      // cancelling the first flip so the card appears frozen.
       e.preventDefault();
       suppressClickRef.current = true;
       setTimeout(() => { suppressClickRef.current = false; }, 600);
-      setFlipped(f => !f);
+      // Only flip if tap was on the card itself, not outer padding
+      if(e.target && e.target.closest && e.target.closest('[data-flashcard]')) {
+        setFlipped(f => !f);
+      }
       touchRef.current = null;
       return;
     }
@@ -3609,6 +3610,8 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
             e.target.closest('[data-speaker]') ||
             e.target.closest('button')
           )) return;
+          // Only flip if click was on the card itself, not the outer padding zone
+          if(!e.target.closest('[data-flashcard]')) return;
           if(!animState.current.busy) setFlipped(f=>!f);
         }}>
 
@@ -5498,6 +5501,7 @@ function VoicePickerPanel() {
 
 function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
   const [active, setActive] = useState(false);
+  const touchFiredRef = useRef(false);
   const fire = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -5508,9 +5512,20 @@ function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
   return (
     <button
       data-speaker="1"
-      onClick={fire}
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        if(touchFiredRef.current){ touchFiredRef.current = false; return; }
+        fire(e);
+      }}
       onTouchStart={e => { e.stopPropagation(); e.preventDefault(); }}
-      onTouchEnd={e => { e.stopPropagation(); e.preventDefault(); fire(e); }}
+      onTouchEnd={e => {
+        e.stopPropagation();
+        e.preventDefault();
+        touchFiredRef.current = true;
+        fire(e);
+        setTimeout(() => { touchFiredRef.current = false; }, 600);
+      }}
       style={{
         background: active ? `${color||'#60A5C8'}30` : 'transparent',
         border: `1px solid ${active ? (color||'#60A5C8')+'80' : 'transparent'}`,
