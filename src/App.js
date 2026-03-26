@@ -2151,14 +2151,11 @@ const THEMES = {
     preview:['#38BDF8','#6366F1','#A855F7','#EFF6FF'],
     dark: false,
     bg: {
-      base:'linear-gradient(180deg,#1A4A9A 0%,#2B6AB8 22%,#4E8FD0 50%,#7BBCE8 78%,#9ACEF5 100%)',
-      fog:['rgba(106,171,224,0.44)','rgba(80,148,210,0.28)','rgba(154,206,245,0.22)'],
-      orbs:['rgba(42,106,168,0.55)','rgba(26,79,154,0.48)','rgba(90,150,210,0.42)','rgba(125,184,232,0.52)'],
-      mtn1:'#183870', mtn2:'#2360A8', mtn3:'#9ACEF5', ridge:'#DDEEFF',
-      skySrc:['#1A4F9A','#68ABDE'], sunC:'#FFFFFF',
-      stars:['#FFFFFF','#E0F0FF','#C0E0FF','#A0D0FF'],
-      aurora:false, auroraColors:['rgba(106,171,224,0.18)','rgba(26,79,154,0.12)','rgba(154,206,245,0.10)'],
-      rays:true,
+      base:'linear-gradient(165deg,#EFF6FF 0%,#E0F2FE 25%,#EEF2FF 55%,#F0F9FF 80%,#DBEAFE 100%)',
+      fog:['rgba(56,189,248,0.14)','rgba(99,102,241,0.10)','rgba(168,85,247,0.08)'],
+      orbs:['rgba(56,189,248,0.22)','rgba(99,102,241,0.18)','rgba(168,85,247,0.14)','rgba(125,211,252,0.20)'],
+      mtn1:'#93C5FD', mtn2:'#BFDBFE', mtn3:'#DBEAFE', ridge:'#6366F1',
+      stars:['#A855F7','#38BDF8','#6366F1','#93C5FD'],
     },
     C: {
   /* Backgrounds — soft light, NOT dark */
@@ -2198,13 +2195,11 @@ midnight: {
   preview:['#2e285d','#598ad2','#aa6fa8','#0d1b2e'],
   dark: true,
   bg: {
-    base:'linear-gradient(180deg,#02070F 0%,#030E1E 20%,#05142A 45%,#071A34 70%,#09203E 100%)',
-    fog:['rgba(80,120,200,0.13)','rgba(60,100,180,0.09)','rgba(100,140,210,0.07)'],
-    orbs:['rgba(150,180,240,0.15)','rgba(80,120,200,0.12)','rgba(40,70,150,0.18)','rgba(120,160,220,0.10)'],
-    mtn1:'#060F22', mtn2:'#040C1A', mtn3:'#020810', ridge:'#4060B8',
-    skySrc:['#040C22','#081A3C'],
-    sunC:'#D8E8FF',
-    stars:['#D0E4FF','#A8CCFF','#E8F0FF','#B8D4FF'],
+    base:'linear-gradient(165deg,#09100A 0%,#0b1020 20%,#0d1428 45%,#0d1830 70%,#101828 100%)',
+    fog:['rgba(170,111,168,0.10)','rgba(89,138,210,0.08)','rgba(138,175,212,0.06)'],
+    orbs:['rgba(170,111,168,0.14)','rgba(89,138,210,0.12)','rgba(46,40,93,0.18)','rgba(138,175,212,0.10)'],
+    mtn1:'#1a2848', mtn2:'#131d38', mtn3:'#0d1424', ridge:'#598ad2',
+    stars:['#c899c8','#8aafd4','#dde8f0','#b8d4ea'],
   },
   C: {
     void:'#090D18',abyss:'#0B1020',deep:'#0D1424',cosmos:'#101828',ocean:'#131D30',
@@ -2233,13 +2228,11 @@ oldmoney: {
   preview:['#C9A84C','#8FAF72','#122E24','#F4ECD8'],
   dark: true,
   bg: {
-    base:'linear-gradient(180deg,#020C0A 0%,#031410 20%,#051A14 45%,#07201A 70%,#09261E 100%)',
-    fog:['rgba(18,100,72,0.16)','rgba(10,80,55,0.10)','rgba(28,118,85,0.09)'],
-    orbs:['rgba(20,118,80,0.16)','rgba(10,98,62,0.11)','rgba(30,138,88,0.11)','rgba(14,88,58,0.11)'],
-    mtn1:'#072820', mtn2:'#051A12', mtn3:'#020E08', ridge:'#0E6A50',
-    skySrc:['#030C0A','#071A12'],
-    sunC:'#38A888',
-    stars:['#28B898','#18A880','#3AC0A8','#48C8B0'],
+    base:'linear-gradient(165deg,#06100C 0%,#04090A 20%,#030807 45%,#050A05 70%,#030606 100%)',
+    fog:['rgba(201,168,76,0.10)','rgba(143,175,114,0.07)','rgba(201,168,76,0.06)'],
+    orbs:['rgba(201,168,76,0.12)','rgba(143,175,114,0.09)','rgba(201,168,76,0.08)','rgba(90,128,80,0.08)'],
+    mtn1:'#0E1F0C', mtn2:'#091508', mtn3:'#060F05', ridge:'#C9A84C',
+    stars:['#C9A84C','#8FAF72','#E8C96A','#D4BC8C'],
   },
   C: {
     void:'#03070A',abyss:'#050D0A',deep:'#060F0C',cosmos:'#081410',ocean:'#0A1A14',
@@ -2268,14 +2261,11 @@ space: {
   preview:['#A78BFA','#00F5A0','#00D4F5','#010208'],
   dark: true,
   bg: {
-    base:'linear-gradient(180deg,#020408 0%,#030610 20%,#040818 45%,#04091C 70%,#050A20 100%)',
-    fog:['rgba(38,80,200,0.20)','rgba(18,58,160,0.13)','rgba(58,98,220,0.11)'],
-    orbs:['rgba(78,118,230,0.22)','rgba(38,78,200,0.17)','rgba(0,158,230,0.15)','rgba(98,78,218,0.13)'],
-    mtn1:'#050A22', mtn2:'#03071A', mtn3:'#020410', ridge:'#3858B8',
-    skySrc:['#040818','#0C28A8'],
-    sunC:'#6080C0',
-    stars:['#78A0FF','#58B8F0','#A8C0FF','#98D0FF'],
-    aurora:true, auroraColors:['rgba(38,98,255,0.58)','rgba(0,158,230,0.48)','rgba(78,58,200,0.40)'],
+    base:'linear-gradient(165deg,#010208 0%,#020510 20%,#030714 45%,#050B1A 70%,#060D1F 100%)',
+    fog:['rgba(167,139,250,0.14)','rgba(0,212,245,0.10)','rgba(0,245,160,0.08)'],
+    orbs:['rgba(167,139,250,0.18)','rgba(0,212,245,0.15)','rgba(0,245,160,0.12)','rgba(255,126,179,0.10)'],
+    mtn1:'#0D1630', mtn2:'#080F24', mtn3:'#050B1A', ridge:'#A78BFA',
+    stars:['#A78BFA','#00F5A0','#00D4F5','#E8F0FF'],
   },
   C: {
     void:'#010208',abyss:'#02040F',deep:'#030714',cosmos:'#050B1A',ocean:'#060D1F',
@@ -2304,14 +2294,11 @@ sakura: {
   preview:['#F9A8D4','#EC4899','#FDF2F8','#831843'],
   dark: false,
   bg: {
-    base:'linear-gradient(180deg,#FFBEA0 0%,#FFC8AE 22%,#FFD0B8 50%,#FFD8C4 78%,#FFE8D2 100%)',
-    fog:['rgba(218,108,148,0.44)','rgba(168,68,138,0.29)','rgba(238,148,168,0.23)'],
-    orbs:['rgba(218,98,158,0.56)','rgba(158,58,178,0.49)','rgba(198,78,138,0.43)','rgba(238,158,188,0.53)'],
-    mtn1:'#38106A', mtn2:'#9C2868', mtn3:'#DE7898', ridge:'#FFBAD0',
-    skySrc:['#C06860','#FFD090'], sunC:'#FFFCEA',
+    base:'linear-gradient(165deg,#FFF0F6 0%,#FDF2F8 25%,#FCE7F3 55%,#FDF4FF 80%,#FAE8FF 100%)',
+    fog:['rgba(249,168,212,0.18)','rgba(192,132,252,0.12)','rgba(236,72,153,0.10)'],
+    orbs:['rgba(249,168,212,0.25)','rgba(168,85,247,0.18)','rgba(236,72,153,0.15)','rgba(253,186,234,0.22)'],
+    mtn1:'#F5D0FE', mtn2:'#F0ABFC', mtn3:'#E879F9', ridge:'#EC4899',
     stars:['#EC4899','#A855F7','#F9A8D4','#E879F9'],
-    aurora:true, auroraColors:['rgba(198,78,138,0.32)','rgba(148,48,168,0.23)','rgba(228,118,148,0.18)'],
-    rays:true,
   },
   C: {
     void:'#FFF0F6',abyss:'#FDF2F8',deep:'#FCE7F3',cosmos:'#FDF4FF',ocean:'#FAE8FF',
@@ -2340,12 +2327,11 @@ ember: {
   preview:['#F59E0B','#EF4444','#DC2626','#1C0A00'],
   dark: true,
   bg: {
-    base:'linear-gradient(180deg,#090200 0%,#130400 20%,#1E0600 45%,#280800 70%,#320A00 100%)',
-    fog:['rgba(178,18,8,0.46)','rgba(138,8,4,0.33)','rgba(218,48,14,0.26)'],
-    orbs:['rgba(198,18,8,0.50)','rgba(158,8,0,0.39)','rgba(228,48,14,0.31)','rgba(178,58,8,0.29)'],
-    mtn1:'#240500', mtn2:'#160300', mtn3:'#0A0100', ridge:'#C81806',
-    skySrc:['#160300','#860600'], sunC:'#FF1600',
-    stars:['#FF2E1E','#C80606','#FF5828','#FFA828'],
+    base:'linear-gradient(165deg,#0C0500 0%,#120800 20%,#180B00 45%,#1F0E02 70%,#271204 100%)',
+    fog:['rgba(245,158,11,0.14)','rgba(251,146,60,0.10)','rgba(239,68,68,0.08)'],
+    orbs:['rgba(245,158,11,0.18)','rgba(239,68,68,0.15)','rgba(251,146,60,0.12)','rgba(252,211,77,0.14)'],
+    mtn1:'#3A1C08', mtn2:'#2E1605', mtn3:'#1F0E02', ridge:'#F59E0B',
+    stars:['#F59E0B','#EF4444','#FBBF24','#FEF3C7'],
   },
   C: {
     void:'#0C0500',abyss:'#120800',deep:'#180B00',cosmos:'#1F0E02',ocean:'#271204',
@@ -2527,415 +2513,345 @@ const RAIN = Array.from({length:50},(_,i)=>({
 function SparkleField(){ return null; }
 
 function NatureBG({ rainMode, themeBg }) {
-  const cvRef = useRef(null);
-  const bgRef = useRef(themeBg || THEMES.sky.bg);
-  useEffect(() => { bgRef.current = themeBg || THEMES.sky.bg; }, [themeBg]);
+  const canvasRef = useRef(null);
 
-  useEffect(() => {
-    const cv = cvRef.current;
-    if (!cv) return;
+  useEffect(()=>{
+    const canvas = canvasRef.current;
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let raf, t = 0;
+    const resize = ()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; };
+    resize();
+    window.addEventListener('resize', resize);
 
-    const gl = cv.getContext('webgl', { alpha:false, antialias:false, powerPreference:'high-performance' })
-             || cv.getContext('experimental-webgl');
-    if (!gl) { console.warn('WebGL not supported'); return; }
+    const draw = ()=>{
+      t += 0.003;
+      const W=canvas.width, H=canvas.height;
+      ctx.clearRect(0,0,W,H);
 
-    // ── Vertex shader ─────────────────────────────────────────────────────────
-    const VS = `attribute vec2 p; void main(){gl_Position=vec4(p,0.0,1.0);}`;
+      // ── Slow drifting fog/mist bands ──
+      const bg = themeBg || THEMES.sky.bg;
+      const fogs = [
+        {y:H*0.15, amp:20, freq:0.6, col:bg.fog[0], phase:0},
+        {y:H*0.35, amp:14, freq:0.9, col:bg.fog[1], phase:2.1},
+        {y:H*0.55, amp:10, freq:0.5, col:bg.fog[2], phase:4.3},
+      ];
+      fogs.forEach(f=>{
+        const g = ctx.createLinearGradient(0, f.y-45, 0, f.y+45);
+        g.addColorStop(0,'rgba(0,0,0,0)');
+        g.addColorStop(0.5, f.col);
+        g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        for(let x=0;x<=W;x+=6){
+          const w = Math.sin(x*0.003*f.freq+t+f.phase)*f.amp + Math.sin(x*0.008*f.freq+t*1.4+f.phase)*f.amp*0.3;
+          if(x===0) ctx.moveTo(x, f.y+w);
+          else ctx.lineTo(x, f.y+w);
+        }
+        for(let x=W;x>=0;x-=6){
+          const w = Math.sin(x*0.003*f.freq+t+f.phase)*f.amp + Math.sin(x*0.008*f.freq+t*1.4+f.phase)*f.amp*0.3;
+          ctx.lineTo(x, f.y+w+55);
+        }
+        ctx.closePath(); ctx.fill();
+      });
 
-    // ── Fragment shader ───────────────────────────────────────────────────────
-    const FS = `
-precision highp float;
-uniform vec2  R;
-uniform float T;
-uniform vec3  SKY0,SKY1,HOR,SUN,FOG,MTN0,MTN1,MTN2,SNOW,AUR0,AUR1,AUR2;
-uniform float DARK,AURORA,RAYS;
+      // ── Drifting colour orbs ──
+      const orbs=[
+        {x:W*0.12+Math.sin(t*0.3)*W*0.04,   y:H*0.18+Math.cos(t*0.25)*H*0.03, r:W*0.30, c:bg.orbs[0]},
+        {x:W*0.80+Math.cos(t*0.28)*W*0.05,   y:H*0.12+Math.sin(t*0.35)*H*0.04, r:W*0.26, c:bg.orbs[1]},
+        {x:W*0.50+Math.sin(t*0.4+1.5)*W*0.06, y:H*0.55+Math.cos(t*0.32+1)*H*0.05,r:W*0.24, c:bg.orbs[2]},
+        {x:W*0.25+Math.cos(t*0.22+2)*W*0.04,  y:H*0.72+Math.sin(t*0.38)*H*0.04, r:W*0.20, c:bg.orbs[3]},
+      ];
+      orbs.forEach(o=>{
+        const g=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
+        g.addColorStop(0,o.c); g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+      });
 
-/* ── HASH / NOISE ──────────────────────────────────────────────────────── */
-float hsh(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+45.23);return fract(p.x*p.y);}
-float vn(vec2 p){
-  vec2 i=floor(p),f=fract(p);
-  f=f*f*(3.0-2.0*f);
-  return mix(mix(hsh(i),hsh(i+vec2(1,0)),f.x),
-             mix(hsh(i+vec2(0,1)),hsh(i+vec2(1,1)),f.x),f.y);
-}
-vec2 rot2(vec2 p){return vec2(1.6*p.x+1.2*p.y,-1.2*p.x+1.6*p.y);}
-float fbm(vec2 p){
-  float v=0.0,a=0.5;
-  for(int i=0;i<6;i++){v+=vn(p)*a;p=rot2(p);a*=0.5;}
-  return v;
-}
-float fbm4(vec2 p){
-  float v=0.0,a=0.5;
-  for(int i=0;i<4;i++){v+=vn(p)*a;p=rot2(p);a*=0.5;}
-  return v;
-}
+      // ── Oil-painting iridescence layer (ultra subtle) ──
+      const shine = ctx.createLinearGradient(
+        W*0.3+Math.sin(t*0.15)*W*0.1, 0,
+        W*0.7+Math.cos(t*0.12)*W*0.1, H
+      );
+      shine.addColorStop(0,'rgba(0,0,0,0)');
+      shine.addColorStop(0.3,'rgba(255,255,255,0.018)');
+      shine.addColorStop(0.5,'rgba(255,255,255,0.012)');
+      shine.addColorStop(0.7,'rgba(255,255,255,0.015)');
+      shine.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=shine; ctx.fillRect(0,0,W,H);
 
-/* ── TERRAIN HEIGHT ────────────────────────────────────────────────────── */
-float terr(vec2 xz){
-  vec2 p=xz*0.00048;
-  float h=fbm(p)*0.58+fbm(p*2.4+vec2(1.9,0.8))*0.26+fbm(p*6.0+vec2(3.1,2.3))*0.09;
-  /* Fuji-like central peak */
-  float dF=length(xz-vec2(50.0,880.0))/235.0;
-  float fuji=max(0.0,1.0-dF); fuji=fuji*fuji*fuji;
-  h+=fuji*0.48;
-  /* Secondary peak */
-  float dS=length(xz-vec2(-340.0,680.0))/155.0;
-  float pk2=max(0.0,1.0-dS); pk2=pk2*pk2;
-  h+=pk2*0.24;
-  /* Subtle ridgeline on right */
-  float dR=length(xz-vec2(520.0,750.0))/200.0;
-  h+=max(0.0,1.0-dR)*max(0.0,1.0-dR)*0.18;
-  return h*680.0;
-}
-
-/* ── CLOUD LAYER ───────────────────────────────────────────────────────── */
-float cloud(vec2 p){
-  float c=fbm4(p*vec2(0.55,1.05)+vec2(T*0.07,0.0));
-  c+=fbm4(p*vec2(1.25,0.65)+vec2(-T*0.038,T*0.028))*0.42;
-  return smoothstep(0.36,0.68,c);
-}
-
-/* ── AURORA ────────────────────────────────────────────────────────────── */
-vec3 aurora(vec2 auv){
-  float w1=sin(auv.x*3.4+T*0.62+vn(auv*0.7+T*0.07)*2.8)*0.5+0.5;
-  float w2=vn(auv*vec2(1.1,5.5)+vec2(T*0.18,0.0));
-  float w3=vn(auv*vec2(2.2,9.5)+vec2(0.0,T*0.11));
-  float vert=smoothstep(0.0,0.16,auv.y)*smoothstep(0.82,0.38,auv.y);
-  float dens=(0.45+0.55*w2)*vert;
-  return (AUR0*(w1*0.9)+AUR1*(w2*0.7)+AUR2*(w3*0.55))*dens*2.0;
-}
-
-/* ── MAIN ──────────────────────────────────────────────────────────────── */
-void main(){
-  vec2 fc=gl_FragCoord.xy;
-  vec2 uv=(fc-R*0.5)/R.y;
-  vec2 ndc=fc/R;
-
-  /* Camera ray */
-  vec3 ro=vec3(0.0,98.0,-570.0);
-  vec3 rd=normalize(vec3(uv.x*1.06,uv.y+0.145,1.0));
-
-  /* Animated sun */
-  float sa=T*0.016+1.22;
-  vec3 sunDir=normalize(vec3(cos(sa)*0.76,0.30+sin(T*0.007)*0.09,sin(sa)*0.46));
-
-  /* ── SKY ──────────────────────────────────────────────────────────────── */
-  float upF=max(0.0,rd.y);
-  vec3 sky=mix(HOR,SKY0,pow(upF,0.50));
-  sky=mix(sky,SKY1,pow(max(0.0,-rd.y),0.45)*0.55);
-
-  /* Horizon atmospheric glow */
-  float hz=1.0-abs(rd.y)*2.2; hz=max(0.0,hz); hz=hz*hz*hz*hz;
-  sky=mix(sky, HOR+SUN*0.18, hz*0.70);
-
-  /* Rayleigh tint (blue sky) */
-  float ray=pow(upF,0.8)*0.15;
-  sky+=SKY0*ray*(1.0-DARK*0.6);
-
-  /* Sun disk + Mie scattering halo */
-  float sd=clamp(dot(rd,sunDir),0.0,1.0);
-  sky+=SUN*pow(sd,7.0)*0.50;    /* wide halo */
-  sky+=SUN*pow(sd,48.0)*2.2;   /* tight corona */
-  sky+=SUN*pow(sd,220.0)*5.0;  /* disk center */
-
-  /* Subtle limb darkening */
-  sky*=0.84+0.16*(1.0-pow(max(0.0,1.0-upF*0.85),2.2));
-
-  /* ── STARS (dark themes) ────────────────────────────────────────────── */
-  if(DARK>0.5 && rd.y>0.0){
-    vec2 suv=rd.xz/(rd.y+0.002);
-    vec2 si=floor(suv*88.0);
-    float smask=step(0.974+hsh(si)*0.022, hsh(si+vec2(5.1,2.7)));
-    float twink=0.5+0.5*sin(T*2.8+hsh(si)*31.4);
-    sky+=SKY0*smask*twink*2.2*(0.35+0.65*upF);
-    /* Milky Way band */
-    float mw=pow(max(0.0,1.0-abs(dot(rd,vec3(0.3,0.9,0.2)))*2.5),3.0);
-    sky+=SKY0*mw*0.12*(DARK*0.9);
-  }
-
-  /* ── AURORA ─────────────────────────────────────────────────────────── */
-  if(AURORA>0.5 && rd.y>0.025){
-    vec2 auv=vec2(uv.x*1.7+0.5, clamp(rd.y*2.0-0.04,0.0,1.0));
-    sky+=aurora(auv);
-  }
-
-  /* ── GOD RAYS (light themes) ────────────────────────────────────────── */
-  if(RAYS>0.5){
-    vec2 sndc=vec2(cos(sa)*0.33+0.5, 0.74);
-    float dSun=length(ndc-sndc);
-    float radial=pow(max(0.0,1.0-dSun*2.0),2.8)*0.55;
-    sky+=SUN*radial*0.40;
-    /* Shaft rays */
-    float shafts=0.0;
-    vec2 dir=normalize(sndc-ndc)*0.016;
-    vec2 rp=ndc;
-    for(int i=0;i<12;i++){
-      rp+=dir;
-      float s=hsh(floor(rp*28.0+float(i)*7.3));
-      shafts+=s*0.075;
-    }
-    shafts*=max(0.0,1.0-dSun*2.5)*0.40;
-    sky+=SUN*shafts;
-  }
-
-  /* ── VOLUMETRIC CLOUDS ──────────────────────────────────────────────── */
-  vec3 col=sky;
-  if(rd.y>0.012){
-    float cPlane=255.0;
-    float tc=(cPlane-ro.y)/rd.y;
-    if(tc>0.0 && tc<3800.0){
-      vec3 cp=ro+rd*tc;
-      float c=cloud(cp.xz*0.00105);
-      if(c>0.006){
-        float fogC=exp(-tc*0.00022);
-        /* Self-shadow from sun */
-        float shadow=cloud(cp.xz*0.00105+sunDir.xz*0.09)*0.6;
-        vec3 cBase=HOR*(0.72-shadow*0.45);
-        vec3 cEdge=mix(HOR,vec3(1.0,1.0,1.0),0.55);
-        float sunLit=pow(sd,2.5)*0.5;
-        vec3 cCol=mix(cBase, cEdge*(1.0+sunLit*SUN), clamp(fogC+0.2,0.0,1.0));
-        col=mix(col,cCol,c*fogC*0.90);
-      }
-    }
-  }
-
-  /* ── TERRAIN RAY MARCH ──────────────────────────────────────────────── */
-  bool hit=false;
-  float tRay=6.0;
-  vec3 hp=ro;
-
-  if(rd.y<0.65){
-    for(int i=0;i<68;i++){
-      vec3 pos=ro+rd*tRay;
-      float th=terr(pos.xz);
-      if(pos.y<th){ hit=true; hp=pos; break; }
-      float dt=max(1.8,(pos.y-th)*0.28+tRay*0.0085);
-      tRay+=dt;
-      if(tRay>1750.0) break;
-    }
-    /* Bisect refinement for accurate normals */
-    if(hit){
-      float t0=tRay-tRay*0.065;
-      for(int j=0;j<7;j++){
-        float tm=(t0+tRay)*0.5;
-        if((ro+rd*tm).y < terr((ro+rd*tm).xz)) tRay=tm; else t0=tm;
-      }
-      hp=ro+rd*tRay;
-    }
-  }
-
-  if(hit){
-    /* Compute surface normal via central differences */
-    float e=3.5;
-    vec3 nm=normalize(vec3(
-      terr(hp.xz-vec2(e,0.0))-terr(hp.xz+vec2(e,0.0)),
-      2.0*e,
-      terr(hp.xz-vec2(0.0,e))-terr(hp.xz+vec2(0.0,e))
-    ));
-
-    /* Material composition */
-    float distT=clamp(tRay/1750.0,0.0,1.0);
-    float snowLine=365.0+vn(hp.xz*0.008)*60.0;
-    float snowFac=smoothstep(snowLine-70.0,snowLine+25.0,hp.y)*clamp(nm.y*2.2-0.25,0.0,1.0);
-    /* Base rock — parallax color shift near/far */
-    vec3 rock=mix(MTN2, mix(MTN1,MTN0,distT), distT);
-    float rNoise=fbm4(hp.xz*0.0038)*0.14;
-    rock=mix(rock,MTN1,rNoise);
-    /* Vegetation at low altitude (light themes only) */
-    if(DARK<0.5){
-      float vegH=160.0; float slope=clamp(nm.y*1.9,0.0,1.0);
-      float veg=smoothstep(vegH+50.0,vegH-10.0,hp.y)*slope;
-      vec3 vegCol=mix(rock, mix(rock,vec3(0.20,0.38,0.14),0.60), veg*0.65);
-      rock=vegCol;
-    }
-    vec3 mat=mix(rock, SNOW, snowFac);
-
-    /* ── LIGHTING ─────────────────────────────────────────────────── */
-    float diff=clamp(dot(nm,sunDir),0.0,1.0);
-    float amb=0.26+0.24*clamp(nm.y,0.0,1.0);
-
-    /* Soft shadow via ray stepping */
-    float shad=1.0;
-    vec3 sp=hp+nm*2.5;
-    for(int k=0;k<7;k++){
-      sp+=sunDir*32.0;
-      shad=min(shad, clamp((sp.y-terr(sp.xz))*0.026,0.0,1.0));
-    }
-    shad=0.22+0.78*shad;
-
-    /* Blinn-Phong specular on snow */
-    vec3 hv=normalize(sunDir-rd);
-    float spec=pow(clamp(dot(nm,hv),0.0,1.0),56.0)*snowFac*0.85;
-
-    /* Subsurface scatter approximation on snow edges */
-    float sss=pow(clamp(dot(-rd,nm),0.0,1.0),2.2)*snowFac*0.28;
-
-    /* Secondary bounce fill light from sky */
-    float bounce=clamp(dot(nm,-sunDir)*0.35+0.5,0.0,1.0);
-
-    vec3 lit=mat*(SUN*diff*shad*0.88 + SKY0*(amb*0.48) + HOR*(bounce*0.12));
-    lit+=SUN*(spec*0.72+sss);
-
-    /* ── ATMOSPHERIC FOG & AERIAL PERSPECTIVE ─────────────────── */
-    float fogAmt=1.0-exp(-tRay*0.00125);
-    float aerAmt=distT*distT*0.55;
-    lit=mix(lit, FOG+SUN*0.04, fogAmt);
-    lit=mix(lit, MTN0+HOR*0.35, aerAmt);
-
-    col=lit;
-  } else if(rd.y<-0.008){
-    /* Far ground plane */
-    float tG=(-52.0-ro.y)/rd.y;
-    if(tG>0.0){
-      float fG=1.0-exp(-tG*0.00075);
-      col=mix(MTN2,FOG+HOR*0.3,fG);
-    }
-  }
-
-  /* ── POST-PROCESSING ─────────────────────────────────────────────────── */
-  col*=1.18;
-  /* ACES filmic tone mapping */
-  col=clamp((col*(2.51*col+0.03))/(col*(2.43*col+0.59)+0.14),0.0,1.0);
-  /* Gamma correction */
-  col=pow(col, vec3(1.0/2.2));
-  /* Subtle saturation boost */
-  float lum=dot(col,vec3(0.2126,0.7152,0.0722));
-  col=mix(vec3(lum),col,1.10);
-  /* Vignette */
-  vec2 vp=ndc-0.5;
-  col*=1.0-dot(vp,vp)*1.55;
-  /* Film grain */
-  col+=vec3(hsh(fc+T*41.3)-0.5)*0.016;
-
-  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
-}
-`;
-
-    /* ── Compile shaders ────────────────────────────────────────────────── */
-    const mkShader = (type, src) => {
-      const s = gl.createShader(type);
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
-        console.warn('GL shader error:', gl.getShaderInfoLog(s));
-      return s;
+      raf=requestAnimationFrame(draw);
     };
-    const prog = gl.createProgram();
-    gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
-    gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
-      console.warn('GL link error:', gl.getProgramInfoLog(prog));
-    gl.useProgram(prog);
-
-    /* Fullscreen quad */
-    const quad = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-    gl.bufferData(gl.ARRAY_BUFFER,
-      new Float32Array([-1,-1, 1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
-    const ap = gl.getAttribLocation(prog, 'p');
-    gl.enableVertexAttribArray(ap);
-    gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
-
-    /* Uniform locations */
-    const U = {};
-    ['R','T','SKY0','SKY1','HOR','SUN','FOG','MTN0','MTN1','MTN2','SNOW',
-     'AUR0','AUR1','AUR2','DARK','AURORA','RAYS'].forEach(n => {
-      U[n] = gl.getUniformLocation(prog, n);
-    });
-
-    const onResize = () => {
-      cv.width = window.innerWidth; cv.height = window.innerHeight;
-      gl.viewport(0, 0, cv.width, cv.height);
-    };
-    onResize();
-    window.addEventListener('resize', onResize);
-
-    /* Color helpers */
-    const hv3 = hex => {
-      const h = (hex || '#888888').replace('#','');
-      return [parseInt(h.slice(0,2),16)/255, parseInt(h.slice(2,4),16)/255, parseInt(h.slice(4,6),16)/255];
-    };
-    const rv3 = s => {
-      const m = (s||'').match(/[\d.]+/g);
-      return m && m.length >= 3 ? [+m[0]/255, +m[1]/255, +m[2]/255] : [0.4,0.5,0.7];
-    };
-
-    /* Animation loop */
-    let raf;
-    const t0 = performance.now();
-    const frame = () => {
-      const t = (performance.now() - t0) * 0.001;
-      const bg  = bgRef.current;
-      const thm = THEMES[_activeTheme] || THEMES.sky;
-      const dark = thm.dark ? 1.0 : 0.0;
-
-      const skySrc = bg.skySrc || ['#4A90D9','#A8D0FF'];
-      const sky0 = hv3(skySrc[0]);
-      const sky1 = hv3(bg.mtn3);
-      const hor  = hv3(skySrc[1]);
-      const sunC = hv3(bg.sunC || (dark ? '#B8CCE8' : '#FFF5E0'));
-      const fog  = rv3(bg.fog[0]);
-      const mtn0 = hv3(bg.mtn1);
-      const mtn1 = hv3(bg.mtn2);
-      const mtn2 = hv3(bg.mtn3);
-      const snow = dark ? [0.80,0.87,1.00] : [1.00,0.99,0.97];
-      const aur  = bg.auroraColors || ['rgba(0,200,200,0.3)','rgba(100,50,200,0.2)','rgba(0,180,100,0.2)'];
-
-      gl.uniform2f(U.R, cv.width, cv.height);
-      gl.uniform1f(U.T, t);
-      gl.uniform3fv(U.SKY0, sky0);
-      gl.uniform3fv(U.SKY1, sky1);
-      gl.uniform3fv(U.HOR, hor);
-      gl.uniform3fv(U.SUN, sunC);
-      gl.uniform3fv(U.FOG, fog);
-      gl.uniform3fv(U.MTN0, mtn0);
-      gl.uniform3fv(U.MTN1, mtn1);
-      gl.uniform3fv(U.MTN2, mtn2);
-      gl.uniform3fv(U.SNOW, snow);
-      gl.uniform3fv(U.AUR0, rv3(aur[0]));
-      gl.uniform3fv(U.AUR1, rv3(aur[1]));
-      gl.uniform3fv(U.AUR2, rv3(aur[2]));
-      gl.uniform1f(U.DARK, dark);
-      gl.uniform1f(U.AURORA, bg.aurora ? 1.0 : 0.0);
-      gl.uniform1f(U.RAYS, bg.rays ? 1.0 : 0.0);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-      raf = requestAnimationFrame(frame);
-    };
-    frame();
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('resize', onResize);
-      try { gl.deleteBuffer(quad); gl.deleteProgram(prog); } catch(e){}
-    };
-  }, []);
+    draw();
+    return()=>{ cancelAnimationFrame(raf); window.removeEventListener('resize',resize); };
+  },[]);
 
   return (
     <div style={{ position:'fixed', inset:0, zIndex:0, overflow:'hidden', pointerEvents:'none' }}>
       <style>{GLOBAL_CSS}</style>
-      <canvas ref={cvRef}
-        style={{ position:'absolute', inset:0, width:'100%', height:'100%', display:'block' }}/>
-      {/* Rain overlay */}
+
+      {/* ── Base: deep forest obsidian ── */}
+      <div style={{ position:'absolute', inset:0,
+        background:themeBg?.base || THEMES.sky.bg.base }}/>
+
+      {/* ── Canvas: animated fog, warm orbs, oil sheen ── */}
+      <canvas ref={canvasRef} style={{ position:'absolute', inset:0, width:'100%', height:'100%' }}/>
+
+      {/* ── Aged vellum texture overlay (pure CSS noise) ── */}
+      <div style={{ position:'absolute', inset:0, opacity:0.025,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+        backgroundSize:'200px 200px' }}/>
+
+      {/* ── Faint star field (amber/gold tinted) ── */}
+      <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%' }}
+           viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+        {STARS.map((s,i)=>(
+          <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill={s.col} opacity={s.o}
+            style={i%7===0?{animation:`twinkle ${s.tw}s ${(i*0.22)%s.tw}s ease-in-out infinite`}:undefined}/>
+        ))}
+      </svg>
+
+      {/* ── Subtle shooting stars ── */}
+      {SHOOTING.map((ss,i)=>(
+        <div key={i} style={{
+          position:'absolute', top:`${ss.y}%`, left:`${ss.x}%`,
+          width:ss.len, height:1, opacity:0,
+          background:`linear-gradient(90deg,transparent,${C.teal} 60%,${C.aurora}CC 85%,transparent)`,
+          borderRadius:2,
+          animation:`shoot ${ss.dur}s ${ss.delay}s linear infinite`,
+          transform:'rotate(-25deg)',
+        }}/>
+      ))}
+
+      {/* ── Japanese Mountain Landscape: Mt Fuji + ranges ── */}
+      <svg style={{ position:'absolute', bottom:0, width:'100%', height:'62%' }}
+           viewBox="0 0 1400 320" preserveAspectRatio="xMidYMax meet">
+        <defs>
+          {/* Far misty range gradient */}
+          <linearGradient id="ink1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.55"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.85"/>
+          </linearGradient>
+          {/* Mid range gradient */}
+          <linearGradient id="ink2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0.82"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="0.95"/>
+          </linearGradient>
+          {/* Near ridge gradient */}
+          <linearGradient id="ink3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="1"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="1"/>
+          </linearGradient>
+          {/* Mt Fuji body gradient — classic blue-grey */}
+          <linearGradient id="fujiBody" x1="0" y1="0" x2="0.3" y2="1">
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.95"/>
+            <stop offset="55%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0.98"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="1"/>
+          </linearGradient>
+          {/* Fuji snow cap */}
+          <linearGradient id="fujiSnow" x1="0" y1="0" x2="0.2" y2="1">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.97"/>
+            <stop offset="60%" stopColor="#E8EFF8" stopOpacity="0.88"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0"/>
+          </linearGradient>
+          {/* Fuji shadow side */}
+          <linearGradient id="fujiShadow" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="rgba(0,0,0,0)" stopOpacity="0"/>
+            <stop offset="100%" stopColor="rgba(0,0,20,0.28)" stopOpacity="1"/>
+          </linearGradient>
+          {/* Gold ridge rim */}
+          <linearGradient id="goldRim" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#C9A84C" stopOpacity="0.6"/>
+            <stop offset="100%" stopColor="#C9A84C" stopOpacity="0"/>
+          </linearGradient>
+          <filter id="inkBlur"><feGaussianBlur stdDeviation="1.2"/></filter>
+          <filter id="softBlur"><feGaussianBlur stdDeviation="2.5"/></filter>
+          <filter id="fujiGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+
+        {/* ── Layer 0: Very distant hazy ranges (barely visible) ── */}
+        <path d="M0,210 Q80,170 160,185 Q240,165 320,175 Q400,155 500,168 Q600,150 700,162 Q800,148 900,160 Q1000,145 1100,158 Q1200,142 1300,155 L1400,150 L1400,320 L0,320Z"
+          fill={(themeBg||THEMES.sky.bg).mtn1} opacity="0.3" filter="url(#softBlur)"/>
+
+        {/* ── Layer 1: Far background mountains (misty, ink-wash) ── */}
+        {/* Left distant range */}
+        <path d="M0,220 Q30,195 60,185 Q90,170 130,178 Q160,168 200,180 Q240,170 280,182 Q320,172 370,185 Q410,178 440,190 L440,320 L0,320Z"
+          fill="url(#ink1)" opacity="0.6" filter="url(#inkBlur)"/>
+        {/* Right distant range */}
+        <path d="M960,220 Q1010,190 1060,175 Q1110,160 1160,172 Q1210,158 1260,170 Q1310,155 1360,168 L1400,162 L1400,320 L960,320Z"
+          fill="url(#ink1)" opacity="0.58" filter="url(#inkBlur)"/>
+
+        {/* ── Layer 2: Mt Fuji — iconic symmetrical cone, center-left ── */}
+        {/* Fuji main body — elegant curved slopes */}
+        <path d="M420,320 Q440,290 480,255 Q520,215 560,180 Q590,152 620,128 Q638,112 655,98 Q665,88 672,82 Q680,76 688,82 Q695,88 705,98 Q722,112 742,128 Q772,152 802,180 Q842,215 882,255 Q922,290 942,320Z"
+          fill="url(#fujiBody)" opacity="0.93"/>
+        {/* Fuji shadow side — right slope darker */}
+        <path d="M672,82 Q680,76 688,82 Q695,88 705,98 Q722,112 742,128 Q772,152 802,180 Q842,215 882,255 Q922,290 942,320 L760,320 Q730,290 710,255 Q690,220 680,185 Q672,155 668,128 Q666,108 667,98Z"
+          fill="url(#fujiShadow)" opacity="0.45"/>
+        {/* Fuji snow cap — iconic white top with natural drape */}
+        <path d="M655,98 Q663,86 672,82 Q680,76 688,82 Q697,86 705,98 Q718,112 736,128 Q724,122 715,126 Q705,132 698,128 Q692,125 688,130 Q684,126 680,130 Q674,132 665,128 Q654,122 638,128 Q648,112 655,98Z"
+          fill="url(#fujiSnow)" opacity="0.95"/>
+        {/* Snow drape extensions down the sides */}
+        <path d="M638,128 Q645,135 655,140 Q664,144 672,140 Q680,136 688,140 Q696,144 705,140 Q715,135 722,128 Q714,132 705,136 Q696,140 688,136 Q680,132 672,136 Q664,140 655,136 Q645,132 638,128Z"
+          fill="#FFFFFF" opacity="0.55"/>
+        {/* Fuji subtle glow/halo at peak */}
+        <ellipse cx="680" cy="85" rx="28" ry="12"
+          fill="#FFFFFF" opacity="0.08" filter="url(#inkBlur)"/>
+
+        {/* ── Layer 2b: Mt Yari (Matterhorn of Japan) — sharp spire left ── */}
+        <path d="M80,320 Q100,295 128,268 Q155,240 178,212 Q198,188 215,165 Q228,148 238,132 Q245,122 250,116 Q254,110 257,108 Q260,106 263,108 Q266,110 270,116 Q277,122 284,132 Q294,148 307,165 Q324,188 344,212 Q367,240 390,268 Q418,295 438,320Z"
+          fill="url(#ink1)" opacity="0.72"/>
+        {/* Yari-dake sharp rocky peak detail */}
+        <path d="M250,116 Q254,110 257,108 Q260,106 263,108 Q266,110 270,116 Q265,113 263,115 Q261,112 257,115 Q255,113 250,116Z"
+          fill="#E8EFF8" opacity="0.7"/>
+        {/* Yari snow patches */}
+        <path d="M245,122 Q250,116 257,108 Q260,106 263,108 Q270,116 275,122 Q268,119 263,122 Q257,125 250,122Z"
+          fill="#FFFFFF" opacity="0.6"/>
+
+        {/* ── Layer 2c: Mt Hotaka — rugged ridge right of Fuji ── */}
+        <path d="M940,320 Q960,295 985,268 Q1010,240 1035,210 Q1055,185 1072,162 Q1085,145 1095,132 Q1102,122 1107,115 Q1111,108 1114,104 Q1117,100 1120,98 Q1124,102 1128,108 Q1133,115 1140,125 Q1150,138 1162,152 Q1178,170 1195,188 Q1218,212 1242,238 Q1268,265 1290,290 Q1310,310 1320,320Z"
+          fill="url(#ink2)" opacity="0.78"/>
+        {/* Hotaka snow */}
+        <path d="M1114,104 Q1117,100 1120,98 Q1124,102 1128,108 Q1133,115 1124,112 Q1120,110 1116,112 Q1114,110 1114,104Z"
+          fill="#FFFFFF" opacity="0.65"/>
+
+        {/* ── Layer 2d: Tateyama range — far right, layered ridges ── */}
+        <path d="M1200,320 Q1218,298 1240,278 Q1262,255 1282,232 Q1300,212 1315,194 Q1326,180 1334,168 Q1340,158 1344,152 Q1348,146 1352,143 Q1356,147 1360,153 Q1365,162 1372,174 Q1382,192 1392,212 L1400,225 L1400,320Z"
+          fill="url(#ink1)" opacity="0.65"/>
+
+        {/* ── Layer 3: Mid-ground rolling hills ── */}
+        <path d="M0,265 Q70,245 140,252 Q210,242 290,250 Q370,240 450,248 Q530,238 610,246 Q690,236 770,244 Q850,234 930,242 Q1010,232 1090,240 Q1170,230 1250,238 Q1330,228 1400,235 L1400,320 L0,320Z"
+          fill="url(#ink2)" opacity="0.82"/>
+
+        {/* ── Layer 4: Near foreground ridge with gold rim ── */}
+        <path d="M0,320 L0,292 Q40,282 90,288 Q140,278 195,285 Q250,275 310,282 Q370,272 435,279 Q500,269 565,276 Q630,266 695,273 Q760,263 825,270 Q890,260 955,267 Q1020,257 1085,264 Q1150,254 1215,261 Q1280,251 1345,258 L1400,254 L1400,320Z"
+          fill="url(#ink3)"/>
+        {/* Gold rim on near ridge */}
+        <path d="M0,292 Q40,282 90,288 Q140,278 195,285 Q250,275 310,282 Q370,272 435,279 Q500,269 565,276 Q630,266 695,273 Q760,263 825,270 Q890,260 955,267 Q1020,257 1085,264 Q1150,254 1215,261 Q1280,251 1345,258 L1400,254"
+          fill="none" stroke={(themeBg||THEMES.sky.bg).ridge} strokeWidth="1.4" opacity="0.55"
+          style={{animation:'energyPulse 5s ease-in-out infinite'}}/>
+
+        {/* ── Ink wash mist layers ── */}
+        {/* Base mist at mountain feet */}
+        <path d="M0,278 Q350,265 700,270 Q1050,275 1400,265 L1400,290 Q1050,298 700,293 Q350,288 0,300Z"
+          fill={(themeBg||THEMES.sky.bg).mtn2} opacity="0.14"/>
+        {/* Mid mist band */}
+        <path d="M0,248 Q200,238 400,243 Q600,235 800,241 Q1000,235 1200,240 L1400,236 L1400,255 Q1200,258 1000,253 Q800,258 600,253 Q400,258 200,253 L0,260Z"
+          fill={(themeBg||THEMES.sky.bg).mtn1} opacity="0.09"/>
+
+        {/* ── Pine trees silhouette foreground (left) ── */}
+        {[0,1,2,3,4,5].map(i=>{
+          const x = 18 + i*22;
+          const h = 55 + (i%3)*18;
+          const base = 320;
+          return (
+            <g key={`pine-l-${i}`} opacity={0.55 - i*0.04}>
+              <rect x={x-1.5} y={base-h} width={3} height={h} rx="1.5"
+                fill={(themeBg||THEMES.sky.bg).mtn3}/>
+              {[0,1,2,3].map(j=>(
+                <path key={j}
+                  d={`M${x-12+j*2},${base-h*0.35-j*12} L${x},${base-h*0.35-j*12-16} L${x+12-j*2},${base-h*0.35-j*12}Z`}
+                  fill={(themeBg||THEMES.sky.bg).mtn3} opacity={0.85-j*0.1}/>
+              ))}
+            </g>
+          );
+        })}
+        {/* Pine trees right side */}
+        {[0,1,2,3,4].map(i=>{
+          const x = 1380 - i*24;
+          const h = 48 + (i%3)*16;
+          const base = 320;
+          return (
+            <g key={`pine-r-${i}`} opacity={0.5 - i*0.04}>
+              <rect x={x-1.5} y={base-h} width={3} height={h} rx="1.5"
+                fill={(themeBg||THEMES.sky.bg).mtn3}/>
+              {[0,1,2,3].map(j=>(
+                <path key={j}
+                  d={`M${x-11+j*2},${base-h*0.35-j*11} L${x},${base-h*0.35-j*11-14} L${x+11-j*2},${base-h*0.35-j*11}Z`}
+                  fill={(themeBg||THEMES.sky.bg).mtn3} opacity={0.8-j*0.1}/>
+              ))}
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* ── Rising embers (candle/fireplace) ── */}
+      {EMBERS.map((e,i)=>(
+        <div key={i} style={{
+          position:'absolute', bottom:`${e.bot}%`, left:`${e.left}%`,
+          width:e.sz, height:e.sz, borderRadius:'50%',
+          background:e.col, opacity:0,
+          boxShadow:`0 0 ${e.sz*3}px ${e.col}`,
+          animation:`emberRise ${e.dur}s ${e.delay}s ease-out infinite`,
+        }}/>
+      ))}
+
+      {/* ── Floating dust motes ── */}
+      {DUST.map((d,i)=>(
+        <div key={i} style={{
+          position:'absolute', left:`${d.left}%`, top:`${d.top}%`,
+          width:d.sz, height:d.sz, borderRadius:'50%',
+          background:C.teal, opacity:0,
+          '--op':d.op, '--dx':`${-10+i%20}px`, '--dy':`${-30-i%25}px`,
+          animation:`dustDrift ${d.dur}s ${d.delay}s ease-in-out infinite`,
+        }}/>
+      ))}
+
+      {/* ── Falling autumn leaves (replacing sakura) ── */}
+      {SAKURA.map((p,i)=>(
+        <div key={i} style={{
+          position:'absolute', top:'-20px', left:`${p.left}%`,
+          width:p.sz+2, height:p.sz,
+          background:i%3===0?'radial-gradient(ellipse,${C.tealL}CC,${C.teal}88)'
+            :i%3===1?'radial-gradient(ellipse,${C.moss}CC,${C.aurora}AA)'
+            :'radial-gradient(ellipse,#A07850CC,#5A3E2866)',
+          borderRadius:'60% 20% 60% 20%', opacity:0.7,
+          animation:`leafFall ${p.dur}s ${p.delay}s linear infinite`,
+          transform:`rotate(${p.rot}deg)`,
+        }}/>
+      ))}
+
+      {/* ── Floating kanji (ink wash, barely visible) ── */}
+      {FLOAT_KANJI.map((fk,i)=>(
+        <div key={i} style={{
+          position:'absolute', left:`${fk.left}%`, top:'12%',
+          fontSize:fk.sz, fontFamily:'serif,"Noto Sans JP"',
+          color:fk.k==='漢'||fk.k==='字'?C.teal:C.sakura, opacity:fk.op, userSelect:'none',
+          animation:`floatKanji ${fk.dur}s ${fk.delay}s ease-in-out infinite`,
+          '--op':fk.op, textShadow:`0 0 24px ${C.teal}B3`,
+          fontWeight:900, letterSpacing:'-0.02em',
+        }}>{fk.k}</div>
+      ))}
+
+      {/* ── Horizon warm glow (fireplace/candle warmth) ── */}
+      <div style={{ position:'absolute', bottom:'20%', left:0, right:0, height:30,
+        background:'linear-gradient(90deg,transparent 8%,${C.teal}40 25%,${C.aurora}38 50%,${C.sakura}2E 75%,transparent 92%)',
+        filter:'blur(12px)' }}/>
+
+      {/* ── Rain ── */}
       {rainMode && RAIN.map((r,i)=>(
         <div key={i} style={{
-          position:'absolute', left:`${r.left}%`, top:-20, width:1.5, height:20, opacity:r.op,
-          background:`linear-gradient(180deg,transparent,${C.teal}CC,${C.teal}55)`,
+          position:'absolute', left:`${r.left}%`, top:-20, width:1, height:16, opacity:r.op,
+          background:'linear-gradient(180deg,transparent,rgba(201,168,76,0.5),rgba(201,168,76,0.2))',
           animation:`rain ${r.dur}s ${r.delay}s linear infinite`,
         }}/>
       ))}
-      {/* Floating kanji */}
-      {FLOAT_KANJI.map((fk,i)=>(
-        <div key={i} style={{
-          position:'absolute', left:`${fk.left}%`, top:'10%',
-          fontSize:fk.sz, fontFamily:'serif,"Noto Sans JP"',
-          color:C.teal, opacity:fk.op*0.40, userSelect:'none',
-          animation:`floatKanji ${fk.dur}s ${fk.delay}s ease-in-out infinite`,
-          '--op':fk.op*0.40, textShadow:`0 0 22px ${C.teal}88`,
-          fontWeight:900,
-        }}>{fk.k}</div>
-      ))}
+
+      {/* ── Film grain texture (aged photograph) ── */}
+      <div style={{ position:'absolute', inset:0, opacity:0.02,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E")`,
+        backgroundSize:'300px 300px' }}/>
+
+      {/* ── Vignette — deep mahogany edges ── */}
+      <div style={{ position:'absolute', inset:0,
+        background:'radial-gradient(ellipse 100% 100% at 50% 50%,transparent 50%,rgba(186,230,253,0.10) 80%,rgba(224,231,255,0.15) 100%)' }}/>
+
+      {/* ── Top warm atmospheric haze ── */}
+      <div style={{ position:'absolute', top:0, left:0, right:0, height:'30%',
+        background:'linear-gradient(180deg,rgba(201,168,76,0.04) 0%,rgba(96,165,200,0.03) 50%,transparent 100%)' }}/>
     </div>
   );
 }
