@@ -2623,62 +2623,159 @@ function NatureBG({ rainMode, themeBg }) {
         }}/>
       ))}
 
-      {/* ── Mountain silhouettes: aged ink wash painting style ── */}
-      <svg style={{ position:'absolute', bottom:0, width:'100%', height:'48%' }}
-           viewBox="0 0 1400 260" preserveAspectRatio="none">
+      {/* ── Japanese Mountain Landscape: Mt Fuji + ranges ── */}
+      <svg style={{ position:'absolute', bottom:0, width:'100%', height:'62%' }}
+           viewBox="0 0 1400 320" preserveAspectRatio="xMidYMax meet">
         <defs>
+          {/* Far misty range gradient */}
           <linearGradient id="ink1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.88"/>
-            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="1"/>
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.55"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.85"/>
           </linearGradient>
+          {/* Mid range gradient */}
           <linearGradient id="ink2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0.94"/>
-            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="0.9"/>
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0.82"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="0.95"/>
           </linearGradient>
+          {/* Near ridge gradient */}
           <linearGradient id="ink3" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="1"/>
-            <stop offset="100%" stopColor="#EEF2FF" stopOpacity="1"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="1"/>
           </linearGradient>
+          {/* Mt Fuji body gradient — classic blue-grey */}
+          <linearGradient id="fujiBody" x1="0" y1="0" x2="0.3" y2="1">
+            <stop offset="0%" stopColor={(themeBg||THEMES.sky.bg).mtn1} stopOpacity="0.95"/>
+            <stop offset="55%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0.98"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn3} stopOpacity="1"/>
+          </linearGradient>
+          {/* Fuji snow cap */}
+          <linearGradient id="fujiSnow" x1="0" y1="0" x2="0.2" y2="1">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.97"/>
+            <stop offset="60%" stopColor="#E8EFF8" stopOpacity="0.88"/>
+            <stop offset="100%" stopColor={(themeBg||THEMES.sky.bg).mtn2} stopOpacity="0"/>
+          </linearGradient>
+          {/* Fuji shadow side */}
+          <linearGradient id="fujiShadow" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="rgba(0,0,0,0)" stopOpacity="0"/>
+            <stop offset="100%" stopColor="rgba(0,0,20,0.28)" stopOpacity="1"/>
+          </linearGradient>
+          {/* Gold ridge rim */}
           <linearGradient id="goldRim" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#C9A84C" stopOpacity="0.5"/>
+            <stop offset="0%" stopColor="#C9A84C" stopOpacity="0.6"/>
             <stop offset="100%" stopColor="#C9A84C" stopOpacity="0"/>
           </linearGradient>
-          <filter id="inkBlur">
-            <feGaussianBlur stdDeviation="0.8"/>
+          <filter id="inkBlur"><feGaussianBlur stdDeviation="1.2"/></filter>
+          <filter id="softBlur"><feGaussianBlur stdDeviation="2.5"/></filter>
+          <filter id="fujiGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
           </filter>
         </defs>
-        {/* Far range — misty, faint */}
-        <path d="M0,175 L70,92 L138,132 L215,58 L300,96 L382,44 L468,82 L558,28 L648,66 L738,38 L828,72 L918,44 L1008,78 L1092,48 L1175,76 L1258,50 L1340,74 L1400,58 L1400,260 L0,260Z"
-          fill="url(#ink1)" opacity="0.75" filter="url(#inkBlur)"/>
-        {/* Mid range */}
-        <path d="M0,192 L88,118 L165,150 L258,78 L352,116 L440,62 L528,102 L622,50 L718,92 L812,60 L908,95 L1000,65 L1092,98 L1175,68 L1262,102 L1340,76 L1400,94 L1400,260 L0,260Z"
-          fill="url(#ink2)"/>
-        {/* Near ridge */}
-        <path d="M0,260 L0,228 L55,210 L115,226 L178,206 L242,222 L305,202 L368,218 L432,198 L496,215 L558,196 L622,212 L686,193 L750,210 L814,191 L878,207 L942,189 L1006,205 L1070,187 L1134,203 L1198,185 L1262,201 L1326,183 L1400,200 L1400,260Z"
-          fill="url(#ink3)"/>
-        {/* Gold rim light on ridge */}
-        <path d="M0,228 L55,210 L115,226 L178,206 L242,222 L305,202 L368,218 L432,198 L496,215 L558,196 L622,212 L686,193 L750,210 L814,191 L878,207 L942,189 L1006,205 L1070,187 L1134,203 L1198,185 L1262,201 L1326,183 L1400,200"
-          fill="none" stroke={(themeBg||THEMES.sky.bg).ridge} strokeWidth="1.2" opacity="0.5"
-          style={{animation:'energyPulse 5s ease-in-out infinite'}}/>
-        {/* Ink wash mist at base of mountains */}
-        <path d="M0,230 Q350,215 700,222 Q1050,228 1400,218 L1400,245 Q1050,250 700,244 Q350,238 0,248Z"
-          fill={(themeBg||THEMES.sky.bg).mtn2} opacity="0.12"/>
-      </svg>
 
-      {/* ── Tall ancient trees (ink painting silhouette) ── */}
-      <svg style={{ position:'absolute', bottom:0, left:'2%', height:'42%', width:80, opacity:0.22 }}
-           viewBox="0 0 80 220">
-        {[10,28,48,66].map((x,i)=>(
-          <g key={i}>
-            <rect x={x-1.5} y={0} width={3} height={220} rx="1.5"
-              fill={`hsl(${220+i*8},55%,${38+i*4}%)`}/>
-            {[35,75,115,155,190].map((y,j)=>(
-              <ellipse key={j} cx={x+(i%2===0?14:-14)} cy={y-8} rx={10} ry={5}
-                fill="#0B1E0A" opacity="0.9"
-                transform={`rotate(${i%2===0?-18:18},${x+(i%2===0?14:-14)},${y-8})`}/>
-            ))}
-          </g>
-        ))}
+        {/* ── Layer 0: Very distant hazy ranges (barely visible) ── */}
+        <path d="M0,210 Q80,170 160,185 Q240,165 320,175 Q400,155 500,168 Q600,150 700,162 Q800,148 900,160 Q1000,145 1100,158 Q1200,142 1300,155 L1400,150 L1400,320 L0,320Z"
+          fill={(themeBg||THEMES.sky.bg).mtn1} opacity="0.3" filter="url(#softBlur)"/>
+
+        {/* ── Layer 1: Far background mountains (misty, ink-wash) ── */}
+        {/* Left distant range */}
+        <path d="M0,220 Q30,195 60,185 Q90,170 130,178 Q160,168 200,180 Q240,170 280,182 Q320,172 370,185 Q410,178 440,190 L440,320 L0,320Z"
+          fill="url(#ink1)" opacity="0.6" filter="url(#inkBlur)"/>
+        {/* Right distant range */}
+        <path d="M960,220 Q1010,190 1060,175 Q1110,160 1160,172 Q1210,158 1260,170 Q1310,155 1360,168 L1400,162 L1400,320 L960,320Z"
+          fill="url(#ink1)" opacity="0.58" filter="url(#inkBlur)"/>
+
+        {/* ── Layer 2: Mt Fuji — iconic symmetrical cone, center-left ── */}
+        {/* Fuji main body — elegant curved slopes */}
+        <path d="M420,320 Q440,290 480,255 Q520,215 560,180 Q590,152 620,128 Q638,112 655,98 Q665,88 672,82 Q680,76 688,82 Q695,88 705,98 Q722,112 742,128 Q772,152 802,180 Q842,215 882,255 Q922,290 942,320Z"
+          fill="url(#fujiBody)" opacity="0.93"/>
+        {/* Fuji shadow side — right slope darker */}
+        <path d="M672,82 Q680,76 688,82 Q695,88 705,98 Q722,112 742,128 Q772,152 802,180 Q842,215 882,255 Q922,290 942,320 L760,320 Q730,290 710,255 Q690,220 680,185 Q672,155 668,128 Q666,108 667,98Z"
+          fill="url(#fujiShadow)" opacity="0.45"/>
+        {/* Fuji snow cap — iconic white top with natural drape */}
+        <path d="M655,98 Q663,86 672,82 Q680,76 688,82 Q697,86 705,98 Q718,112 736,128 Q724,122 715,126 Q705,132 698,128 Q692,125 688,130 Q684,126 680,130 Q674,132 665,128 Q654,122 638,128 Q648,112 655,98Z"
+          fill="url(#fujiSnow)" opacity="0.95"/>
+        {/* Snow drape extensions down the sides */}
+        <path d="M638,128 Q645,135 655,140 Q664,144 672,140 Q680,136 688,140 Q696,144 705,140 Q715,135 722,128 Q714,132 705,136 Q696,140 688,136 Q680,132 672,136 Q664,140 655,136 Q645,132 638,128Z"
+          fill="#FFFFFF" opacity="0.55"/>
+        {/* Fuji subtle glow/halo at peak */}
+        <ellipse cx="680" cy="85" rx="28" ry="12"
+          fill="#FFFFFF" opacity="0.08" filter="url(#inkBlur)"/>
+
+        {/* ── Layer 2b: Mt Yari (Matterhorn of Japan) — sharp spire left ── */}
+        <path d="M80,320 Q100,295 128,268 Q155,240 178,212 Q198,188 215,165 Q228,148 238,132 Q245,122 250,116 Q254,110 257,108 Q260,106 263,108 Q266,110 270,116 Q277,122 284,132 Q294,148 307,165 Q324,188 344,212 Q367,240 390,268 Q418,295 438,320Z"
+          fill="url(#ink1)" opacity="0.72"/>
+        {/* Yari-dake sharp rocky peak detail */}
+        <path d="M250,116 Q254,110 257,108 Q260,106 263,108 Q266,110 270,116 Q265,113 263,115 Q261,112 257,115 Q255,113 250,116Z"
+          fill="#E8EFF8" opacity="0.7"/>
+        {/* Yari snow patches */}
+        <path d="M245,122 Q250,116 257,108 Q260,106 263,108 Q270,116 275,122 Q268,119 263,122 Q257,125 250,122Z"
+          fill="#FFFFFF" opacity="0.6"/>
+
+        {/* ── Layer 2c: Mt Hotaka — rugged ridge right of Fuji ── */}
+        <path d="M940,320 Q960,295 985,268 Q1010,240 1035,210 Q1055,185 1072,162 Q1085,145 1095,132 Q1102,122 1107,115 Q1111,108 1114,104 Q1117,100 1120,98 Q1124,102 1128,108 Q1133,115 1140,125 Q1150,138 1162,152 Q1178,170 1195,188 Q1218,212 1242,238 Q1268,265 1290,290 Q1310,310 1320,320Z"
+          fill="url(#ink2)" opacity="0.78"/>
+        {/* Hotaka snow */}
+        <path d="M1114,104 Q1117,100 1120,98 Q1124,102 1128,108 Q1133,115 1124,112 Q1120,110 1116,112 Q1114,110 1114,104Z"
+          fill="#FFFFFF" opacity="0.65"/>
+
+        {/* ── Layer 2d: Tateyama range — far right, layered ridges ── */}
+        <path d="M1200,320 Q1218,298 1240,278 Q1262,255 1282,232 Q1300,212 1315,194 Q1326,180 1334,168 Q1340,158 1344,152 Q1348,146 1352,143 Q1356,147 1360,153 Q1365,162 1372,174 Q1382,192 1392,212 L1400,225 L1400,320Z"
+          fill="url(#ink1)" opacity="0.65"/>
+
+        {/* ── Layer 3: Mid-ground rolling hills ── */}
+        <path d="M0,265 Q70,245 140,252 Q210,242 290,250 Q370,240 450,248 Q530,238 610,246 Q690,236 770,244 Q850,234 930,242 Q1010,232 1090,240 Q1170,230 1250,238 Q1330,228 1400,235 L1400,320 L0,320Z"
+          fill="url(#ink2)" opacity="0.82"/>
+
+        {/* ── Layer 4: Near foreground ridge with gold rim ── */}
+        <path d="M0,320 L0,292 Q40,282 90,288 Q140,278 195,285 Q250,275 310,282 Q370,272 435,279 Q500,269 565,276 Q630,266 695,273 Q760,263 825,270 Q890,260 955,267 Q1020,257 1085,264 Q1150,254 1215,261 Q1280,251 1345,258 L1400,254 L1400,320Z"
+          fill="url(#ink3)"/>
+        {/* Gold rim on near ridge */}
+        <path d="M0,292 Q40,282 90,288 Q140,278 195,285 Q250,275 310,282 Q370,272 435,279 Q500,269 565,276 Q630,266 695,273 Q760,263 825,270 Q890,260 955,267 Q1020,257 1085,264 Q1150,254 1215,261 Q1280,251 1345,258 L1400,254"
+          fill="none" stroke={(themeBg||THEMES.sky.bg).ridge} strokeWidth="1.4" opacity="0.55"
+          style={{animation:'energyPulse 5s ease-in-out infinite'}}/>
+
+        {/* ── Ink wash mist layers ── */}
+        {/* Base mist at mountain feet */}
+        <path d="M0,278 Q350,265 700,270 Q1050,275 1400,265 L1400,290 Q1050,298 700,293 Q350,288 0,300Z"
+          fill={(themeBg||THEMES.sky.bg).mtn2} opacity="0.14"/>
+        {/* Mid mist band */}
+        <path d="M0,248 Q200,238 400,243 Q600,235 800,241 Q1000,235 1200,240 L1400,236 L1400,255 Q1200,258 1000,253 Q800,258 600,253 Q400,258 200,253 L0,260Z"
+          fill={(themeBg||THEMES.sky.bg).mtn1} opacity="0.09"/>
+
+        {/* ── Pine trees silhouette foreground (left) ── */}
+        {[0,1,2,3,4,5].map(i=>{
+          const x = 18 + i*22;
+          const h = 55 + (i%3)*18;
+          const base = 320;
+          return (
+            <g key={`pine-l-${i}`} opacity={0.55 - i*0.04}>
+              <rect x={x-1.5} y={base-h} width={3} height={h} rx="1.5"
+                fill={(themeBg||THEMES.sky.bg).mtn3}/>
+              {[0,1,2,3].map(j=>(
+                <path key={j}
+                  d={`M${x-12+j*2},${base-h*0.35-j*12} L${x},${base-h*0.35-j*12-16} L${x+12-j*2},${base-h*0.35-j*12}Z`}
+                  fill={(themeBg||THEMES.sky.bg).mtn3} opacity={0.85-j*0.1}/>
+              ))}
+            </g>
+          );
+        })}
+        {/* Pine trees right side */}
+        {[0,1,2,3,4].map(i=>{
+          const x = 1380 - i*24;
+          const h = 48 + (i%3)*16;
+          const base = 320;
+          return (
+            <g key={`pine-r-${i}`} opacity={0.5 - i*0.04}>
+              <rect x={x-1.5} y={base-h} width={3} height={h} rx="1.5"
+                fill={(themeBg||THEMES.sky.bg).mtn3}/>
+              {[0,1,2,3].map(j=>(
+                <path key={j}
+                  d={`M${x-11+j*2},${base-h*0.35-j*11} L${x},${base-h*0.35-j*11-14} L${x+11-j*2},${base-h*0.35-j*11}Z`}
+                  fill={(themeBg||THEMES.sky.bg).mtn3} opacity={0.8-j*0.1}/>
+              ))}
+            </g>
+          );
+        })}
       </svg>
 
       {/* ── Rising embers (candle/fireplace) ── */}
@@ -3092,7 +3189,6 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
   };
   return (
     <div ref={outerRef}
-      data-flashcard="1"
       style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative',
         perspective:1400,
         willChange:'transform,opacity' }}>
@@ -3515,13 +3611,13 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
 
     // ── TAP: short movement = flip card ──
     if(ax < 18 && ay < 18) {
+      // e.preventDefault() stops the browser from synthesising a click event
+      // after touchend, which would call onClick below and flip the card AGAIN,
+      // cancelling the first flip so the card appears frozen.
       e.preventDefault();
       suppressClickRef.current = true;
       setTimeout(() => { suppressClickRef.current = false; }, 600);
-      // Only flip if tap was on the card itself, not outer padding
-      if(e.target && e.target.closest && e.target.closest('[data-flashcard]')) {
-        setFlipped(f => !f);
-      }
+      setFlipped(f => !f);
       touchRef.current = null;
       return;
     }
@@ -3610,8 +3706,6 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
             e.target.closest('[data-speaker]') ||
             e.target.closest('button')
           )) return;
-          // Only flip if click was on the card itself, not the outer padding zone
-          if(!e.target.closest('[data-flashcard]')) return;
           if(!animState.current.busy) setFlipped(f=>!f);
         }}>
 
@@ -5501,7 +5595,6 @@ function VoicePickerPanel() {
 
 function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
   const [active, setActive] = useState(false);
-  const touchFiredRef = useRef(false);
   const fire = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -5512,20 +5605,9 @@ function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
   return (
     <button
       data-speaker="1"
-      onClick={e => {
-        e.stopPropagation();
-        e.preventDefault();
-        if(touchFiredRef.current){ touchFiredRef.current = false; return; }
-        fire(e);
-      }}
+      onClick={fire}
       onTouchStart={e => { e.stopPropagation(); e.preventDefault(); }}
-      onTouchEnd={e => {
-        e.stopPropagation();
-        e.preventDefault();
-        touchFiredRef.current = true;
-        fire(e);
-        setTimeout(() => { touchFiredRef.current = false; }, 600);
-      }}
+      onTouchEnd={e => { e.stopPropagation(); e.preventDefault(); fire(e); }}
       style={{
         background: active ? `${color||'#60A5C8'}30` : 'transparent',
         border: `1px solid ${active ? (color||'#60A5C8')+'80' : 'transparent'}`,
