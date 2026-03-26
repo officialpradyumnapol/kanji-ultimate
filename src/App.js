@@ -3495,6 +3495,14 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
   };
   const handleTouchEnd = e=>{
     if(!touchRef.current) return;
+    // Don't flip if touch ended on a speaker button or any interactive button
+    if(e.target && e.target.closest && (
+      e.target.closest('[data-speaker]') || e.target.closest('button')
+    )) {
+      touchRef.current = null;
+      dragRef.current = {active:false, x:0, startY:0, wasDragged:false};
+      return;
+    }
     const dx = e.changedTouches[0].clientX - touchRef.current.x;
     const dy = e.changedTouches[0].clientY - touchRef.current.y;
     const ax = Math.abs(dx), ay = Math.abs(dy);
@@ -4870,29 +4878,92 @@ function BottomNav({ tab, setTab }) {
 }
 
 function SideNav({ tab, setTab, bp }) {
-  const w=bp.isLarge?80:66;
+  const w=bp.isLarge?82:68;
+  // Per-item accent colours matching the app's colour vocabulary
+  const ACCENT = {
+    study:'#7BB8D4', quiz:'#C084FC', write:'#FB923C',
+    srs:'#34D399',   browse:'#60A5C8', stats:'#F59E0B',
+    achieve:'#F472B6', settings:'#94A3B8',
+  };
   return (
-    <div style={{ width:w, background:`${C.abyss}FA`, borderRight:`1px solid ${C.border}`,
+    <div style={{ width:w, flexShrink:0, position:'relative',
+      background:`linear-gradient(180deg,${C.card} 0%,${C.abyss} 100%)`,
+      borderRight:`1px solid rgba(123,184,212,0.12)`,
       display:'flex', flexDirection:'column', alignItems:'center',
-      padding:'12px 0', gap:3, flexShrink:0, boxShadow:'4px 0 24px rgba(0,0,0,0.4)' }}>
-      <div style={{ fontSize:bp.isLarge?30:24, fontFamily:'serif,"Noto Sans JP"', color:C.jade,
-        marginBottom:14, textShadow:`0 0 22px ${C.jade},0 0 44px #60A5C850`, lineHeight:1 }}>漢</div>
+      padding:'10px 0 14px', gap:2,
+      boxShadow:'4px 0 32px rgba(0,0,0,0.55), inset -1px 0 0 rgba(255,255,255,0.03)' }}>
+
+      {/* Decorative top accent line */}
+      <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:2,
+        background:`linear-gradient(90deg,transparent,${C.jade},#C9A84C,${C.jade},transparent)`,
+        borderRadius:2, boxShadow:`0 0 12px ${C.jade}80` }}/>
+
+      {/* 漢 logo mark */}
+      <div style={{ fontSize:bp.isLarge?32:26, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
+        color:C.jade, marginBottom:10, marginTop:4, lineHeight:1, userSelect:'none',
+        textShadow:`0 0 20px ${C.jade},0 0 50px #60A5C870,0 0 80px #60A5C840`,
+        animation:'glowPulse 4s ease-in-out infinite' }}>漢</div>
+
+      {/* Divider */}
+      <div style={{ width:'55%', height:1, marginBottom:6,
+        background:`linear-gradient(90deg,transparent,${C.jade}60,transparent)` }}/>
+
       {NAV.map(({id,icon,label})=>{
         const active=tab===id;
+        const ac = ACCENT[id] || C.jade;
         return (
           <button key={id} onClick={()=>setTab(id)} style={{
-            width:w-10, padding:'10px 0',
-            background:active?`linear-gradient(145deg,${C.jade}1A,#60A5C80E)`:'none',
-            border:active?`1px solid ${C.jade}50`:'1px solid transparent',
-            borderRadius:15, cursor:'pointer', color:active?C.jade:C.nebula,
-            display:'flex', flexDirection:'column', alignItems:'center', gap:2,
-            transition:'all 0.25s',
-            boxShadow:active?`0 3px 16px ${C.jade}30,inset 0 1px 0 rgba(255,255,255,0.07)`:'none' }}>
-            <span style={{ fontSize:bp.isLarge?22:18, filter:active?`drop-shadow(0 0 9px ${C.jade})`:'none', transition:'filter 0.25s' }}>{icon}</span>
-            <span style={{ fontSize:bp.isLarge?8:7.5, fontWeight:active?900:400, letterSpacing:0.2, opacity:active?1:0.7 }}>{label}</span>
+            position:'relative', width:w-12, padding:bp.isLarge?'10px 0':'9px 0',
+            background: active
+              ? `linear-gradient(160deg,${ac}22 0%,${ac}0A 60%,transparent 100%)`
+              : 'transparent',
+            border: active ? `1px solid ${ac}55` : '1px solid transparent',
+            borderRadius:14, cursor:'pointer',
+            color: active ? ac : C.nebula,
+            display:'flex', flexDirection:'column', alignItems:'center', gap:3,
+            transition:'all 0.22s cubic-bezier(0.34,1.2,0.64,1)',
+            boxShadow: active
+              ? `0 4px 20px ${ac}30, 0 0 0 1px ${ac}18, inset 0 1px 0 rgba(255,255,255,0.07)`
+              : 'none',
+            transform: active ? 'scale(1.04)' : 'scale(1)',
+          }}>
+            {/* Active left-glow bar */}
+            {active && (
+              <div style={{ position:'absolute', left:-1, top:'20%', bottom:'20%', width:3,
+                background:`linear-gradient(180deg,transparent,${ac},transparent)`,
+                borderRadius:'0 3px 3px 0',
+                boxShadow:`0 0 10px ${ac}, 0 0 20px ${ac}80` }}/>
+            )}
+            {/* Active top shimmer */}
+            {active && (
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1,
+                background:`linear-gradient(90deg,transparent,${ac}90,transparent)`,
+                borderRadius:1 }}/>
+            )}
+            <span style={{
+              fontSize:bp.isLarge?22:19,
+              filter: active ? `drop-shadow(0 0 10px ${ac}) drop-shadow(0 0 20px ${ac}80)` : 'none',
+              transition:'filter 0.25s, transform 0.2s',
+              transform: active ? 'scale(1.1)' : 'scale(1)',
+              display:'block', lineHeight:1 }}>{icon}</span>
+            <span style={{
+              fontSize:bp.isLarge?8.5:7.5, fontWeight:active?900:500,
+              letterSpacing: active?0.8:0.3,
+              color: active ? ac : C.nebula,
+              opacity: active?1:0.65,
+              transition:'all 0.2s',
+              fontFamily:"'Cinzel',serif",
+              textShadow: active ? `0 0 10px ${ac}80` : 'none',
+              textTransform:'uppercase' }}>{label}</span>
           </button>
         );
       })}
+
+      {/* Decorative bottom accent */}
+      <div style={{ marginTop:'auto', paddingTop:10, width:'55%', height:1,
+        background:`linear-gradient(90deg,transparent,${C.jade}40,transparent)` }}/>
+      <div style={{ fontSize:9, color:C.nebula, opacity:0.25, letterSpacing:2,
+        fontFamily:"'Cinzel',serif", userSelect:'none' }}>漢字</div>
     </div>
   );
 }
