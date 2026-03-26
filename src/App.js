@@ -3373,11 +3373,14 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
 ═══════════════════════════════════════════════════════════════════════════ */
 function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mark, toggleStar,
                      mode, setMode, setDeckIdx, shuffled, setShuffled, bp, confettiTrig, theme = 'sky' }) {
-  const touchRef   = useRef(null);
-  const dragRef    = useRef({active:false, x:0, startY:0});
-  const cardRef    = useRef(null);   // ref to FlashCard outer div — JS animates this directly
-  const rafRef     = useRef(null);
-  const animState  = useRef({busy:false});
+  const touchRef        = useRef(null);
+  const dragRef         = useRef({active:false, x:0, startY:0});
+  const cardRef         = useRef(null);   // ref to FlashCard outer div — JS animates this directly
+  const rafRef          = useRef(null);
+  const animState       = useRef({busy:false});
+  // Prevents the synthetic click event (fired by browser after touchend) from
+  // double-triggering the flip and cancelling the touch-tap flip.
+  const suppressClickRef = useRef(false);
   const prog = deck.length>0?(deckIdx+1)/deck.length:0;
 
   const [shownCard, setShownCard] = useState(card);
@@ -3503,6 +3506,12 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
 
     // ── TAP: short movement = flip card ──
     if(ax < 18 && ay < 18) {
+      // e.preventDefault() stops the browser from synthesising a click event
+      // after touchend, which would call onClick below and flip the card AGAIN,
+      // cancelling the first flip so the card appears frozen.
+      e.preventDefault();
+      suppressClickRef.current = true;
+      setTimeout(() => { suppressClickRef.current = false; }, 600);
       setFlipped(f => !f);
       touchRef.current = null;
       return;
@@ -3584,6 +3593,9 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
         overflow:'hidden', position:'relative' }}
         onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
         onClick={e=>{
+          // If a touch-tap already flipped the card, the browser fires a synthetic
+          // click right after — suppress it so we don't flip back immediately.
+          if(suppressClickRef.current){ suppressClickRef.current = false; return; }
           // Don't flip if clicking speaker, star button, or any other interactive element
           if(e.target && e.target.closest && (
             e.target.closest('[data-speaker]') ||
@@ -4974,67 +4986,194 @@ window._kanjiVoiceCfg = window._kanjiVoiceCfg || { presetId:'f2' };
 })();
 
 /*
-  ResponsiveVoice Japanese voice names (all work without any API key on FREE tier):
-    "Japanese Female"          — standard female
-    "Japanese Male"            — standard male
-  We simulate 6 distinct personalities via pitch + rate parameters.
-  For devices without ResponsiveVoice (offline), we fall back to Web Speech API.
+  Voice architecture (3 layers, tried in order):
+  ─────────────────────────────────────────────────────────────
+  Layer 1 — Web Speech API with SPECIFIC voice selection
+    Each preset has a priority list of real Japanese voice names.
+    On Windows: Microsoft Ayumi / Haruka (F) + Ichiro (M)
+    On macOS/iOS: Kyoko / O-ren (F) + Otoya (M)
+    On Android: Google 日本語 (F) + sometimes more
+    These are GENUINELY different voice engines, not pitch tricks.
+
+  Layer 2 — ResponsiveVoice fallback (online only)
+    "Japanese Female" / "Japanese Male" — real Japanese TTS voices.
+    Uses NATURAL pitch (0.88–1.05) so they don't sound distorted.
+    Rate is the main differentiator between the 3 slots per gender.
+
+  Layer 3 — Web Speech API without specific voice
+    Last resort if RV is also unavailable.
+  ─────────────────────────────────────────────────────────────
 */
+
+// Per-preset config
+// wsVoiceNames: ordered list of Web Speech voice name fragments to look for
+// rvVoice/rvRate/rvPitch: ResponsiveVoice fallback (NATURAL pitch ranges only)
+// wsRate/wsPitch: parameters used when a real Web Speech voice is found
 const RV_PRESETS = {
-  f1: { rvVoice:'Japanese Female', rate:0.6,  pitch:1.4,  desc:'Soft · slow & gentle'   },
-  f2: { rvVoice:'Japanese Female', rate:0.8,  pitch:1.1,  desc:'Natural · standard pace' },
-  f3: { rvVoice:'Japanese Female', rate:1.0,  pitch:1.2,  desc:'Clear · crisp & bright'  },
-  m1: { rvVoice:'Japanese Male',   rate:0.55, pitch:0.6,  desc:'Deep · very slow'        },
-  m2: { rvVoice:'Japanese Male',   rate:0.78, pitch:0.85, desc:'Natural · standard pace'  },
-  m3: { rvVoice:'Japanese Male',   rate:0.95, pitch:0.95, desc:'Clear · confident pace'   },
+  f1: {
+    label: 'Haruka', character: 'Warm & gentle',
+    wsVoiceNames: ['haruka', 'ayumi', 'google 日本語', '日本語', 'kyoko', 'o-ren', 'japanese'],
+    wsRate: 0.80, wsPitch: 1.05,
+    rvVoice: 'Japanese Female', rvRate: 0.78, rvPitch: 1.02,
+    // legacy keys so existing code that reads .rate/.pitch still works
+    rate: 0.78, pitch: 1.02,
+  },
+  f2: {
+    label: 'Ayumi', character: 'Clear & natural',
+    wsVoiceNames: ['ayumi', 'google 日本語', '日本語', 'o-ren', 'kyoko', 'haruka', 'japanese'],
+    wsRate: 0.92, wsPitch: 1.00,
+    rvVoice: 'Japanese Female', rvRate: 0.90, rvPitch: 1.00,
+    rate: 0.90, pitch: 1.00,
+  },
+  f3: {
+    label: 'Kyoko', character: 'Crisp & bright',
+    wsVoiceNames: ['kyoko', 'o-ren', '日本語', 'google 日本語', 'ayumi', 'haruka', 'japanese'],
+    wsRate: 1.02, wsPitch: 1.08,
+    rvVoice: 'Japanese Female', rvRate: 1.02, rvPitch: 1.05,
+    rate: 1.02, pitch: 1.05,
+  },
+  m1: {
+    label: 'Kenji', character: 'Deep & calm',
+    wsVoiceNames: ['otoya', 'ichiro', 'hideo', 'japanese male', 'japanese'],
+    wsRate: 0.70, wsPitch: 0.88,
+    rvVoice: 'Japanese Male', rvRate: 0.65, rvPitch: 0.87,
+    rate: 0.65, pitch: 0.87,
+  },
+  m2: {
+    label: 'Ichiro', character: 'Natural & steady',
+    wsVoiceNames: ['ichiro', 'hideo', 'otoya', 'japanese male', 'japanese'],
+    wsRate: 0.88, wsPitch: 0.95,
+    rvVoice: 'Japanese Male', rvRate: 0.84, rvPitch: 0.92,
+    rate: 0.84, pitch: 0.92,
+  },
+  m3: {
+    label: 'Otoya', character: 'Confident & brisk',
+    wsVoiceNames: ['hideo', 'otoya', 'ichiro', 'japanese male', 'japanese'],
+    wsRate: 1.00, wsPitch: 1.00,
+    rvVoice: 'Japanese Male', rvRate: 0.98, rvPitch: 0.97,
+    rate: 0.98, pitch: 0.97,
+  },
 };
+
+// ── Build a map: presetId → SpeechSynthesisVoice (best match on this device) ──
+// Called once on load and again when voiceschanged fires.
+function buildWsVoiceMap() {
+  if (!window.speechSynthesis) { window._wsVoiceMap = {}; return; }
+  const voices = window.speechSynthesis.getVoices();
+  const jpVoices = voices.filter(v =>
+    v.lang === 'ja-JP' || v.lang === 'ja' || v.lang.startsWith('ja-')
+  );
+  if (jpVoices.length === 0) { window._wsVoiceMap = {}; return; }
+
+  const map = {};
+  Object.entries(RV_PRESETS).forEach(([id, cfg]) => {
+    const namesToTry = cfg.wsVoiceNames || [];
+    let found = null;
+    for (const frag of namesToTry) {
+      found = jpVoices.find(v => v.name.toLowerCase().includes(frag));
+      if (found) break;
+    }
+    // If no preferred voice, fall back to first female/male jp voice by name heuristic
+    if (!found) {
+      const isFemale = id.startsWith('f');
+      const maleFrags  = ['male','otoya','ichiro','hideo','men'];
+      const femaleFrags = ['female','kyoko','ayumi','haruka','o-ren','oren'];
+      if (isFemale) {
+        found = jpVoices.find(v => femaleFrags.some(f => v.name.toLowerCase().includes(f)))
+             || jpVoices[0];
+      } else {
+        found = jpVoices.find(v => maleFrags.some(f => v.name.toLowerCase().includes(f)))
+             || jpVoices[0];
+      }
+    }
+    map[id] = found || null;
+  });
+  window._wsVoiceMap = map;
+}
+
+// Build immediately + rebuild when browser loads voices asynchronously
+window._wsVoiceMap = window._wsVoiceMap || {};
+if (window.speechSynthesis) {
+  buildWsVoiceMap();
+  window.speechSynthesis.addEventListener('voiceschanged', buildWsVoiceMap);
+}
 
 function speak(text) {
   const presetId = (window._kanjiVoiceCfg || {}).presetId || 'f2';
   const cfg = RV_PRESETS[presetId] || RV_PRESETS.f2;
 
-  /* ── Primary: ResponsiveVoice ── */
+  /* ── Layer 1: Web Speech API with the preset-specific REAL voice ── */
+  // _wsVoiceMap is built by buildWsVoiceMap() at startup and on voiceschanged.
+  // Each preset slot maps to a distinct, named Japanese voice on the device.
+  const wsVoice = (window._wsVoiceMap || {})[presetId];
+  if (wsVoice && window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = wsVoice;
+    u.lang  = wsVoice.lang || 'ja-JP';
+    u.rate  = cfg.wsRate  || 0.90;
+    u.pitch = cfg.wsPitch || 1.00;
+    window.speechSynthesis.speak(u);
+    return;
+  }
+
+  /* ── Layer 2: ResponsiveVoice (online Japanese TTS, natural pitch only) ── */
   if (window.responsiveVoice && window.responsiveVoice.voiceSupport()) {
     window.responsiveVoice.cancel();
     window.responsiveVoice.speak(text, cfg.rvVoice, {
-      pitch: cfg.pitch,
-      rate:  cfg.rate,
+      pitch:  cfg.rvPitch || cfg.pitch,
+      rate:   cfg.rvRate  || cfg.rate,
       volume: 1
     });
     return;
   }
 
-  /* ── Fallback: Web Speech API ── */
+  /* ── Layer 3: Web Speech API without specific voice (last resort) ── */
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang  = 'ja-JP';
-  u.rate  = cfg.rate;
-  u.pitch = cfg.pitch;
+  u.rate  = cfg.rvRate  || cfg.rate;
+  u.pitch = cfg.rvPitch || cfg.pitch;
+
+  const doSpeak = () => {
+    const voices = window.speechSynthesis.getVoices();
+    const jp = voices.find(v => v.lang === 'ja-JP') || voices.find(v => v.lang.startsWith('ja'));
+    if (jp) u.voice = jp;
+    window.speechSynthesis.speak(u);
+  };
+
   const voices = window.speechSynthesis.getVoices();
-  const jp = voices.find(v => v.lang === 'ja-JP')
-          || voices.find(v => v.lang.startsWith('ja'))
-          || voices[0];
-  if (jp) u.voice = jp;
-  window.speechSynthesis.speak(u);
+  if (voices.length > 0) {
+    doSpeak();
+  } else {
+    const onVC = () => { window.speechSynthesis.removeEventListener('voiceschanged', onVC); doSpeak(); };
+    window.speechSynthesis.addEventListener('voiceschanged', onVC);
+    setTimeout(() => {
+      window.speechSynthesis.removeEventListener('voiceschanged', onVC);
+      if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(u);
+    }, 300);
+  }
 }
 
 /* ─── VoicePickerPanel ──────────────────────────────────────────── */
 const VOICE_PRESETS = [
-  { id:'f1', label:'Female 1 — Soft',    gender:'F', icon:'👩',    desc:'Slow & gentle'    },
-  { id:'f2', label:'Female 2 — Natural', gender:'F', icon:'👩\u200d🦱', desc:'Standard pace'   },
-  { id:'f3', label:'Female 3 — Clear',   gender:'F', icon:'👩\u200d🦳', desc:'Crisp & bright'   },
-  { id:'m1', label:'Male 1 — Deep',      gender:'M', icon:'👨',    desc:'Very slow & deep' },
-  { id:'m2', label:'Male 2 — Natural',   gender:'M', icon:'👨\u200d🦱', desc:'Standard pace'   },
-  { id:'m3', label:'Male 3 — Clear',     gender:'M', icon:'👨\u200d🦳', desc:'Confident pace'   },
+  { id:'f1', gender:'F', icon:'👩',         accent:'Tokyo accent' },
+  { id:'f2', gender:'F', icon:'👩‍🦱', accent:'Tokyo accent' },
+  { id:'f3', gender:'F', icon:'👩‍🦳', accent:'Tokyo accent' },
+  { id:'m1', gender:'M', icon:'👨',         accent:'Tokyo accent' },
+  { id:'m2', gender:'M', icon:'👨‍🦱', accent:'Tokyo accent' },
+  { id:'m3', gender:'M', icon:'👨‍🦳', accent:'Tokyo accent' },
 ];
 
 function VoicePickerPanel() {
   const [selPreset, setSelPreset] = useState(
     ()=>{ try{ return localStorage.getItem('kanji_voice_preset')||'f2'; }catch(e){ return 'f2'; } }
   );
-  const [playing,  setPlaying]  = useState(null);
-  const [rvReady,  setRvReady]  = useState(false);
+  const [playing,    setPlaying]    = useState(null);
+  const [rvReady,    setRvReady]    = useState(false);
+  // Bump this to force re-render when _wsVoiceMap is populated asynchronously
+  const [voiceTick,  setVoiceTick]  = useState(0);
 
   // Poll until ResponsiveVoice loads (usually <2s on wifi)
   useEffect(()=>{
@@ -5044,8 +5183,19 @@ function VoicePickerPanel() {
         clearInterval(iv);
       }
     }, 300);
-    setTimeout(()=>clearInterval(iv), 12000); // stop polling after 12s
+    setTimeout(()=>clearInterval(iv), 12000);
     return ()=>clearInterval(iv);
+  },[]);
+
+  // Re-render tiles when Web Speech voices become available
+  useEffect(()=>{
+    const refresh = () => { buildWsVoiceMap(); setVoiceTick(t => t+1); };
+    if (window.speechSynthesis) {
+      window.speechSynthesis.addEventListener('voiceschanged', refresh);
+      // Trigger once immediately in case voices are already loaded
+      if (window.speechSynthesis.getVoices().length > 0) refresh();
+    }
+    return ()=>{ if(window.speechSynthesis) window.speechSynthesis.removeEventListener('voiceschanged', refresh); };
   },[]);
 
   // Apply saved preset on mount
@@ -5094,10 +5244,17 @@ function VoicePickerPanel() {
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:7 }}>
         {VOICE_PRESETS.map(p => {
-          const active = selPreset === p.id;
-          const isF    = p.gender === 'F';
-          const col    = isF ? C.sakura : C.teal;
-          const cfg    = RV_PRESETS[p.id];
+          const active  = selPreset === p.id;
+          const isF     = p.gender === 'F';
+          const col     = isF ? C.sakura : C.teal;
+          const cfg     = RV_PRESETS[p.id];
+          // Detect which real voice will be used on this device
+          const wsVoice = (window._wsVoiceMap || {})[p.id];
+          const voiceName = wsVoice
+            ? wsVoice.name.replace('Microsoft ', '').replace(' Online (Natural)', '').replace(' Desktop', '')
+            : cfg.rvVoice;
+          const engine  = wsVoice ? 'Device voice' : (rvReady ? 'ResponsiveVoice' : 'Loading…');
+          const engineCol = wsVoice ? C.jade : (rvReady ? C.aurora : C.amber);
           return (
             <RippleBtn key={p.id} onClick={()=>handlePreset(p)}
               style={{
@@ -5110,15 +5267,24 @@ function VoicePickerPanel() {
                 opacity: playing && playing!==p.id ? 0.6 : 1,
               }}>
               <span style={{ fontSize:22 }}>{p.icon}</span>
-              <span style={{ fontSize:9, color:active?col:C.starlight, fontWeight:800,
+              {/* Character name from RV_PRESETS */}
+              <span style={{ fontSize:10, color:active?col:C.moonlight, fontWeight:900,
                 letterSpacing:0.3, textAlign:'center' }}>
-                {isF?'♀':'♂'} {p.label.split('—')[1].trim()}
+                {isF?'♀':'♂'} {cfg.label}
               </span>
-              <span style={{ fontSize:8, color:active?col+'CC':C.nebula, textAlign:'center', lineHeight:1.3 }}>
-                {p.desc}
+              {/* Real voice name used on this device */}
+              <span style={{ fontSize:7.5, color:active?col+'CC':C.nebula, textAlign:'center',
+                lineHeight:1.3, fontFamily:'monospace', maxWidth:80, overflow:'hidden',
+                textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                {voiceName}
               </span>
-              <span style={{ fontSize:8, color:C.nebula }}>
-                {cfg.rate}× · pitch {cfg.pitch}
+              {/* Character description */}
+              <span style={{ fontSize:7.5, color:active?col+'AA':C.dim, textAlign:'center' }}>
+                {cfg.character}
+              </span>
+              {/* Engine badge */}
+              <span style={{ fontSize:7, color:engineCol, fontWeight:700, letterSpacing:0.3 }}>
+                {engine}
               </span>
               {active && playing!==p.id &&
                 <span style={{ fontSize:8, color:col }}>● active</span>}
@@ -5131,8 +5297,8 @@ function VoicePickerPanel() {
 
       <div style={{ fontSize:9, color:C.nebula, textAlign:'center',
         marginTop:12, lineHeight:1.7, borderTop:`1px solid ${C.border}`, paddingTop:8 }}>
-        Powered by ResponsiveVoice · Real Japanese pronunciation<br/>
-        No voice downloads needed · Works on any device with internet
+        Uses real device voices when available (Kyoko, Ayumi, Haruka…)<br/>
+        Falls back to ResponsiveVoice online TTS · All Japanese accent
       </div>
     </Glass>
   );
