@@ -4970,12 +4970,19 @@ function Header({ known, total, sessionTime, seen, streak, bp, onHome }) {
 const SAVE_KEY = 'kanji_ultimate_v1';
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEXT-TO-SPEECH — ResponsiveVoice (online, real Japanese) + Web Speech fallback
-   6 distinct Japanese voices mapped to the 6 UI presets
+   TEXT-TO-SPEECH
+   Layer 1 — Azure Neural TTS  (6 genuinely different JP neural voice models)
+   Layer 2 — Web Speech API    (pool-indexed device voices for variety)
+   Layer 3 — ResponsiveVoice   (online fallback)
+   Layer 4 — Web Speech API    (no specific voice, last resort)
+   ─────────────────────────────────────────────────────────────────────────
+   Azure free tier (F0): 500,000 chars/month, no credit card required.
+   Get key: portal.azure.com → Create resource → "Speech" → F0 tier
+   Paste key + region into Voice Settings inside the app.
 ═══════════════════════════════════════════════════════════════════════════ */
 window._kanjiVoiceCfg = window._kanjiVoiceCfg || { presetId:'f2' };
 
-/* Inject ResponsiveVoice CDN once */
+/* Inject ResponsiveVoice CDN once (Layer 3 fallback) */
 (function(){
   if(window._rvScriptAdded) return;
   window._rvScriptAdded = true;
@@ -4986,167 +4993,209 @@ window._kanjiVoiceCfg = window._kanjiVoiceCfg || { presetId:'f2' };
 })();
 
 /*
-  Voice architecture (3 layers, tried in order):
-  ─────────────────────────────────────────────────────────────
-  Layer 1 — Web Speech API with SPECIFIC voice selection
-    Each preset has a priority list of real Japanese voice names.
-    On Windows: Microsoft Ayumi / Haruka (F) + Ichiro (M)
-    On macOS/iOS: Kyoko / O-ren (F) + Otoya (M)
-    On Android: Google 日本語 (F) + sometimes more
-    These are GENUINELY different voice engines, not pitch tricks.
+  ─────────────────────────────────────────────────────────────────────────────
+  VOICE PRESETS — 6 distinct voices across 3 styles × 2 genders.
 
-  Layer 2 — ResponsiveVoice fallback (online only)
-    "Japanese Female" / "Japanese Male" — real Japanese TTS voices.
-    Uses NATURAL pitch (0.88–1.05) so they don't sound distorted.
-    Rate is the main differentiator between the 3 slots per gender.
+  azureVoice: Azure Neural TTS voice name (genuinely different voice model).
+  rvVoice/rvRate: ResponsiveVoice fallback (only 2 JP voices exist on free key).
+  wsRate/wsPitch/wsVoiceGender: Web Speech API fallback parameters.
 
-  Layer 3 — Web Speech API without specific voice
-    Last resort if RV is also unavailable.
-  ─────────────────────────────────────────────────────────────
+  Style meanings:
+    *1 = Soft / Polite  — gentle, warm, slower
+    *2 = Normal         — natural conversational
+    *3 = Professional   — clear, authoritative, formal
+  ─────────────────────────────────────────────────────────────────────────────
 */
-
-// Per-preset config
-// wsVoiceNames: ordered list of Web Speech voice name fragments to look for
-// rvVoice/rvRate/rvPitch: ResponsiveVoice fallback (NATURAL pitch ranges only)
-// wsRate/wsPitch: parameters used when a real Web Speech voice is found
-const RV_PRESETS = {
+const VOICE_PRESETS_CFG = {
   f1: {
-    label: 'Haruka', character: 'Warm & gentle',
-    wsVoiceNames: ['haruka', 'ayumi', 'google 日本語', '日本語', 'kyoko', 'o-ren', 'japanese'],
-    wsRate: 0.80, wsPitch: 1.05,
-    rvVoice: 'Japanese Female', rvRate: 0.78, rvPitch: 1.02,
-    // legacy keys so existing code that reads .rate/.pitch still works
-    rate: 0.78, pitch: 1.02,
+    label:'Female · Soft', character:'Gentle & polite', gender:'f',
+    /* Layer 1 — Azure Neural: young warm female voice */
+    azureVoice: 'ja-JP-NanamiNeural',
+    azureStyle: 'gentle',
+    /* Layer 2 — Web Speech fallback */
+    wsGender:'female', wsRate:0.78, wsPitch:1.08,
+    /* Layer 3 — ResponsiveVoice fallback */
+    rvVoice:'Japanese Female', rvRate:0.76, rvPitch:1.08,
+    rate:0.76, pitch:1.08,
   },
   f2: {
-    label: 'Ayumi', character: 'Clear & natural',
-    wsVoiceNames: ['ayumi', 'google 日本語', '日本語', 'o-ren', 'kyoko', 'haruka', 'japanese'],
-    wsRate: 0.92, wsPitch: 1.00,
-    rvVoice: 'Japanese Female', rvRate: 0.90, rvPitch: 1.00,
-    rate: 0.90, pitch: 1.00,
+    label:'Female · Normal', character:'Natural & clear', gender:'f',
+    /* Layer 1 — Azure Neural: natural standard female */
+    azureVoice: 'ja-JP-AoiNeural',
+    azureStyle: 'chat',
+    wsGender:'female', wsRate:0.92, wsPitch:1.00,
+    rvVoice:'Japanese Female', rvRate:0.90, rvPitch:1.00,
+    rate:0.90, pitch:1.00,
   },
   f3: {
-    label: 'Kyoko', character: 'Crisp & bright',
-    wsVoiceNames: ['kyoko', 'o-ren', '日本語', 'google 日本語', 'ayumi', 'haruka', 'japanese'],
-    wsRate: 1.02, wsPitch: 1.08,
-    rvVoice: 'Japanese Female', rvRate: 1.02, rvPitch: 1.05,
-    rate: 1.02, pitch: 1.05,
+    label:'Female · Pro', character:'Formal & confident', gender:'f',
+    /* Layer 1 — Azure Neural: newsreader/professional female */
+    azureVoice: 'ja-JP-ShioriNeural',
+    azureStyle: 'newscast',
+    wsGender:'female', wsRate:0.86, wsPitch:0.90,
+    rvVoice:'Japanese Female', rvRate:0.85, rvPitch:0.90,
+    rate:0.85, pitch:0.90,
   },
   m1: {
-    label: 'Kenji', character: 'Deep & calm',
-    wsVoiceNames: ['otoya', 'ichiro', 'hideo', 'japanese male', 'japanese'],
-    wsRate: 0.70, wsPitch: 0.88,
-    rvVoice: 'Japanese Male', rvRate: 0.65, rvPitch: 0.87,
-    rate: 0.65, pitch: 0.87,
+    label:'Male · Soft', character:'Warm & friendly', gender:'m',
+    /* Layer 1 — Azure Neural: soft gentle male */
+    azureVoice: 'ja-JP-DaichiNeural',
+    azureStyle: 'gentle',
+    wsGender:'male', wsRate:0.80, wsPitch:1.05,
+    rvVoice:'Japanese Male', rvRate:0.78, rvPitch:1.05,
+    rate:0.78, pitch:1.05,
   },
   m2: {
-    label: 'Ichiro', character: 'Natural & steady',
-    wsVoiceNames: ['ichiro', 'hideo', 'otoya', 'japanese male', 'japanese'],
-    wsRate: 0.88, wsPitch: 0.95,
-    rvVoice: 'Japanese Male', rvRate: 0.84, rvPitch: 0.92,
-    rate: 0.84, pitch: 0.92,
+    label:'Male · Normal', character:'Natural & steady', gender:'m',
+    /* Layer 1 — Azure Neural: standard natural male */
+    azureVoice: 'ja-JP-KeitaNeural',
+    azureStyle: 'chat',
+    wsGender:'male', wsRate:0.90, wsPitch:0.95,
+    rvVoice:'Japanese Male', rvRate:0.88, rvPitch:0.95,
+    rate:0.88, pitch:0.95,
   },
   m3: {
-    label: 'Otoya', character: 'Confident & brisk',
-    wsVoiceNames: ['hideo', 'otoya', 'ichiro', 'japanese male', 'japanese'],
-    wsRate: 1.00, wsPitch: 1.00,
-    rvVoice: 'Japanese Male', rvRate: 0.98, rvPitch: 0.97,
-    rate: 0.98, pitch: 0.97,
+    label:'Male · Pro', character:'Deep & authoritative', gender:'m',
+    /* Layer 1 — Azure Neural: deep authoritative male */
+    azureVoice: 'ja-JP-NaokiNeural',
+    azureStyle: 'newscast',
+    wsGender:'male', wsRate:0.84, wsPitch:0.80,
+    rvVoice:'Japanese Male', rvRate:0.82, rvPitch:0.80,
+    rate:0.82, pitch:0.80,
   },
 };
+/* Alias so existing code that reads RV_PRESETS still works */
+const RV_PRESETS = VOICE_PRESETS_CFG;
 
-// ── Build a map: presetId → SpeechSynthesisVoice (best match on this device) ──
-// Called once on load and again when voiceschanged fires.
+/* ── Azure TTS helpers ────────────────────────────────────────────────────── */
+function getAzureCfg() {
+  try {
+    const key    = localStorage.getItem('kanji_azure_key')    || '';
+    const region = localStorage.getItem('kanji_azure_region') || 'eastus';
+    return { key: key.trim(), region: region.trim() };
+  } catch(e) { return { key:'', region:'eastus' }; }
+}
+
+let _azureAudio = null;
+async function speakAzure(text, presetId) {
+  const { key, region } = getAzureCfg();
+  if (!key) return false;
+  const cfg = VOICE_PRESETS_CFG[presetId] || VOICE_PRESETS_CFG.f2;
+  const ssml = `<speak version='1.0' xml:lang='ja-JP'>
+    <voice xml:lang='ja-JP' name='${cfg.azureVoice}'>
+      <mstts:express-as xmlns:mstts="http://www.w3.org/2001/mstts" style="${cfg.azureStyle}" styledegree="1.2">
+        ${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+      </mstts:express-as>
+    </voice>
+  </speak>`;
+  try {
+    const res = await fetch(
+      `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`,
+      {
+        method: 'POST',
+        headers: {
+          'Ocp-Apim-Subscription-Key': key,
+          'Content-Type': 'application/ssml+xml',
+          'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3',
+          'User-Agent': 'KanjiApp',
+        },
+        body: ssml,
+      }
+    );
+    if (!res.ok) { console.warn('Azure TTS error', res.status); return false; }
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    if (_azureAudio) { _azureAudio.pause(); URL.revokeObjectURL(_azureAudio.src); }
+    _azureAudio = new Audio(url);
+    _azureAudio.play();
+    return true;
+  } catch(e) { console.warn('Azure TTS fetch failed', e); return false; }
+}
+
+/* ── Web Speech pool-indexed voice map ───────────────────────────────────── */
 function buildWsVoiceMap() {
   if (!window.speechSynthesis) { window._wsVoiceMap = {}; return; }
-  const voices = window.speechSynthesis.getVoices();
+  const voices  = window.speechSynthesis.getVoices();
   const jpVoices = voices.filter(v =>
     v.lang === 'ja-JP' || v.lang === 'ja' || v.lang.startsWith('ja-')
   );
   if (jpVoices.length === 0) { window._wsVoiceMap = {}; return; }
 
+  const femaleHints = ['haruka','ayumi','kyoko','o-ren','oren','female','nanami','mayu','shiori','akiko'];
+  const maleHints   = ['ichiro','otoya','hideo','kenji','keita','naoki','daichi','hiroshi','male'];
+
+  let fPool = jpVoices.filter(v => femaleHints.some(h => v.name.toLowerCase().includes(h)));
+  let mPool = jpVoices.filter(v => maleHints.some(h =>   v.name.toLowerCase().includes(h)));
+  if (fPool.length === 0) fPool = [...jpVoices];
+  if (mPool.length === 0) mPool = [...jpVoices];
+  const dedup = a => a.filter((v,i,arr) => arr.findIndex(x => x.name===v.name)===i);
+  fPool = dedup(fPool);
+  mPool = dedup(mPool);
+
   const map = {};
-  Object.entries(RV_PRESETS).forEach(([id, cfg]) => {
-    const namesToTry = cfg.wsVoiceNames || [];
-    let found = null;
-    for (const frag of namesToTry) {
-      found = jpVoices.find(v => v.name.toLowerCase().includes(frag));
-      if (found) break;
-    }
-    // If no preferred voice, fall back to first female/male jp voice by name heuristic
-    if (!found) {
-      const isFemale = id.startsWith('f');
-      const maleFrags  = ['male','otoya','ichiro','hideo','men'];
-      const femaleFrags = ['female','kyoko','ayumi','haruka','o-ren','oren'];
-      if (isFemale) {
-        found = jpVoices.find(v => femaleFrags.some(f => v.name.toLowerCase().includes(f)))
-             || jpVoices[0];
-      } else {
-        found = jpVoices.find(v => maleFrags.some(f => v.name.toLowerCase().includes(f)))
-             || jpVoices[0];
-      }
-    }
-    map[id] = found || null;
+  ['f1','f2','f3'].forEach((id, i) => {
+    map[id] = fPool[i] || fPool[Math.min(i, fPool.length-1)] || fPool[0] || null;
+  });
+  ['m1','m2','m3'].forEach((id, i) => {
+    map[id] = mPool[i] || mPool[Math.min(i, mPool.length-1)] || mPool[0] || null;
   });
   window._wsVoiceMap = map;
 }
-
-// Build immediately + rebuild when browser loads voices asynchronously
 window._wsVoiceMap = window._wsVoiceMap || {};
 if (window.speechSynthesis) {
   buildWsVoiceMap();
   window.speechSynthesis.addEventListener('voiceschanged', buildWsVoiceMap);
 }
 
-function speak(text) {
+/* ── Main speak() — tries all 4 layers in order ─────────────────────────── */
+async function speak(text) {
   const presetId = (window._kanjiVoiceCfg || {}).presetId || 'f2';
-  const cfg = RV_PRESETS[presetId] || RV_PRESETS.f2;
+  const cfg = VOICE_PRESETS_CFG[presetId] || VOICE_PRESETS_CFG.f2;
 
-  /* ── Layer 1: Web Speech API with the preset-specific REAL voice ── */
-  // _wsVoiceMap is built by buildWsVoiceMap() at startup and on voiceschanged.
-  // Each preset slot maps to a distinct, named Japanese voice on the device.
+  /* Layer 1 — Azure Neural TTS (genuinely different voice models) */
+  const azureOk = await speakAzure(text, presetId);
+  if (azureOk) return;
+
+  /* Layer 2 — Web Speech API with pool-indexed device voice */
   const wsVoice = (window._wsVoiceMap || {})[presetId];
   if (wsVoice && window.speechSynthesis) {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.voice = wsVoice;
     u.lang  = wsVoice.lang || 'ja-JP';
-    u.rate  = cfg.wsRate  || 0.90;
-    u.pitch = cfg.wsPitch || 1.00;
+    u.rate  = cfg.wsRate;
+    u.pitch = cfg.wsPitch;
     window.speechSynthesis.speak(u);
     return;
   }
 
-  /* ── Layer 2: ResponsiveVoice (online Japanese TTS, natural pitch only) ── */
+  /* Layer 3 — ResponsiveVoice (online, 2 real JP voices) */
   if (window.responsiveVoice && window.responsiveVoice.voiceSupport()) {
     window.responsiveVoice.cancel();
     window.responsiveVoice.speak(text, cfg.rvVoice, {
-      pitch:  cfg.rvPitch || cfg.pitch,
-      rate:   cfg.rvRate  || cfg.rate,
-      volume: 1
+      pitch: cfg.rvPitch || cfg.pitch,
+      rate:  cfg.rvRate  || cfg.rate,
+      volume: 1,
     });
     return;
   }
 
-  /* ── Layer 3: Web Speech API without specific voice (last resort) ── */
+  /* Layer 4 — Web Speech API, any JP voice (last resort) */
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang  = 'ja-JP';
   u.rate  = cfg.rvRate  || cfg.rate;
   u.pitch = cfg.rvPitch || cfg.pitch;
-
   const doSpeak = () => {
     const voices = window.speechSynthesis.getVoices();
     const jp = voices.find(v => v.lang === 'ja-JP') || voices.find(v => v.lang.startsWith('ja'));
     if (jp) u.voice = jp;
     window.speechSynthesis.speak(u);
   };
-
   const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    doSpeak();
-  } else {
+  if (voices.length > 0) { doSpeak(); }
+  else {
     const onVC = () => { window.speechSynthesis.removeEventListener('voiceschanged', onVC); doSpeak(); };
     window.speechSynthesis.addEventListener('voiceschanged', onVC);
     setTimeout(() => {
@@ -5158,12 +5207,12 @@ function speak(text) {
 
 /* ─── VoicePickerPanel ──────────────────────────────────────────── */
 const VOICE_PRESETS = [
-  { id:'f1', gender:'F', icon:'👩',         accent:'Tokyo accent' },
-  { id:'f2', gender:'F', icon:'👩‍🦱', accent:'Tokyo accent' },
-  { id:'f3', gender:'F', icon:'👩‍🦳', accent:'Tokyo accent' },
-  { id:'m1', gender:'M', icon:'👨',         accent:'Tokyo accent' },
-  { id:'m2', gender:'M', icon:'👨‍🦱', accent:'Tokyo accent' },
-  { id:'m3', gender:'M', icon:'👨‍🦳', accent:'Tokyo accent' },
+  { id:'f1', gender:'F', icon:'🌸', accent:'Soft · Polite',   azName:'Nanami' },
+  { id:'f2', gender:'F', icon:'👩', accent:'Normal',           azName:'Aoi'    },
+  { id:'f3', gender:'F', icon:'💼', accent:'Professional',     azName:'Shiori' },
+  { id:'m1', gender:'M', icon:'🌿', accent:'Soft · Polite',   azName:'Daichi' },
+  { id:'m2', gender:'M', icon:'👨', accent:'Normal',           azName:'Keita'  },
+  { id:'m3', gender:'M', icon:'🎯', accent:'Professional',     azName:'Naoki'  },
 ];
 
 function VoicePickerPanel() {
@@ -5172,36 +5221,50 @@ function VoicePickerPanel() {
   );
   const [playing,    setPlaying]    = useState(null);
   const [rvReady,    setRvReady]    = useState(false);
-  // Bump this to force re-render when _wsVoiceMap is populated asynchronously
   const [voiceTick,  setVoiceTick]  = useState(0);
+  const [showAzure,  setShowAzure]  = useState(false);
+  const [azureKey,   setAzureKey]   = useState(()=>{ try{ return localStorage.getItem('kanji_azure_key')||''; }catch(e){ return ''; } });
+  const [azureReg,   setAzureReg]   = useState(()=>{ try{ return localStorage.getItem('kanji_azure_region')||'eastus'; }catch(e){ return 'eastus'; } });
+  const [azStatus,   setAzStatus]   = useState('');
 
-  // Poll until ResponsiveVoice loads (usually <2s on wifi)
+  const azureActive = azureKey.trim().length > 10;
+
   useEffect(()=>{
     const iv = setInterval(()=>{
-      if(window.responsiveVoice && window.responsiveVoice.voiceSupport()){
-        setRvReady(true);
-        clearInterval(iv);
-      }
+      if(window.responsiveVoice && window.responsiveVoice.voiceSupport()){ setRvReady(true); clearInterval(iv); }
     }, 300);
     setTimeout(()=>clearInterval(iv), 12000);
     return ()=>clearInterval(iv);
   },[]);
 
-  // Re-render tiles when Web Speech voices become available
   useEffect(()=>{
     const refresh = () => { buildWsVoiceMap(); setVoiceTick(t => t+1); };
     if (window.speechSynthesis) {
       window.speechSynthesis.addEventListener('voiceschanged', refresh);
-      // Trigger once immediately in case voices are already loaded
       if (window.speechSynthesis.getVoices().length > 0) refresh();
     }
     return ()=>{ if(window.speechSynthesis) window.speechSynthesis.removeEventListener('voiceschanged', refresh); };
   },[]);
 
-  // Apply saved preset on mount
   useEffect(()=>{
     window._kanjiVoiceCfg = { presetId: selPreset };
   },[]);
+
+  const saveAzure = () => {
+    try {
+      localStorage.setItem('kanji_azure_key',    azureKey.trim());
+      localStorage.setItem('kanji_azure_region', azureReg.trim());
+    } catch(e){}
+    setAzStatus('saved');
+    setTimeout(()=>setAzStatus(''), 2000);
+  };
+
+  const testAzure = async () => {
+    setAzStatus('testing…');
+    const ok = await speakAzure('こんにちは', selPreset);
+    setAzStatus(ok ? '✓ working!' : '✗ check key/region');
+    setTimeout(()=>setAzStatus(''), 3000);
+  };
 
   const handlePreset = (preset) => {
     setSelPreset(preset.id);
@@ -5209,15 +5272,16 @@ function VoicePickerPanel() {
     try{ localStorage.setItem('kanji_voice_preset', preset.id); }catch(e){}
     setPlaying(preset.id);
     speak('こんにちは、漢字を勉強しましょう');
-    setTimeout(()=>setPlaying(null), 3000);
+    setTimeout(()=>setPlaying(null), 3500);
   };
 
-  const statusColor  = rvReady ? C.jade   : C.amber;
-  const statusIcon   = rvReady ? '🌐'      : '⏳';
-  const statusTitle  = rvReady ? 'ONLINE JAPANESE VOICE READY' : 'LOADING JAPANESE VOICE…';
-  const statusDesc   = rvReady
-    ? 'Authentic Japanese TTS · tap any style to preview'
-    : 'Connecting to voice server (needs internet)…';
+  const engineBadge = (p) => {
+    if (azureActive) return { text:`Azure · ${p.azName}`, col:C.jade };
+    const wsVoice = (window._wsVoiceMap || {})[p.id];
+    if (wsVoice) return { text:'Device voice', col:C.aurora };
+    if (rvReady)  return { text:'ResponsiveVoice', col:C.amber };
+    return { text:'Loading…', col:C.nebula };
+  };
 
   return (
     <Glass animate style={{ padding:'18px 18px' }}>
@@ -5225,18 +5289,85 @@ function VoicePickerPanel() {
         🔊 VOICE SETTINGS
       </div>
 
-      {/* Status banner */}
-      <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:14,
-        background:`${statusColor}15`, border:`1px solid ${statusColor}45`,
-        borderRadius:10, padding:'9px 13px' }}>
-        <span style={{ fontSize:16 }}>{statusIcon}</span>
+      {/* Azure status banner */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10,
+        background: azureActive ? `${C.jade}15` : `${C.amber}12`,
+        border:`1px solid ${azureActive ? C.jade+'45' : C.amber+'45'}`,
+        borderRadius:10, padding:'8px 12px' }}>
         <div>
-          <div style={{ fontSize:10, fontWeight:800, color:statusColor, letterSpacing:0.5 }}>
-            {statusTitle}
+          <div style={{ fontSize:10, fontWeight:800, color: azureActive ? C.jade : C.amber, letterSpacing:0.5 }}>
+            {azureActive ? '✓ Azure Neural TTS active — 6 real voices' : '⚡ Add Azure key for 6 distinct neural voices'}
           </div>
-          <div style={{ fontSize:9, color:C.nebula, marginTop:1 }}>{statusDesc}</div>
+          <div style={{ fontSize:9, color:C.nebula, marginTop:2 }}>
+            {azureActive ? 'Free tier: 500K chars/month · portal.azure.com' : 'Free tier available · no credit card needed'}
+          </div>
         </div>
+        <button onClick={()=>setShowAzure(v=>!v)} style={{
+          background: azureActive ? `${C.jade}25` : `${C.amber}25`,
+          border:`1px solid ${azureActive ? C.jade+'60' : C.amber+'60'}`,
+          borderRadius:8, padding:'4px 10px', cursor:'pointer', fontSize:10,
+          color: azureActive ? C.jade : C.amber, fontWeight:700, whiteSpace:'nowrap', marginLeft:8 }}>
+          {showAzure ? 'Close' : (azureActive ? 'Edit' : 'Setup')}
+        </button>
       </div>
+
+      {/* Azure setup panel */}
+      {showAzure && (
+        <div style={{ background:C.lifted, border:`1px solid ${C.border}`, borderRadius:12,
+          padding:'14px', marginBottom:12 }}>
+          <div style={{ fontSize:10, color:C.jade, fontWeight:800, marginBottom:10, letterSpacing:0.5 }}>
+            AZURE SPEECH SETUP
+          </div>
+
+          <div style={{ fontSize:9, color:C.nebula, marginBottom:10, lineHeight:1.6 }}>
+            1. Go to <span style={{color:C.aurora}}>portal.azure.com</span> → Create resource<br/>
+            2. Search "Speech" → Select "Speech" by Microsoft<br/>
+            3. Pricing tier: <b>F0 (Free)</b> → Create<br/>
+            4. Go to resource → Keys and Endpoint → copy Key 1 + Region
+          </div>
+
+          <div style={{ marginBottom:8 }}>
+            <div style={{ fontSize:9, color:C.nebula, marginBottom:3, fontWeight:700 }}>API KEY</div>
+            <input
+              value={azureKey}
+              onChange={e=>setAzureKey(e.target.value)}
+              placeholder="Paste your Azure Speech key here"
+              style={{ width:'100%', background:C.base, border:`1px solid ${C.border}`,
+                borderRadius:8, padding:'8px 10px', fontSize:11, color:C.moonlight,
+                outline:'none', boxSizing:'border-box' }}
+            />
+          </div>
+          <div style={{ marginBottom:10 }}>
+            <div style={{ fontSize:9, color:C.nebula, marginBottom:3, fontWeight:700 }}>REGION</div>
+            <input
+              value={azureReg}
+              onChange={e=>setAzureReg(e.target.value)}
+              placeholder="e.g. eastus, westeurope, eastasia"
+              style={{ width:'100%', background:C.base, border:`1px solid ${C.border}`,
+                borderRadius:8, padding:'8px 10px', fontSize:11, color:C.moonlight,
+                outline:'none', boxSizing:'border-box' }}
+            />
+          </div>
+
+          <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+            <button onClick={saveAzure} style={{
+              background:C.jade, color:'white', border:'none', borderRadius:8,
+              padding:'7px 14px', fontSize:11, fontWeight:700, cursor:'pointer' }}>
+              Save
+            </button>
+            <button onClick={testAzure} style={{
+              background:'transparent', color:C.aurora, border:`1px solid ${C.aurora}50`,
+              borderRadius:8, padding:'7px 14px', fontSize:11, fontWeight:700, cursor:'pointer' }}>
+              Test
+            </button>
+            {azStatus && (
+              <span style={{ fontSize:10, color: azStatus.includes('✓') ? C.jade : azStatus.includes('✗') ? '#e74c3c' : C.nebula }}>
+                {azStatus}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 6 Voice preset tiles */}
       <div style={{ fontSize:10, color:C.jade, fontWeight:700, letterSpacing:1, marginBottom:8 }}>
@@ -5244,17 +5375,11 @@ function VoicePickerPanel() {
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:7 }}>
         {VOICE_PRESETS.map(p => {
-          const active  = selPreset === p.id;
-          const isF     = p.gender === 'F';
-          const col     = isF ? C.sakura : C.teal;
-          const cfg     = RV_PRESETS[p.id];
-          // Detect which real voice will be used on this device
-          const wsVoice = (window._wsVoiceMap || {})[p.id];
-          const voiceName = wsVoice
-            ? wsVoice.name.replace('Microsoft ', '').replace(' Online (Natural)', '').replace(' Desktop', '')
-            : cfg.rvVoice;
-          const engine  = wsVoice ? 'Device voice' : (rvReady ? 'ResponsiveVoice' : 'Loading…');
-          const engineCol = wsVoice ? C.jade : (rvReady ? C.aurora : C.amber);
+          const active = selPreset === p.id;
+          const isF    = p.gender === 'F';
+          const col    = isF ? C.sakura : C.teal;
+          const cfg    = VOICE_PRESETS_CFG[p.id];
+          const badge  = engineBadge(p);
           return (
             <RippleBtn key={p.id} onClick={()=>handlePreset(p)}
               style={{
@@ -5266,25 +5391,20 @@ function VoicePickerPanel() {
                 boxShadow: active ? `0 4px 14px ${col}40` : 'none',
                 opacity: playing && playing!==p.id ? 0.6 : 1,
               }}>
-              <span style={{ fontSize:22 }}>{p.icon}</span>
-              {/* Character name from RV_PRESETS */}
+              <span style={{ fontSize:20 }}>{p.icon}</span>
               <span style={{ fontSize:10, color:active?col:C.moonlight, fontWeight:900,
                 letterSpacing:0.3, textAlign:'center' }}>
-                {isF?'♀':'♂'} {cfg.label}
+                {isF?'♀':'♂'} {cfg.label.replace('Female · ','').replace('Male · ','')}
               </span>
-              {/* Real voice name used on this device */}
-              <span style={{ fontSize:7.5, color:active?col+'CC':C.nebula, textAlign:'center',
-                lineHeight:1.3, fontFamily:'monospace', maxWidth:80, overflow:'hidden',
-                textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                {voiceName}
+              <span style={{ fontSize:8, color:active?col+'CC':C.nebula, textAlign:'center',
+                lineHeight:1.3, fontFamily:'monospace' }}>
+                {azureActive ? cfg.azureVoice.replace('ja-JP-','').replace('Neural','') : (isF?'Female':'Male')}
               </span>
-              {/* Character description */}
               <span style={{ fontSize:7.5, color:active?col+'AA':C.dim, textAlign:'center' }}>
                 {cfg.character}
               </span>
-              {/* Engine badge */}
-              <span style={{ fontSize:7, color:engineCol, fontWeight:700, letterSpacing:0.3 }}>
-                {engine}
+              <span style={{ fontSize:7, color:badge.col, fontWeight:700, letterSpacing:0.3, textAlign:'center' }}>
+                {badge.text}
               </span>
               {active && playing!==p.id &&
                 <span style={{ fontSize:8, color:col }}>● active</span>}
@@ -5297,8 +5417,9 @@ function VoicePickerPanel() {
 
       <div style={{ fontSize:9, color:C.nebula, textAlign:'center',
         marginTop:12, lineHeight:1.7, borderTop:`1px solid ${C.border}`, paddingTop:8 }}>
-        Uses real device voices when available (Kyoko, Ayumi, Haruka…)<br/>
-        Falls back to ResponsiveVoice online TTS · All Japanese accent
+        {azureActive
+          ? '6 distinct Azure Neural voices · Nanami / Aoi / Shiori · Daichi / Keita / Naoki'
+          : '3 styles × 2 genders · Add Azure key above for genuinely different voices'}
       </div>
     </Glass>
   );
