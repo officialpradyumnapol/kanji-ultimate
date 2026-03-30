@@ -6698,7 +6698,7 @@ const VD = {
     {id:798,w:'暖かい',r:'あたたかい',m:'warm',pos:'adjective',ex:[{j:'暖かい春の日だ。',e:'It is a warm spring day.'},{j:'暖かいコーヒーを飲む。',e:'I drink warm coffee.'}]},
     {id:799,w:'素晴らしい',r:'すばらしい',m:'wonderful / splendid',pos:'adjective',ex:[{j:'素晴らしい景色だ。',e:'It is a wonderful view.'},{j:'素晴らしい演奏だった。',e:'It was a wonderful performance.'}]},
     {id:800,w:'大好き',r:'だいすき',m:'love / really like',pos:'na-adj',ex:[{j:'日本語が大好きです。',e:'I love Japanese.'},{j:'大好きな人がいる。',e:'There is someone I really love.'}]},
-  ]
+  ],
 
   N4: [
     {id:101,w:'集める',r:'あつめる',m:'to collect / gather',pos:'verb',ex:[{j:'切手を集める。',e:'I collect stamps.'},{j:'情報を集めた。',e:'I gathered information.'}]},
