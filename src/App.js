@@ -3832,71 +3832,140 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
    QUIZ VIEW — 3 modes + countdown + animated feedback
 ═══════════════════════════════════════════════════════════════════════════ */
 function QuizView({ bp }) {
-  const [qMode, setQMode]     = useState('meaning');
-  const [q,     setQ]         = useState(null);
-  const [opts,  setOpts]      = useState([]);
-  const [sel,   setSel]       = useState(null);
-  const [done,  setDone]      = useState(false);
-  const [score, setScore]     = useState({c:0,w:0});
-  const [streak,setStreak]    = useState(0);
-  const [best,  setBest]      = useState(0);
-  const [tLeft, setTLeft]     = useState(15);
-  const [tiKey, setTiKey]     = useState(0);
-  const [fx,    setFx]        = useState(null); // 'correct'|'wrong'|null
+  const BATCH = 100;
+  const totalBatches = Math.ceil(KD.length / BATCH);
+
+  const [batchIdx, setBatchIdx] = useState(null); // null = selector screen
+  const [qMode,    setQMode]    = useState('meaning');
+  const [q,        setQ]        = useState(null);
+  const [opts,     setOpts]     = useState([]);
+  const [sel,      setSel]      = useState(null);
+  const [done,     setDone]     = useState(false);
+  const [score,    setScore]    = useState({c:0,w:0});
+  const [streak,   setStreak]   = useState(0);
+  const [best,     setBest]     = useState(0);
+  const [tLeft,    setTLeft]    = useState(15);
+  const [tiKey,    setTiKey]    = useState(0);
+  const [fx,       setFx]       = useState(null);
   const ivRef=useRef(), advRef=useRef();
 
-  const genQ = useCallback((m) => {
-    const md=m||qMode;
-    const qk=KD[Math.floor(Math.random()*KD.length)];
-    const others=[...KD].filter(x=>x.id!==qk.id).sort(()=>Math.random()-0.5).slice(0,3);
-    setQ(qk); setOpts([...others,qk].sort(()=>Math.random()-0.5));
+  const genQ = useCallback((m, bi) => {
+    const md  = m  !== undefined ? m  : qMode;
+    const idx = bi !== undefined ? bi : batchIdx;
+    const pool = KD.slice(idx * BATCH, (idx + 1) * BATCH);
+    if (!pool.length) return;
+    const qk = pool[Math.floor(Math.random() * pool.length)];
+    const others = [...KD].filter(x => x.id !== qk.id).sort(() => Math.random()-0.5).slice(0,3);
+    setQ(qk); setOpts([...others, qk].sort(() => Math.random()-0.5));
     setSel(null); setDone(false); setFx(null);
-    setTLeft(15); setTiKey(k=>k+1);
+    setTLeft(15); setTiKey(k => k+1);
     clearTimeout(advRef.current); clearInterval(ivRef.current);
-  },[qMode]);
+  }, [qMode, batchIdx]);
 
-  useEffect(()=>{ genQ(); return()=>{ clearInterval(ivRef.current); clearTimeout(advRef.current); }; },[]);
+  useEffect(() => {
+    if (batchIdx === null) return;
+    genQ(qMode, batchIdx);
+    return () => { clearInterval(ivRef.current); clearTimeout(advRef.current); };
+  }, [batchIdx]);
 
-  useEffect(()=>{
-    if(done){ clearInterval(ivRef.current); return; }
-    ivRef.current=setInterval(()=>{
-      setTLeft(t=>{
-        if(t<=1){ clearInterval(ivRef.current); setDone(true); setStreak(0); advRef.current=setTimeout(()=>genQ(),1800); return 0; }
+  useEffect(() => {
+    if (batchIdx === null || done) { clearInterval(ivRef.current); return; }
+    ivRef.current = setInterval(() => {
+      setTLeft(t => {
+        if (t <= 1) { clearInterval(ivRef.current); setDone(true); setStreak(0); advRef.current=setTimeout(()=>genQ(),1800); return 0; }
         return t-1;
       });
-    },1000);
-    return()=>clearInterval(ivRef.current);
-  },[tiKey,done]);
+    }, 1000);
+    return () => clearInterval(ivRef.current);
+  }, [tiKey, done, batchIdx]);
 
-  const answer=opt=>{
-    if(done) return;
+  const answer = opt => {
+    if (done) return;
     clearInterval(ivRef.current);
     setSel(opt.id); setDone(true);
-    const ok=opt.id===q.id;
-    setFx(ok?'correct':'wrong');
-    setScore(s=>({c:s.c+(ok?1:0),w:s.w+(ok?0:1)}));
-    if(ok){ const ns=streak+1; setStreak(ns); if(ns>best)setBest(ns); } else setStreak(0);
-    advRef.current=setTimeout(()=>genQ(),1900);
+    const ok = opt.id === q.id;
+    setFx(ok ? 'correct' : 'wrong');
+    setScore(s => ({c:s.c+(ok?1:0), w:s.w+(ok?0:1)}));
+    if (ok) { const ns=streak+1; setStreak(ns); if(ns>best)setBest(ns); } else setStreak(0);
+    advRef.current = setTimeout(() => genQ(), 1900);
   };
 
-  if(!q) return <div style={{color:C.moonlight,padding:40,textAlign:'center'}}>Loading…</div>;
+  // ── Batch selector ──
+  if (batchIdx === null) {
+    return (
+      <div style={{ flex:1, overflowY:'auto', padding:'16px',
+        WebkitOverflowScrolling:'touch' }}>
+        <div style={{ maxWidth:560, margin:'0 auto' }}>
+          <div style={{ fontSize:11, color:C.aurora, fontWeight:800, letterSpacing:3,
+            fontFamily:"'Cinzel',serif", textAlign:'center', marginBottom:18 }}>
+            — SELECT QUIZ BATCH —
+          </div>
+          <div style={{ display:'grid',
+            gridTemplateColumns: bp.isLarge ? 'repeat(4,1fr)' : bp.isTablet ? 'repeat(3,1fr)' : 'repeat(2,1fr)',
+            gap:10 }}>
+            {Array.from({ length: totalBatches }, (_, i) => {
+              const from = i * BATCH + 1;
+              const to   = Math.min((i + 1) * BATCH, KD.length);
+              // JLPT level of the middle card in this batch as a hint
+              const midLv = KD[Math.min(i * BATCH + 49, KD.length-1)]?.lv || '';
+              return (
+                <RippleBtn key={i} onClick={() => {
+                    setBatchIdx(i);
+                    setScore({c:0,w:0}); setStreak(0); setBest(0);
+                    genQ(qMode, i);
+                  }}
+                  style={{ background:`linear-gradient(135deg,${C.card}F0,${C.lifted}E0)`,
+                    border:`1.5px solid ${C.aurora}40`, borderRadius:14,
+                    padding:'16px 10px', cursor:'pointer', textAlign:'center',
+                    boxShadow:`0 4px 16px rgba(0,0,0,0.35)`, transition:'all 0.2s' }}>
+                  <div style={{ fontSize:13, fontWeight:900, color:C.aurora,
+                    fontFamily:"'Cinzel',serif", marginBottom:4 }}>
+                    Batch {i + 1}
+                  </div>
+                  <div style={{ fontSize:10, color:C.nebula }}>#{from} – #{to}</div>
+                  <div style={{ fontSize:9, color:C.dim, marginTop:4 }}>{midLv} range</div>
+                </RippleBtn>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const total=score.c+score.w;
-  const acc=total>0?Math.round(score.c/total*100):0;
-  const tp=tLeft/15;
-  const timerColor=tp>0.5?C.jade:tp>0.25?C.amber:C.crimson;
+  if (!q) return <div style={{color:C.moonlight,padding:40,textAlign:'center'}}>Loading…</div>;
+
+  const total = score.c+score.w;
+  const acc   = total>0 ? Math.round(score.c/total*100) : 0;
+  const tp    = tLeft/15;
+  const timerColor = tp>0.5?C.jade:tp>0.25?C.amber:C.crimson;
+  const from  = batchIdx * BATCH + 1;
+  const to    = Math.min((batchIdx + 1) * BATCH, KD.length);
 
   return (
     <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'auto',
       padding:bp.isLarge?'16px 34px':bp.isTablet?'14px 22px':'12px 14px', gap:10,
       position:'relative' }}>
 
-      {/* Full-screen feedback flash */}
+      {/* Flash feedback */}
       {fx && (
         <div style={{ position:'absolute', inset:0, zIndex:50, pointerEvents:'none',
           background:fx==='correct'?`${C.jade}12`:`${C.crimson}12`,
-          animation:'fadeIn 0.15s ease both', borderRadius:0 }}/>
+          animation:'fadeIn 0.15s ease both' }}/>
       )}
+
+      {/* Batch header + back */}
+      <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+        <RippleBtn onClick={() => { setBatchIdx(null); clearInterval(ivRef.current); clearTimeout(advRef.current); }}
+          style={{ background:`${C.aurora}18`, color:C.aurora,
+            border:`1px solid ${C.aurora}40`, borderRadius:8,
+            padding:'5px 12px', fontSize:11, fontWeight:700, cursor:'pointer' }}>
+          ← Batches
+        </RippleBtn>
+        <span style={{ fontSize:11, color:C.starlight, fontWeight:700, fontFamily:"'Cinzel',serif" }}>
+          Batch {batchIdx+1} &nbsp;·&nbsp; #{from}–#{to}
+        </span>
+      </div>
 
       {/* Timer bar */}
       <div style={{ height:5, background:C.border, borderRadius:3, overflow:'hidden', flexShrink:0 }}>
@@ -3909,7 +3978,8 @@ function QuizView({ bp }) {
       {/* Score strip */}
       <Glass style={{ display:'flex', justifyContent:'space-around', padding:'14px 8px', flexShrink:0 }}>
         {[['✓','Correct',score.c,C.jade],['%','Accuracy',acc+'%',C.aurora],
-          ['🔥','Streak',streak,C.amber],['🏆','Best',best,C.sakura],['⏱','Time',tLeft+'s',timerColor]].map(([ic,lb,vl,cl])=>(
+          ['🔥','Streak',streak,C.amber],['🏆','Best',best,C.sakura],['⏱','Time',tLeft+'s',timerColor]
+        ].map(([ic,lb,vl,cl])=>(
           <div key={lb} style={{ textAlign:'center' }}>
             <div style={{ fontSize:22, fontWeight:900, color:cl, lineHeight:1,
               animation:lb==='Streak'&&streak>0?'pop 0.3s ease':undefined }}>{vl}</div>
@@ -3921,7 +3991,7 @@ function QuizView({ bp }) {
       {/* Mode buttons */}
       <div style={{ display:'flex', gap:7, flexShrink:0 }}>
         {[['meaning','漢 → Meaning'],['kanji','Meaning → 漢'],['reading','漢 → Reading']].map(([m,l])=>(
-          <RippleBtn key={m} onClick={()=>{ setQMode(m); genQ(m); }}
+          <RippleBtn key={m} onClick={()=>{ setQMode(m); genQ(m, batchIdx); }}
             style={{ flex:1, background:qMode===m?`linear-gradient(135deg,#7BB8D4CC,#60A5C888)`:C.lifted,
               color:qMode===m?'#fff':C.starlight, border:`1px solid ${qMode===m?C.aurora+'80':C.border}`,
               borderRadius:13, padding:'10px 4px', fontSize:bp.isLarge?12:10, fontWeight:900,
@@ -3939,7 +4009,8 @@ function QuizView({ bp }) {
         </div>
         {qMode!=='kanji' ? (
           <>
-            <div style={{ fontSize:bp.isLarge?130:bp.isTablet?108:88, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
+            <div style={{ fontSize:bp.isLarge?130:bp.isTablet?108:88,
+              fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
               color:C.moonlight, lineHeight:1,
               textShadow:`0 0 70px #7BB8D470, 0 0 140px #7BB8D425`, fontWeight:900,
               filter:`drop-shadow(0 0 30px #7BB8D460)` }}>{q.k}</div>
@@ -3967,7 +4038,7 @@ function QuizView({ bp }) {
                 padding:qMode==='kanji'?'20px 8px':'15px 12px',
                 fontSize:qMode==='kanji'?(bp.isLarge?48:38):(bp.isLarge?16:13),
                 fontWeight:800, cursor:'pointer', transition:'all 0.28s',
-                fontFamily:qMode==='kanji'?'serif,"Noto Sans JP"'  :'inherit',
+                fontFamily:qMode==='kanji'?'serif,"Noto Sans JP"':'inherit',
                 boxShadow:sh, textAlign:'center',
                 display:'flex', flexDirection:'column', alignItems:'center', gap:5,
                 animation:done&&isC?'pop 0.35s ease both':undefined }}>
@@ -11341,6 +11412,288 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   VOCAB QUIZ VIEW — Batches of 100 cards each
+═══════════════════════════════════════════════════════════════════════════ */
+function VocabQuizView({ words, bp, theme='sky' }) {
+  const TC = (THEMES[theme]||THEMES.sky).C;
+
+  const BATCH = 100;
+  const totalBatches = Math.ceil(words.length / BATCH);
+
+  const [batchIdx,   setBatchIdx]  = useState(null); // null = batch selector
+  const [qMode,      setQMode]     = useState('word'); // 'word'→meaning | 'meaning'→word
+  const [q,          setQ]         = useState(null);
+  const [opts,       setOpts]      = useState([]);
+  const [sel,        setSel]       = useState(null);
+  const [done,       setDone]      = useState(false);
+  const [score,      setScore]     = useState({c:0,w:0,total:0});
+  const [streak,     setStreak]    = useState(0);
+  const [best,       setBest]      = useState(0);
+  const [tLeft,      setTLeft]     = useState(15);
+  const [tiKey,      setTiKey]     = useState(0);
+  const [fx,         setFx]        = useState(null);
+  const [qNum,       setQNum]      = useState(0);
+  const ivRef = useRef(); const advRef = useRef();
+
+  const batchWords = batchIdx !== null
+    ? words.slice(batchIdx * BATCH, (batchIdx + 1) * BATCH)
+    : [];
+
+  const genQ = useCallback((mode, batch) => {
+    const pool = batch !== undefined
+      ? words.slice(batch * BATCH, (batch + 1) * BATCH)
+      : batchWords;
+    if (!pool.length) return;
+    const md = mode !== undefined ? mode : qMode;
+    const qw = pool[Math.floor(Math.random() * pool.length)];
+    const distractors = [...words]
+      .filter(x => x.id !== qw.id)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    setQ(qw);
+    setOpts([...distractors, qw].sort(() => Math.random() - 0.5));
+    setSel(null); setDone(false); setFx(null);
+    setTLeft(15); setTiKey(k => k + 1);
+    setQNum(n => n + 1);
+    clearTimeout(advRef.current); clearInterval(ivRef.current);
+  }, [batchWords, qMode, words]);
+
+  useEffect(() => {
+    if (batchIdx === null) return;
+    genQ(qMode, batchIdx);
+    return () => { clearInterval(ivRef.current); clearTimeout(advRef.current); };
+  }, [batchIdx]);
+
+  useEffect(() => {
+    if (batchIdx === null || done) { clearInterval(ivRef.current); return; }
+    ivRef.current = setInterval(() => {
+      setTLeft(t => {
+        if (t <= 1) {
+          clearInterval(ivRef.current);
+          setDone(true); setStreak(0);
+          setScore(s => ({ ...s, w: s.w + 1, total: s.total + 1 }));
+          advRef.current = setTimeout(() => genQ(), 1900);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(ivRef.current);
+  }, [tiKey, done, batchIdx]);
+
+  const answer = opt => {
+    if (done) return;
+    clearInterval(ivRef.current);
+    setSel(opt.id); setDone(true);
+    const ok = opt.id === q.id;
+    setFx(ok ? 'correct' : 'wrong');
+    setScore(s => ({ c: s.c + (ok?1:0), w: s.w + (ok?0:1), total: s.total + 1 }));
+    if (ok) { const ns = streak + 1; setStreak(ns); if (ns > best) setBest(ns); }
+    else setStreak(0);
+    advRef.current = setTimeout(() => genQ(), 1900);
+  };
+
+  // ── Batch selector ──
+  if (batchIdx === null) {
+    return (
+      <div style={{ flex:1, overflowY:'auto', padding:'16px',
+        WebkitOverflowScrolling:'touch' }}>
+        <div style={{ maxWidth:520, margin:'0 auto' }}>
+          <div style={{ fontSize:11, color:TC.aurora, fontWeight:800, letterSpacing:3,
+            fontFamily:"'Cinzel',serif", textAlign:'center', marginBottom:18 }}>
+            — SELECT QUIZ BATCH —
+          </div>
+          <div style={{ display:'grid',
+            gridTemplateColumns: bp?.isLarge ? 'repeat(4,1fr)' : bp?.isTablet ? 'repeat(3,1fr)' : 'repeat(2,1fr)',
+            gap:10 }}>
+            {Array.from({ length: totalBatches }, (_, i) => {
+              const from = i * BATCH + 1;
+              const to   = Math.min((i + 1) * BATCH, words.length);
+              return (
+                <RippleBtn key={i} onClick={() => {
+                    setBatchIdx(i);
+                    setScore({c:0,w:0,total:0});
+                    setStreak(0); setBest(0); setQNum(0);
+                    genQ(qMode, i);
+                  }}
+                  style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
+                    border:`1.5px solid ${TC.aurora}40`, borderRadius:14,
+                    padding:'16px 10px', cursor:'pointer', textAlign:'center',
+                    boxShadow:`0 4px 16px rgba(0,0,0,0.3)`,
+                    transition:'all 0.2s' }}>
+                  <div style={{ fontSize:13, fontWeight:900, color:TC.aurora,
+                    fontFamily:"'Cinzel',serif", marginBottom:4 }}>
+                    Batch {i + 1}
+                  </div>
+                  <div style={{ fontSize:10, color:TC.nebula }}>
+                    #{from} – #{to}
+                  </div>
+                  <div style={{ fontSize:9, color:TC.dim, marginTop:4 }}>
+                    {to - from + 1} words
+                  </div>
+                </RippleBtn>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!q) return (
+    <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div style={{ color:TC.moonlight }}>Loading…</div>
+    </div>
+  );
+
+  const acc   = score.total > 0 ? Math.round(score.c / score.total * 100) : 0;
+  const tp    = tLeft / 15;
+  const timerColor = tp > 0.5 ? TC.jade : tp > 0.25 ? TC.amber : TC.crimson;
+  const from  = batchIdx * BATCH + 1;
+  const to    = Math.min((batchIdx + 1) * BATCH, words.length);
+
+  return (
+    <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'auto',
+      padding: bp?.isLarge?'14px 34px':bp?.isTablet?'12px 22px':'10px 12px', gap:9,
+      position:'relative' }}>
+
+      {/* Flash feedback */}
+      {fx && (
+        <div style={{ position:'absolute', inset:0, zIndex:50, pointerEvents:'none',
+          background: fx==='correct' ? `${TC.jade}12` : `${TC.crimson}12`,
+          animation:'fadeIn 0.15s ease both' }}/>
+      )}
+
+      {/* Batch header + back button */}
+      <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+        <RippleBtn onClick={() => { setBatchIdx(null); clearInterval(ivRef.current); clearTimeout(advRef.current); }}
+          style={{ background:`${TC.aurora}18`, color:TC.aurora,
+            border:`1px solid ${TC.aurora}40`, borderRadius:8,
+            padding:'5px 12px', fontSize:11, fontWeight:700, cursor:'pointer' }}>
+          ← Batches
+        </RippleBtn>
+        <span style={{ fontSize:11, color:TC.starlight, fontWeight:700,
+          fontFamily:"'Cinzel',serif" }}>
+          Batch {batchIdx + 1} &nbsp;·&nbsp; #{from}–#{to}
+        </span>
+      </div>
+
+      {/* Timer bar */}
+      <div style={{ height:5, background:TC.border, borderRadius:3, overflow:'hidden', flexShrink:0 }}>
+        <div style={{ height:'100%', borderRadius:3,
+          background:`linear-gradient(90deg, ${timerColor}, ${timerColor}80)`,
+          width:`${tp*100}%`, transition:'width 0.85s linear',
+          boxShadow:`0 0 10px ${timerColor}80` }}/>
+      </div>
+
+      {/* Score strip */}
+      <div style={{ display:'flex', justifyContent:'space-around',
+        background:`linear-gradient(135deg,${TC.card}E8,${TC.lifted}D8)`,
+        borderRadius:14, padding:'12px 8px', flexShrink:0,
+        border:`1px solid ${TC.aurora}25`,
+        boxShadow:`0 4px 16px rgba(0,0,0,0.25)` }}>
+        {[['✓','Correct',score.c,TC.jade],['%','Accuracy',acc+'%',TC.aurora],
+          ['🔥','Streak',streak,TC.amber],['🏆','Best',best,TC.sakura],['⏱','Time',tLeft+'s',timerColor]
+        ].map(([ic,lb,vl,cl]) => (
+          <div key={lb} style={{ textAlign:'center' }}>
+            <div style={{ fontSize:20, fontWeight:900, color:cl, lineHeight:1 }}>{vl}</div>
+            <div style={{ fontSize:9, color:TC.nebula, marginTop:2 }}>{lb}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Mode buttons */}
+      <div style={{ display:'flex', gap:7, flexShrink:0 }}>
+        {[['word','語 → Meaning'],['meaning','Meaning → 語']].map(([m,l]) => (
+          <RippleBtn key={m} onClick={() => { setQMode(m); genQ(m, batchIdx); }}
+            style={{ flex:1,
+              background: qMode===m ? `linear-gradient(135deg,${TC.aurora}CC,${TC.teal}88)` : TC.lifted,
+              color: qMode===m ? TC.card : TC.starlight,
+              border:`1px solid ${qMode===m ? TC.aurora+'80' : TC.border}`,
+              borderRadius:12, padding:'10px 4px',
+              fontSize: bp?.isLarge?12:10, fontWeight:900, cursor:'pointer',
+              boxShadow: qMode===m ? `0 4px 18px ${TC.aurora}45` : 'none',
+              transition:'all 0.25s' }}>
+            {l}
+          </RippleBtn>
+        ))}
+      </div>
+
+      {/* Question card */}
+      <div style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
+        borderRadius:18, padding: bp?.isLarge?28:20, textAlign:'center', flexShrink:0,
+        border:`1px solid ${TC.aurora}30`,
+        boxShadow:`0 8px 32px rgba(0,0,0,0.4), 0 0 40px ${TC.aurora}10`,
+        animation:'fadeUp 0.35s ease both' }}>
+        <div style={{ fontSize:9, color:TC.nebula, fontWeight:800, letterSpacing:2, marginBottom:12,
+          fontFamily:"'Cinzel',serif" }}>
+          {qMode==='word' ? 'WHAT DOES THIS WORD MEAN?' : 'WHICH WORD MATCHES?'}
+        </div>
+        {qMode === 'word' ? (
+          <>
+            <div style={{ fontSize: bp?.isLarge?64:bp?.isTablet?54:46,
+              fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
+              color:TC.moonlight, lineHeight:1.1, fontWeight:900,
+              textShadow:`0 0 40px ${TC.aurora}60, 0 0 80px ${TC.aurora}25`,
+              filter:`drop-shadow(0 0 20px ${TC.aurora}50)` }}>
+              {q.w}
+            </div>
+            <div style={{ fontSize:13, color:TC.tealD, marginTop:6,
+              fontFamily:'serif,"Noto Sans JP"', letterSpacing:2 }}>{q.r}</div>
+          </>
+        ) : (
+          <div style={{ fontSize: bp?.isLarge?30:24, fontWeight:900, color:TC.moonlight,
+            lineHeight:1.3, textShadow:`0 0 20px ${TC.aurora}40` }}>
+            {q.m}
+          </div>
+        )}
+      </div>
+
+      {/* Options */}
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, flexShrink:0 }}>
+        {opts.map(opt => {
+          const isC = opt.id === q.id, isSel = sel === opt.id;
+          let bg = TC.lifted, clr = TC.moonlight, bdr = TC.border, sh = 'none';
+          if (done) {
+            if (isC)       { bg=`${TC.jade}22`; clr=TC.jade; bdr=`${TC.jade}75`; sh=`0 4px 22px ${TC.jade}45`; }
+            else if (isSel){ bg=`${TC.crimson}22`; clr=TC.crimson; bdr=`${TC.crimson}75`; sh=`0 4px 22px ${TC.crimson}45`; }
+          }
+          const label = qMode==='word' ? opt.m : opt.w;
+          const sub   = qMode==='word' ? `(${opt.w} · ${opt.r})` : opt.r;
+          return (
+            <RippleBtn key={opt.id} onClick={() => answer(opt)}
+              style={{ background:bg, color:clr, border:`1.5px solid ${bdr}`, borderRadius:14,
+                padding:'14px 10px', fontSize: bp?.isLarge?15:13, fontWeight:800,
+                cursor:'pointer', transition:'all 0.28s', textAlign:'center',
+                display:'flex', flexDirection:'column', alignItems:'center', gap:4,
+                boxShadow:sh,
+                animation: done&&isC ? 'pop 0.35s ease both' : undefined,
+                fontFamily: qMode==='meaning' ? '"Zen Old Mincho","Noto Serif JP",serif' : 'inherit' }}>
+              {label}
+              {done && isC && (
+                <span style={{ fontSize:10, color:TC.jade, fontFamily:'inherit' }}>{sub}</span>
+              )}
+            </RippleBtn>
+          );
+        })}
+      </div>
+
+      {done && (
+        <RippleBtn onClick={() => genQ()}
+          style={{ background:`linear-gradient(135deg,${TC.aurora},${TC.jade}88)`,
+            color:TC.card, border:'none', borderRadius:14, padding:14,
+            fontSize:14, fontWeight:900, cursor:'pointer',
+            boxShadow:`0 6px 28px ${TC.aurora}55`, flexShrink:0,
+            fontFamily:"'Cinzel',serif",
+            animation:'pop 0.35s ease both' }}>
+          Next Question →
+        </RippleBtn>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    VOCAB APP
 ═══════════════════════════════════════════════════════════════════════════ */
 const JLPT_LEVELS = ['N5','N4','N3','N2','N1'];
@@ -11408,9 +11761,9 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
 
   const VTABS = [
     { id:'study',    label:'Study',    icon:'📖' },
+    { id:'quiz',     label:'Quiz',     icon:'🧠' },
     { id:'browse',   label:'Browse',   icon:'🗂'  },
     { id:'stats',    label:'Stats',    icon:'📊' },
-    { id:'awards',   label:'Awards',   icon:'🏆' },
     { id:'settings', label:'Settings', icon:'⚙️' },
   ];
 
@@ -11721,15 +12074,8 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
             </div>
           )}
 
-          {tab === 'awards' && (
-            <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
-              <div style={{ textAlign:'center', color:TC.aurora }}>
-                <div style={{ fontSize:40, marginBottom:12 }}>🏆</div>
-                <div style={{ fontSize:16, fontWeight:700, color:TC.moonlight,
-                  fontFamily:"'Cinzel',serif" }}>Achievements coming soon!</div>
-                <div style={{ fontSize:13, color:TC.nebula, marginTop:8 }}>Keep studying to unlock awards.</div>
-              </div>
-            </div>
+          {tab === 'quiz' && (
+            <VocabQuizView words={words} bp={bp} theme={theme}/>
           )}
 
           {tab === 'settings' && (
