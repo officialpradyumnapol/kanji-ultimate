@@ -12820,6 +12820,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
             </RippleBtn>
           ))}
         </div>
+
       </div>
     </div>
   );
