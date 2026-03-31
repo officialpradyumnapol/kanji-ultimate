@@ -12823,5 +12823,5 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
       </div>
     </div>
   );
-}}
+  }}
 
