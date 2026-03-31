@@ -5834,7 +5834,7 @@ export default function KanjiApp() {
   if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>
 
   if(appMode==='home') return <HomeScreen onSelectKanji={()=>setAppMode('kanji')} onSelectVocab={()=>setAppMode('vocab')} theme={theme}/>;
-  if(appMode==='vocab') return <VocabApp onBack={()=>setAppMode('home')}/>;
+  if(appMode==='vocab') return <VocabApp onBack={()=>setAppMode('home')} theme={theme} setTheme={applyThemeAndRender}/>;
   
 
   return (
@@ -11132,118 +11132,207 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
 /* ═══════════════════════════════════════════════════════════════════════════
    VOCAB WORD CARD
 ═══════════════════════════════════════════════════════════════════════════ */
-function VocabCard({ word, cs, flipped, onFlip, onStar }) {
-  const cardH = 360;
+function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky', level='N5' }) {
+  const TC = (THEMES[theme]||THEMES.sky).C;
+  const uid = useRef('vg' + Math.random().toString(36).slice(2, 6)).current;
+  if (!word) return null;
+  const st    = STATUS[cs?.status] || STATUS.new;
+  const cardH = bp?.isLarge?500:bp?.isTablet?440:390;
+  const wlen  = (word.w||'').length;
+  const wsize = bp?.isLarge ? (wlen<=2?110:wlen<=4?85:65) : bp?.isTablet ? (wlen<=2?90:wlen<=4?70:52) : (wlen<=2?78:wlen<=4?60:44);
+  const svgW  = Math.min(wsize * wlen * 0.88 + 24, 340);
+  const svgH  = wsize * 1.3;
+  const c1=TC.aurora, c2=TC.teal, c3=TC.jade;
+
   const faceBase = {
     position:'absolute', inset:0, borderRadius:24, overflow:'hidden',
     backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden',
     display:'flex', flexDirection:'column',
   };
-  const st = STATUS[cs?.status] || STATUS.new;
+
+  const lvColor = level==='N5'?'#60A5C8':level==='N4'?'#7BB8D4':level==='N3'?'#818CF8':level==='N2'?'#8B5CF6':'#C9A84C';
+  const lvBg    = `${lvColor}22`;
+  const lvBdr   = `${lvColor}40`;
 
   return (
-    <div style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative', perspective:1400 }}
-      onClick={e => { if(e.target.closest('button')) return; onFlip(); }}>
-      <div style={{
-        width:'100%', height:'100%', position:'relative',
+    <div ref={outerRef}
+      style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative',
+        perspective:1400, willChange:'transform,opacity' }}>
+      <div style={{ width:'100%', height:'100%', position:'relative',
         transformStyle:'preserve-3d',
-        transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-        transition:'transform 0.55s cubic-bezier(0.4,0.2,0.2,1)',
-      }}>
-        {/* FRONT */}
+        transform:flipped?'rotateY(180deg)':'rotateY(0deg)',
+        transition:'transform 0.6s cubic-bezier(0.4,0.2,0.2,1)' }}>
+
+        {/* ──── FRONT ──── */}
         <div style={{ ...faceBase,
-          background:'linear-gradient(155deg,#f0f9ff 0%,#e0f2fe 50%,#bae6fd 100%)',
-          border:`2px solid ${st.color}60`,
-          boxShadow:`0 20px 60px rgba(37,99,235,0.12), inset 0 1px 0 rgba(255,255,255,0.8)`,
+          background:`linear-gradient(155deg, ${TC.card} 0%, ${TC.lifted} 40%, ${TC.abyss} 100%)`,
+          border:`1.5px solid ${st.color}90`,
+          boxShadow:`0 24px 80px rgba(0,0,0,0.95), 0 0 0 1px rgba(201,168,76,0.15), inset 0 1px 0 rgba(138,175,212,0.12), inset 0 -1px 0 rgba(0,0,0,0.5)`,
         }}>
-          {/* Header */}
-          <div style={{ height:44, display:'flex', alignItems:'center', justifyContent:'space-between',
-            padding:'0 16px', background:`${st.color}18`, borderBottom:`1px solid ${st.color}30` }}>
-            <span style={{ background:`${st.color}22`, color:st.color, borderRadius:8,
-              padding:'3px 10px', fontSize:11, fontWeight:800 }}>
-              {st.emoji} {st.label}
-            </span>
-            <div style={{display:'flex',gap:8,alignItems:'center'}}>
-              <span style={{ fontSize:11, color:'#7c3aed', fontWeight:700,
-                background:'#7c3aed15', borderRadius:8, padding:'3px 10px' }}>
-                {word?.pos}
-              </span>
-              <button onClick={e=>{e.stopPropagation();onStar();}}
-                style={{ background:cs?.starred?'#fef3c720':'transparent',
-                  color:cs?.starred?'#f59e0b':'#94a3b8',
-                  border:`1px solid ${cs?.starred?'#f59e0b60':'transparent'}`,
-                  borderRadius:8, padding:'4px 8px', fontSize:18, cursor:'pointer' }}>
+          {/* Shimmer overlay */}
+          <div style={{ position:'absolute', inset:0, pointerEvents:'none', zIndex:10,
+            background:`linear-gradient(105deg, transparent 40%, ${st.color}08 50%, transparent 60%)`,
+            backgroundSize:'200% 100%', animation:'shimmer 3s linear infinite', opacity:0.6 }}/>
+          {/* Header strip */}
+          <div style={{ height:48, flexShrink:0,
+            background:`linear-gradient(90deg, ${st.color}28 0%, ${st.color}12 50%, transparent 100%)`,
+            borderBottom:`1px solid ${st.color}30`,
+            display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px',
+            position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', inset:0, opacity:0.15,
+              background:`repeating-linear-gradient(90deg, transparent, transparent 20px, ${st.color}40 20px, ${st.color}40 22px)`,
+              animation:'waveFlow 3s linear infinite' }}/>
+            <div style={{ display:'flex', gap:8, alignItems:'center', position:'relative' }}>
+              <span style={{ background:`${st.color}22`, color:st.color, borderRadius:9,
+                padding:'3px 11px', fontSize:11, fontWeight:800, border:`1px solid ${st.color}40`,
+                letterSpacing:0.4, boxShadow:`0 2px 8px ${st.color}30` }}>#{word.id}</span>
+              <span style={{ background:lvBg, color:lvColor, borderRadius:9,
+                padding:'3px 10px', fontSize:11, fontWeight:900, border:`1px solid ${lvBdr}`,
+                letterSpacing:0.5 }}>{level}</span>
+              <span style={{ fontSize:12, color:st.color, fontWeight:800 }}>{st.emoji} {st.label}</span>
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap:8, position:'relative' }}>
+              <span style={{ background:`${TC.aurora}18`, color:TC.aurora, borderRadius:7,
+                padding:'2px 9px', fontSize:10, fontWeight:700, border:`1px solid ${TC.aurora}35` }}>
+                {word.pos}</span>
+              <button data-star="1" onClick={e=>{e.stopPropagation();onStar();}}
+                style={{ background:cs?.starred?`${TC.amber}20`:'transparent',
+                  color:cs?.starred?TC.amber:TC.dim,
+                  border:`1px solid ${cs?.starred?TC.amber+'60':'transparent'}`,
+                  borderRadius:8, padding:'4px 8px', fontSize:20, cursor:'pointer',
+                  transition:'all 0.2s', lineHeight:1 }}>
                 {cs?.starred?'★':'☆'}
               </button>
             </div>
           </div>
-          {/* Main — Japanese word */}
-          <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
-            justifyContent:'center', gap:12, padding:'20px 24px' }}>
-            <div style={{ fontSize:64, fontWeight:900, lineHeight:1,
-              fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
-              background:'linear-gradient(135deg,#1e3a8a,#2563eb,#0ea5e9)',
-              WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-              filter:'drop-shadow(0 2px 8px rgba(37,99,235,0.2))',
-              textAlign:'center' }}>
-              {word?.w}
+
+          {/* Main — big word SVG */}
+          <div style={{ flex:1, display:'flex', flexDirection:'column',
+            alignItems:'center', justifyContent:'center', gap:10,
+            padding:'20px 24px', position:'relative' }}>
+            <div style={{ position:'relative', zIndex:1,
+              display:'inline-flex', alignItems:'center', justifyContent:'center',
+              animation:'kanjiPop 0.5s cubic-bezier(0.34,1.5,0.64,1) both',
+              filter:`drop-shadow(0 0 20px ${c1}99) drop-shadow(0 6px 16px ${c2}66)`,
+              marginBottom:4 }}>
+              <svg width={svgW} height={svgH}
+                viewBox={`0 0 ${svgW} ${svgH}`}
+                style={{overflow:'visible', display:'block'}}>
+                <defs>
+                  <linearGradient id={`${uid}_g`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={c1}>
+                      <animate attributeName="stop-color" values={`${c1};${c2};${c3};${c1}`} dur="8s" repeatCount="indefinite"/>
+                    </stop>
+                    <stop offset="50%" stopColor={c2}>
+                      <animate attributeName="stop-color" values={`${c2};${c3};${c1};${c2}`} dur="8s" repeatCount="indefinite"/>
+                    </stop>
+                    <stop offset="100%" stopColor={c3}>
+                      <animate attributeName="stop-color" values={`${c3};${c1};${c2};${c3}`} dur="8s" repeatCount="indefinite"/>
+                    </stop>
+                  </linearGradient>
+                </defs>
+                <text x={svgW/2} y={svgH/2}
+                  dominantBaseline="central" textAnchor="middle"
+                  fontSize={wsize} fontWeight="900"
+                  fontFamily='"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif'
+                  fill={`url(#${uid}_g)`}
+                >{word.w}</text>
+              </svg>
             </div>
-            <div style={{ fontSize:18, color:'#64748b', fontFamily:'"Noto Sans JP",serif',
-              letterSpacing:2, fontWeight:500 }}>
-              {word?.r}
+            <div style={{ fontSize:bp?.isLarge?17:bp?.isTablet?15:14, color:TC.starlight,
+              fontFamily:'serif,"Noto Sans JP"', fontWeight:700, letterSpacing:3,
+              textShadow:`0 0 20px ${TC.teal}40` }}>{word.r}</div>
+            <div style={{ position:'absolute', bottom:10, fontSize:9, color:TC.dim, letterSpacing:2 }}>
+              ◉ TAP TO REVEAL
             </div>
-          </div>
-          <div style={{ textAlign:'center', padding:'8px 0 14px', fontSize:10,
-            color:'#94a3b8', letterSpacing:2 }}>
-            ◉ TAP TO REVEAL MEANING
           </div>
         </div>
 
-        {/* BACK */}
+        {/* ──── BACK ──── */}
         <div style={{ ...faceBase, transform:'rotateY(180deg)',
-          background:'linear-gradient(155deg,#faf5ff 0%,#f3e8ff 50%,#e9d5ff 100%)',
-          border:'2px solid rgba(124,58,237,0.3)',
-          boxShadow:'0 20px 60px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.8)',
-        }}>
+          background:`linear-gradient(145deg, ${TC.abyss} 0%, ${TC.card} 40%, ${TC.lifted} 100%)`,
+          border:`1.5px solid ${TC.jade}70`,
+          boxShadow:`0 24px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.06)` }}>
           {/* Back header */}
-          <div style={{ height:44, display:'flex', alignItems:'center', justifyContent:'space-between',
-            padding:'0 16px', background:'rgba(124,58,237,0.1)', borderBottom:'1px solid rgba(124,58,237,0.2)' }}>
-            <span style={{ background:'rgba(124,58,237,0.15)', color:'#7c3aed', borderRadius:8,
-              padding:'3px 10px', fontSize:11, fontWeight:800, letterSpacing:1 }}>✦ ANSWER</span>
-            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-              <SpeakerBtn text={word?.w} lang="ja-JP" size={15} color="#7c3aed"/>
-              <SpeakerBtn text={word?.m} lang="en-US" size={15} color="#0ea5e9"/>
+          <div style={{ height:46, flexShrink:0,
+            background:`linear-gradient(90deg, ${TC.jade}22 0%, ${TC.teal}12 50%, transparent 100%)`,
+            borderBottom:`1px solid ${TC.jade}30`,
+            display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px',
+            position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', inset:0, opacity:0.1,
+              background:`repeating-linear-gradient(90deg, transparent, transparent 18px, ${TC.jade}40 18px, ${TC.jade}40 20px)`,
+              animation:'waveFlow 4s linear infinite' }}/>
+            <div style={{ display:'flex', gap:8, alignItems:'center', position:'relative' }}>
+              <span style={{ background:`${TC.teal}26`, color:TC.jadeD, borderRadius:7,
+                padding:'3px 11px', fontSize:11, fontWeight:700, fontFamily:"'Cinzel',serif",
+                letterSpacing:1, border:`1px solid ${TC.teal}80`,
+                boxShadow:`0 2px 8px ${TC.teal}40` }}>✦ ANSWER</span>
+              <span style={{ background:`${TC.aurora}18`, color:TC.aurora, borderRadius:7,
+                padding:'3px 10px', fontSize:10, fontWeight:700, border:`1px solid ${TC.aurora}35` }}>
+                {word.pos}</span>
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap:8, position:'relative' }}>
+              <SpeakerBtn text={word.w} lang="ja-JP" size={18} color={TC.jade}/>
+              <SpeakerBtn text={word.m} lang="en-US" size={18} color={TC.teal}/>
             </div>
           </div>
-          {/* Meaning */}
-          <div style={{ padding:'16px 20px', flex:1, overflowY:'auto',
-            WebkitOverflowScrolling:'touch', scrollbarWidth:'none' }}>
-            <div style={{ fontSize:28, fontWeight:800, color:'#4c1d95',
-              fontFamily:'"Zen Old Mincho",serif', marginBottom:6, textAlign:'center' }}>
-              {word?.w}
+
+          <div data-card-back="1" style={{ flex:1, display:'flex', flexDirection:'column',
+            padding:'14px 18px', overflowY:'auto', overflowX:'hidden', gap:9,
+            WebkitOverflowScrolling:'touch', scrollbarWidth:'none', msOverflowStyle:'none' }}>
+            {/* Meaning */}
+            <div style={{ display:'flex', alignItems:'center', gap:10,
+              animation:'slideInLeft 0.4s ease both' }}>
+              <div style={{ fontSize:bp?.isLarge?36:bp?.isTablet?30:25, fontWeight:900,
+                color:TC.moonlight, lineHeight:1.15, textShadow:`0 0 30px ${TC.jade}30` }}>
+                {word.m}
+              </div>
             </div>
-            <div style={{ fontSize:14, color:'#6d28d9', textAlign:'center',
-              marginBottom:4, letterSpacing:1 }}>{word?.r}</div>
-            <div style={{ fontSize:12, color:'#7c3aed', textAlign:'center',
-              fontStyle:'italic', marginBottom:16,
-              background:'rgba(124,58,237,0.1)', borderRadius:8, padding:'4px 12px',
-              display:'inline-block' }}>{word?.pos}</div>
-            <div style={{ fontSize:22, fontWeight:900, color:'#1e1b4b',
-              textAlign:'center', marginBottom:20 }}>
-              {word?.m}
+            {/* Word + reading pills */}
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap',
+              animation:'slideInLeft 0.4s 0.05s ease both' }}>
+              <div style={{ background:`${TC.teal}1A`, border:`1px solid rgba(56,189,248,0.35)`,
+                borderRadius:8, padding:'6px 14px', display:'flex', gap:7, alignItems:'center',
+                boxShadow:`0 2px 10px ${TC.teal}1F` }}>
+                <span style={{ fontSize:9, color:TC.crimson, fontWeight:900, letterSpacing:1.5 }}>語 WORD</span>
+                <span style={{ fontSize:bp?.isLarge?15:14, color:'#FF9898', fontWeight:900,
+                  fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Sans JP",serif' }}>{word.w}</span>
+              </div>
+              <div style={{ background:`${TC.aurora}1A`, border:`1px solid rgba(99,102,241,0.32)`,
+                borderRadius:8, padding:'6px 14px', display:'flex', gap:7, alignItems:'center',
+                boxShadow:`0 2px 10px ${TC.aurora}1F` }}>
+                <span style={{ fontSize:9, color:'#60A5C8', fontWeight:900, letterSpacing:1.5 }}>読 READ</span>
+                <span style={{ fontSize:bp?.isLarge?15:14, color:TC.jadeL, fontWeight:900,
+                  fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Sans JP",serif' }}>{word.r}</span>
+              </div>
+            </div>
+            <div style={{ height:1, background:`linear-gradient(90deg, rgba(201,168,76,0.35), rgba(96,165,200,0.15), transparent)` }}/>
+            {/* Examples header */}
+            <div style={{ fontSize:9, color:TC.tealD, fontWeight:700, letterSpacing:2,
+              fontFamily:"'Cinzel',serif", display:'flex', alignItems:'center', gap:6 }}>
+              <span style={{ width:16, height:1, background:`linear-gradient(90deg,${TC.teal}CC,transparent)`, display:'inline-block' }}/>
+              ▸ EXAMPLES
+              <span style={{ width:16, height:1, background:`linear-gradient(270deg,${TC.jade},transparent)`, display:'inline-block' }}/>
             </div>
             {/* Examples */}
-            <div style={{ fontSize:10, color:'#7c3aed', fontWeight:700,
-              letterSpacing:2, marginBottom:8, textAlign:'center' }}>— EXAMPLES —</div>
-            {word?.ex?.map((ex, i) => (
-              <div key={i} style={{ background:'rgba(124,58,237,0.08)',
-                borderRadius:12, padding:'10px 14px', marginBottom:8,
-                border:'1px solid rgba(124,58,237,0.15)' }}>
-                <div style={{ fontSize:14, fontWeight:700, color:'#4c1d95',
-                  fontFamily:'"Noto Sans JP",serif', marginBottom:3 }}>{ex.j}</div>
-                <div style={{ fontSize:12, color:'#6d28d9' }}>{ex.e}</div>
-              </div>
-            ))}
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              {word.ex?.map((ex, i) => (
+                <div key={i} data-speaker="1" style={{ display:'flex', alignItems:'flex-start', gap:10,
+                  padding:'10px 14px',
+                  background:`linear-gradient(135deg,${TC.lifted}E6,${TC.abyss}D9)`,
+                  borderRadius:14, border:`1px solid ${TC.jade}28`,
+                  animation:`slideInUp 0.35s ${0.08+i*0.07}s ease both`,
+                  boxShadow:`0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05)` }}>
+                  <SpeakerBtn text={ex.j} lang="ja-JP" size={18} color={TC.teal}/>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:bp?.isLarge?15:14, fontWeight:900, color:TC.moonlight,
+                      fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
+                      textShadow:`0 0 16px ${TC.jade}55`, lineHeight:1.4, marginBottom:3 }}>{ex.j}</div>
+                    <div style={{ fontSize:bp?.isLarge?14:13, color:TC.auroraD, fontWeight:600, lineHeight:1.3 }}>{ex.e}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -11256,7 +11345,8 @@ function VocabCard({ word, cs, flipped, onFlip, onStar }) {
 ═══════════════════════════════════════════════════════════════════════════ */
 const JLPT_LEVELS = ['N5','N4','N3','N2','N1'];
 
-function VocabApp({ onBack }) {
+function VocabApp({ onBack, theme='sky', setTheme }) {
+  const TC = (THEMES[theme]||THEMES.sky).C;
   const bp = useBreakpoint();
   const [level, setLevel] = useState('N5');
   const [tab, setTab] = useState('study');
@@ -11317,12 +11407,11 @@ function VocabApp({ onBack }) {
   const prog = words.length > 0 ? idx / words.length : 0;
 
   const VTABS = [
-    { id:'study', label:'Study', icon:'📖' },
-    { id:'quiz',  label:'Quiz',  icon:'🧠' },
-    { id:'srs',   label:'SRS',   icon:'📋' },
-    { id:'browse',label:'Browse',icon:'🗂' },
-    { id:'stats', label:'Stats', icon:'📊' },
-    { id:'awards',label:'Awards',icon:'🏆' },
+    { id:'study',    label:'Study',    icon:'📖' },
+    { id:'browse',   label:'Browse',   icon:'🗂'  },
+    { id:'stats',    label:'Stats',    icon:'📊' },
+    { id:'awards',   label:'Awards',   icon:'🏆' },
+    { id:'settings', label:'Settings', icon:'⚙️' },
   ];
 
   // Level Complete Popup
@@ -11330,38 +11419,42 @@ function VocabApp({ onBack }) {
     const nextIdx = JLPT_LEVELS.indexOf(level) + 1;
     const nextLevel = JLPT_LEVELS[nextIdx];
     return (
-      <div style={{ width:'100%', height:'100vh', display:'flex', alignItems:'center',
-        justifyContent:'center', background:'linear-gradient(160deg,#faf5ff,#f3e8ff)',
-        fontFamily:'"Noto Sans JP",system-ui,sans-serif' }}>
-        <div style={{ background:'white', borderRadius:24, padding:'40px 36px',
+      <div style={{ width:'100%', height:'100vh', position:'relative', display:'flex',
+        alignItems:'center', justifyContent:'center',
+        fontFamily:'"Noto Sans JP",system-ui,sans-serif', overflow:'hidden',
+        background: THEMES[theme]?.bg?.base?.match(/#[A-Fa-f0-9]{6}/)?.[0] || TC.void }}>
+        <NatureBG rainMode={false} themeBg={THEMES[theme]?.bg}/>
+        <div style={{ position:'relative', zIndex:2,
+          background:`linear-gradient(145deg, ${TC.card}F0, ${TC.lifted}E8)`,
+          borderRadius:24, padding:'40px 36px',
           maxWidth:360, width:'90%', textAlign:'center',
-          boxShadow:'0 32px 80px rgba(124,58,237,0.2)' }}>
+          border:`1px solid ${TC.aurora}40`,
+          boxShadow:`0 32px 80px rgba(0,0,0,0.6), 0 0 60px ${TC.aurora}20` }}>
           <div style={{ fontSize:64 }}>🎉</div>
-          <div style={{ fontSize:24, fontWeight:900, color:'#4c1d95', margin:'12px 0 8px' }}>
-            {level} Complete!
-          </div>
-          <div style={{ fontSize:14, color:'#6d28d9', marginBottom:24 }}>
-            Your progress is saved. {nextLevel ? `Ready for ${nextLevel}?` : 'You\'ve mastered all levels!'}
+          <div style={{ fontSize:24, fontWeight:900, color:TC.moonlight, margin:'12px 0 8px',
+            fontFamily:"'Cinzel',serif" }}>{level} Complete!</div>
+          <div style={{ fontSize:14, color:TC.starlight, marginBottom:24 }}>
+            Your progress is saved. {nextLevel ? `Ready for ${nextLevel}?` : "You've mastered all levels!"}
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
             {nextLevel && (
-              <button onClick={() => switchLevel(nextLevel)}
-                style={{ background:'linear-gradient(135deg,#7c3aed,#a855f7)',
-                  color:'white', border:'none', borderRadius:12, padding:'14px',
-                  fontSize:15, fontWeight:800, cursor:'pointer' }}>
+              <RippleBtn onClick={() => switchLevel(nextLevel)}
+                style={{ background:`linear-gradient(135deg,${TC.aurora},${TC.jade})`,
+                  color:TC.card, border:'none', borderRadius:12, padding:'14px',
+                  fontSize:15, fontWeight:800, cursor:'pointer', fontFamily:"'Cinzel',serif" }}>
                 Start {nextLevel} →
-              </button>
+              </RippleBtn>
             )}
-            <button onClick={() => { setLevelComplete(false); setIdx(0); setFlipped(false); }}
-              style={{ background:'#f3e8ff', color:'#7c3aed', border:'none',
+            <RippleBtn onClick={() => { setLevelComplete(false); setIdx(0); setFlipped(false); }}
+              style={{ background:`${TC.teal}22`, color:TC.tealD, border:`1px solid ${TC.teal}44`,
                 borderRadius:12, padding:'12px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
               Review {level} Again
-            </button>
-            <button onClick={() => setShowLevelSelect(true)}
-              style={{ background:'#f1f5f9', color:'#64748b', border:'none',
+            </RippleBtn>
+            <RippleBtn onClick={() => setShowLevelSelect(true)}
+              style={{ background:`${TC.aurora}15`, color:TC.aurora, border:`1px solid ${TC.aurora}30`,
                 borderRadius:12, padding:'12px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
               Choose Level
-            </button>
+            </RippleBtn>
           </div>
         </div>
       </div>
@@ -11372,49 +11465,62 @@ function VocabApp({ onBack }) {
   if (showLevelSelect) {
     return (
       <div style={{ width:'100%', height:'100vh', display:'flex', flexDirection:'column',
-        background:'linear-gradient(160deg,#faf5ff,#e9d5ff)',
-        fontFamily:'"Noto Sans JP",system-ui,sans-serif' }}>
-        {/* Back */}
-        <div style={{ padding:'16px 20px', display:'flex', alignItems:'center', gap:12 }}>
-          <button onClick={onBack}
-            style={{ background:'rgba(124,58,237,0.1)', border:'none', borderRadius:10,
-              padding:'8px 16px', fontSize:13, color:'#7c3aed', cursor:'pointer', fontWeight:700 }}>
-            ← Home
-          </button>
-          <span style={{ fontSize:18, fontWeight:800, color:'#4c1d95' }}>語彙 Vocabulary</span>
-        </div>
-        <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
-          justifyContent:'center', padding:'20px' }}>
-          <div style={{ fontSize:16, fontWeight:800, color:'#4c1d95', marginBottom:24,
-            letterSpacing:2 }}>SELECT LEVEL</div>
-          <div style={{ display:'flex', flexDirection:'column', gap:12, width:'100%', maxWidth:320 }}>
-            {JLPT_LEVELS.map(lv => {
-              const saved = loadVocabProgress(lv);
-              const states = saved?.cardStates || {};
-              const known = Object.values(states).filter(s=>s.status==='known').length;
-              const total = (VD[lv]||[]).length;
-              const pct = total > 0 ? Math.round(known/total*100) : 0;
-              return (
-                <button key={lv} onClick={() => switchLevel(lv)}
-                  style={{ background:'white', border:`2px solid rgba(124,58,237,${lv===level?0.6:0.2})`,
-                    borderRadius:16, padding:'16px 20px', cursor:'pointer',
-                    display:'flex', alignItems:'center', justifyContent:'space-between',
-                    boxShadow:'0 4px 16px rgba(124,58,237,0.1)',
-                    transition:'all 0.2s ease' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                    <span style={{ fontSize:20, fontWeight:900, color:'#7c3aed' }}>{lv}</span>
-                    <span style={{ fontSize:12, color:'#94a3b8' }}>{total} words</span>
-                  </div>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:60, height:6, background:'#e9d5ff', borderRadius:3 }}>
-                      <div style={{ width:`${pct}%`, height:'100%',
-                        background:'linear-gradient(90deg,#7c3aed,#a855f7)', borderRadius:3 }}/>
+        position:'relative', overflow:'hidden',
+        fontFamily:'"Noto Sans JP",system-ui,sans-serif',
+        background: THEMES[theme]?.bg?.base?.match(/#[A-Fa-f0-9]{6}/)?.[0] || TC.void }}>
+        <NatureBG rainMode={false} themeBg={THEMES[theme]?.bg}/>
+        <div style={{ position:'relative', zIndex:1, display:'flex', flexDirection:'column', height:'100%' }}>
+          {/* Header */}
+          <div style={{ padding:'14px 20px', display:'flex', alignItems:'center', gap:12,
+            background:`${TC.card}CC`, backdropFilter:'blur(12px)',
+            borderBottom:`1px solid ${TC.aurora}30` }}>
+            <RippleBtn onClick={onBack}
+              style={{ background:`${TC.aurora}20`, border:`1px solid ${TC.aurora}40`,
+                borderRadius:10, padding:'8px 16px', fontSize:13, color:TC.aurora,
+                cursor:'pointer', fontWeight:700 }}>
+              ← Home
+            </RippleBtn>
+            <span style={{ fontSize:18, fontWeight:800, color:TC.moonlight,
+              fontFamily:"'Cinzel',serif", letterSpacing:1 }}>語彙 Vocabulary</span>
+          </div>
+          <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
+            justifyContent:'center', padding:'20px' }}>
+            <div style={{ fontSize:12, fontWeight:800, color:TC.aurora, marginBottom:24,
+              letterSpacing:3, fontFamily:"'Cinzel',serif" }}>— SELECT LEVEL —</div>
+            <div style={{ display:'flex', flexDirection:'column', gap:12, width:'100%', maxWidth:340 }}>
+              {JLPT_LEVELS.map(lv => {
+                const saved = loadVocabProgress(lv);
+                const states = saved?.cardStates || {};
+                const known = Object.values(states).filter(s=>s.status==='known').length;
+                const total = (VD[lv]||[]).length;
+                const pct = total > 0 ? Math.round(known/total*100) : 0;
+                const lvColor = lv==='N5'?'#60A5C8':lv==='N4'?'#7BB8D4':lv==='N3'?'#818CF8':lv==='N2'?'#8B5CF6':'#C9A84C';
+                const isActive = lv === level;
+                return (
+                  <RippleBtn key={lv} onClick={() => switchLevel(lv)}
+                    style={{ background:`linear-gradient(135deg, ${TC.card}F0, ${TC.lifted}E0)`,
+                      border:`1.5px solid ${isActive ? lvColor+'AA' : TC.border}`,
+                      borderRadius:16, padding:'16px 20px', cursor:'pointer',
+                      display:'flex', alignItems:'center', justifyContent:'space-between',
+                      boxShadow: isActive ? `0 4px 20px ${lvColor}40` : `0 2px 12px rgba(0,0,0,0.3)`,
+                      transition:'all 0.2s ease' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                      <span style={{ fontSize:22, fontWeight:900, color:lvColor,
+                        fontFamily:"'Cinzel',serif",
+                        textShadow:`0 0 12px ${lvColor}60` }}>{lv}</span>
+                      <span style={{ fontSize:12, color:TC.nebula }}>{total} words</span>
                     </div>
-                    <span style={{ fontSize:11, color:'#7c3aed', fontWeight:700 }}>{pct}%</span>
-                  </div>
-                </button>
-              );
-            })}
+                    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <div style={{ width:64, height:6, background:`${TC.border}80`, borderRadius:3 }}>
+                        <div style={{ width:`${pct}%`, height:'100%',
+                          background:`linear-gradient(90deg,${lvColor},${lvColor}AA)`, borderRadius:3 }}/>
+                      </div>
+                      <span style={{ fontSize:11, color:lvColor, fontWeight:700, minWidth:28 }}>{pct}%</span>
+                    </div>
+                  </RippleBtn>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -11424,193 +11530,238 @@ function VocabApp({ onBack }) {
   // Main vocab study view
   return (
     <div style={{ width:'100%', height:'100vh', display:'flex', flexDirection:'column',
-      background:'linear-gradient(160deg,#faf5ff,#f3e8ff)',
-      fontFamily:'"Noto Sans JP",system-ui,sans-serif', overflow:'hidden' }}>
+      position:'relative', overflow:'hidden',
+      fontFamily:'"Noto Sans JP",system-ui,sans-serif',
+      background: THEMES[theme]?.bg?.base?.match(/#[A-Fa-f0-9]{6}/)?.[0] || TC.void }}>
 
-      {/* Header */}
-      <div style={{ padding:'10px 16px', display:'flex', alignItems:'center',
-        justifyContent:'space-between', background:'rgba(255,255,255,0.85)',
-        backdropFilter:'blur(12px)', borderBottom:'1px solid rgba(124,58,237,0.15)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <button onClick={() => setShowLevelSelect(true)}
-            style={{ background:'rgba(124,58,237,0.1)', border:'none', borderRadius:8,
-              padding:'6px 12px', fontSize:12, color:'#7c3aed', cursor:'pointer', fontWeight:700 }}>
-            ← {level}
-          </button>
-          <button onClick={onBack}
-            style={{ background:'transparent', border:'none', borderRadius:8,
-              padding:'6px 10px', fontSize:12, color:'#94a3b8', cursor:'pointer' }}>
-            🏠
-          </button>
-        </div>
-        <div style={{ textAlign:'center' }}>
-          <div style={{ fontSize:11, color:'#7c3aed', fontWeight:700, letterSpacing:1 }}>VOCABULARY {level}</div>
-          <div style={{ fontSize:10, color:'#94a3b8' }}>{totalKnown}/{words.length} known</div>
-        </div>
-        <div style={{ fontSize:13, fontWeight:800, color:'#7c3aed' }}>
-          {idx+1}/{words.length}
-        </div>
-      </div>
+      <NatureBG rainMode={false} themeBg={THEMES[theme]?.bg}/>
+      <SparkleField/>
 
-      {/* Progress bar */}
-      <div style={{ height:4, background:'#e9d5ff' }}>
-        <div style={{ height:'100%', width:`${prog*100}%`,
-          background:'linear-gradient(90deg,#7c3aed,#a855f7)',
-          transition:'width 0.4s ease', borderRadius:2 }}/>
-      </div>
+      <div style={{ position:'relative', zIndex:1, flex:1, display:'flex',
+        flexDirection:'column', overflow:'hidden' }}>
 
-      {/* Content */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
-        {tab === 'study' && card && (
-          <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
-            <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center',
-              padding:'16px', overflow:'hidden' }}>
-              <div style={{ width:'100%', maxWidth:460 }}>
-                <VocabCard word={card} cs={cs} flipped={flipped}
-                  onFlip={() => setFlipped(f=>!f)}
-                  onStar={() => setCardStates(p=>({...p,[card.id]:{...p[card.id],starred:!p[card.id].starred}}))}/>
-              </div>
-            </div>
-            {/* Controls */}
-            <div style={{ padding:'12px 16px', background:'rgba(255,255,255,0.9)',
-              borderTop:'1px solid rgba(124,58,237,0.15)' }}>
-              <div style={{ display:'flex', gap:8, marginBottom:8, maxWidth:460, margin:'0 auto 8px' }}>
-                <button onClick={() => { setIdx(i=>Math.max(0,i-1)); setFlipped(false); }}
-                  style={{ flex:1, background:'rgba(124,58,237,0.08)', color:'#7c3aed',
-                    border:'1px solid rgba(124,58,237,0.3)', borderRadius:10, padding:'12px',
-                    fontSize:13, fontWeight:700, cursor:'pointer' }}>◀ PREV</button>
-                <button onClick={() => setFlipped(f=>!f)}
-                  style={{ flex:2, background:'linear-gradient(135deg,#7c3aed,#a855f7)',
-                    color:'white', border:'none', borderRadius:10, padding:'12px',
-                    fontSize:13, fontWeight:800, cursor:'pointer', letterSpacing:1 }}>
-                  {flipped ? '↩ FRONT' : '↻ FLIP CARD'}
-                </button>
-                <button onClick={() => { setIdx(i=>Math.min(words.length-1,i+1)); setFlipped(false); }}
-                  style={{ flex:1, background:'rgba(124,58,237,0.08)', color:'#7c3aed',
-                    border:'1px solid rgba(124,58,237,0.3)', borderRadius:10, padding:'12px',
-                    fontSize:13, fontWeight:700, cursor:'pointer' }}>NEXT ▶</button>
-              </div>
-              <div style={{ display:'flex', gap:8, maxWidth:460, margin:'0 auto' }}>
-                {[['hard','✗ Hard','#ef4444'],['ok','≈ Review','#f59e0b'],['known','✓ Easy','#10b981']].map(([s,l,c])=>(
-                  <button key={s} onClick={() => mark(s)}
-                    style={{ flex:1, background:`${c}15`, color:c, border:`1px solid ${c}40`,
-                      borderRadius:10, padding:'11px', fontSize:12, fontWeight:800, cursor:'pointer' }}>
-                    {l}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {/* Header */}
+        <div style={{ padding:'10px 16px', display:'flex', alignItems:'center',
+          justifyContent:'space-between',
+          background:`${TC.card}CC`, backdropFilter:'blur(12px)',
+          borderBottom:`1px solid ${TC.aurora}30`, flexShrink:0 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <RippleBtn onClick={() => setShowLevelSelect(true)}
+              style={{ background:`${TC.aurora}20`, border:`1px solid ${TC.aurora}40`,
+                borderRadius:8, padding:'6px 12px', fontSize:12, color:TC.aurora,
+                cursor:'pointer', fontWeight:700 }}>
+              ← {level}
+            </RippleBtn>
+            <RippleBtn onClick={onBack}
+              style={{ background:'transparent', border:'none', borderRadius:8,
+                padding:'6px 10px', fontSize:14, color:TC.dim, cursor:'pointer' }}>
+              🏠
+            </RippleBtn>
           </div>
-        )}
-
-        {tab === 'browse' && (
-          <div style={{ flex:1, overflowY:'auto', padding:'16px',
-            WebkitOverflowScrolling:'touch' }}>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))',
-              gap:10, maxWidth:600, margin:'0 auto' }}>
-              {words.map((w,i) => {
-                const wcs = cardStates[w.id] || { status:'new', starred:false };
-                const st = STATUS[wcs.status];
-                return (
-                  <div key={w.id} style={{ background:'white', borderRadius:12, padding:'12px',
-                    border:`1px solid ${st.color}40`,
-                    boxShadow:'0 2px 8px rgba(124,58,237,0.08)' }}>
-                    <div style={{ fontSize:22, fontWeight:900, color:'#4c1d95',
-                      fontFamily:'"Zen Old Mincho",serif', marginBottom:2 }}>{w.w}</div>
-                    <div style={{ fontSize:11, color:'#7c3aed', marginBottom:4 }}>{w.r}</div>
-                    <div style={{ fontSize:11, color:'#64748b' }}>{w.m}</div>
-                    <div style={{ fontSize:9, color:st.color, marginTop:4,
-                      fontWeight:700 }}>{st.emoji} {st.label}</div>
-                  </div>
-                );
-              })}
-            </div>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ fontSize:11, color:TC.aurora, fontWeight:700, letterSpacing:1,
+              fontFamily:"'Cinzel',serif" }}>語彙 {level}</div>
+            <div style={{ fontSize:10, color:TC.nebula }}>{totalKnown}/{words.length} known</div>
           </div>
-        )}
+          <div style={{ fontSize:13, fontWeight:800, color:TC.moonlight,
+            fontFamily:"'Cinzel',serif" }}>
+            {idx+1}/{words.length}
+          </div>
+        </div>
 
-        {tab === 'stats' && (
-          <div style={{ flex:1, overflowY:'auto', padding:'20px' }}>
-            <div style={{ maxWidth:400, margin:'0 auto' }}>
-              {[['Known','known','#10b981'],['Review','ok','#f59e0b'],['Hard','hard','#ef4444'],['New','new','#94a3b8']].map(([label,status,color])=>{
-                const count = Object.values(cardStates).filter(s=>s.status===status).length;
-                const pct = words.length > 0 ? Math.round(count/words.length*100) : 0;
-                return (
-                  <div key={status} style={{ background:'white', borderRadius:14, padding:'16px 20px',
-                    marginBottom:10, display:'flex', alignItems:'center', justifyContent:'space-between',
-                    border:`1px solid ${color}30`, boxShadow:'0 2px 8px rgba(124,58,237,0.08)' }}>
-                    <div>
-                      <div style={{ fontSize:14, fontWeight:800, color }}>{label}</div>
-                      <div style={{ fontSize:22, fontWeight:900, color:'#1e1b4b' }}>{count}</div>
-                    </div>
-                    <div style={{ textAlign:'right' }}>
-                      <div style={{ width:80, height:8, background:'#f3e8ff', borderRadius:4 }}>
-                        <div style={{ width:`${pct}%`, height:'100%',
-                          background:color, borderRadius:4 }}/>
-                      </div>
-                      <div style={{ fontSize:12, color:'#7c3aed', marginTop:4, fontWeight:700 }}>{pct}%</div>
-                    </div>
-                  </div>
-                );
-              })}
-              <div style={{ background:'linear-gradient(135deg,#7c3aed,#a855f7)',
-                borderRadius:14, padding:'16px 20px', color:'white', marginTop:10 }}>
-                <div style={{ fontSize:14, fontWeight:700, opacity:0.8 }}>Session</div>
-                <div style={{ display:'flex', gap:20, marginTop:4 }}>
-                  <div><div style={{ fontSize:22, fontWeight:900 }}>{sessCorrect}</div><div style={{ fontSize:11, opacity:0.7 }}>correct</div></div>
-                  <div><div style={{ fontSize:22, fontWeight:900 }}>{sessWrong}</div><div style={{ fontSize:11, opacity:0.7 }}>hard</div></div>
+        {/* Progress bar */}
+        <div style={{ height:4, background:TC.border, flexShrink:0 }}>
+          <div style={{ height:'100%', width:`${prog*100}%`,
+            background:`linear-gradient(90deg, ${TC.teal}, ${TC.aurora}, ${TC.jade})`,
+            transition:'width 0.4s cubic-bezier(0.34,1.2,0.64,1)', borderRadius:2,
+            boxShadow:`0 0 10px ${TC.teal}70` }}/>
+        </div>
+
+        {/* Content */}
+        <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+          {tab === 'study' && card && (
+            <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+              {/* Card zone */}
+              <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center',
+                padding: bp.isLarge?'16px 40px':bp.isTablet?'12px 26px':'10px 14px',
+                overflow:'hidden' }}
+                onClick={e => {
+                  if(e.target.closest('button') || e.target.closest('[data-speaker]')) return;
+                  setFlipped(f=>!f);
+                }}>
+                <div style={{ width:'100%', maxWidth:bp.isLarge?560:bp.isTablet?500:430,
+                  position:'relative', perspective:1200 }}>
+                  {cs?.status==='known' && (
+                    <div style={{ position:'absolute', inset:-3, borderRadius:26, zIndex:0,
+                      border:`2px solid ${TC.jade}40`,
+                      boxShadow:`0 0 20px ${TC.jade}20, 0 0 40px ${TC.jade}10`,
+                      pointerEvents:'none', animation:'glowPulse 2s ease-in-out infinite' }}/>
+                  )}
+                  {cs?.status==='hard' && (
+                    <div style={{ position:'absolute', inset:-3, borderRadius:26, zIndex:0,
+                      border:`2px solid ${TC.crimson}30`, boxShadow:`0 0 20px ${TC.crimson}15`,
+                      pointerEvents:'none' }}/>
+                  )}
+                  <VocabCard word={card} cs={cs} flipped={flipped}
+                    onFlip={() => setFlipped(f=>!f)}
+                    onStar={() => setCardStates(p=>({...p,[card.id]:{...p[card.id],starred:!p[card.id].starred}}))}
+                    bp={bp} theme={theme} level={level}/>
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div style={{ padding:bp.isTablet?'10px 26px 14px':'8px 14px 12px',
+                background:`${TC.card}F7`, borderTop:`1px solid ${TC.aurora}30`,
+                boxShadow:`0 -4px 16px ${TC.aurora}1A, inset 0 1px 0 rgba(255,255,255,0.07)`,
+                flexShrink:0 }}>
+                <div style={{ display:'flex', gap:8, marginBottom:8,
+                  maxWidth:bp.isLarge?560:bp.isTablet?500:430, margin:'0 auto 8px' }}>
+                  <RippleBtn onClick={() => { setIdx(i=>Math.max(0,i-1)); setFlipped(false); }}
+                    style={{ flex:1, background:`${TC.aurora}1A`, color:TC.auroraD,
+                      border:`1px solid ${TC.aurora}66`, borderRadius:10, padding:'12px 0',
+                      fontSize:12, fontWeight:700, cursor:'pointer',
+                      fontFamily:"'Cinzel',serif", letterSpacing:'0.05em' }}>
+                    ◀ Prev
+                  </RippleBtn>
+                  <RippleBtn onClick={() => setFlipped(f=>!f)}
+                    style={{ flex:2.2,
+                      background:`linear-gradient(135deg, ${TC.aurora}, ${TC.violetD}, ${TC.aurora})`,
+                      color:TC.card, border:`1px solid ${TC.aurora}99`, borderRadius:10,
+                      padding:'12px 0', fontSize:13, fontWeight:700, cursor:'pointer',
+                      fontFamily:"'Cinzel',serif", letterSpacing:'0.08em',
+                      boxShadow:`0 4px 20px ${TC.aurora}59` }}>
+                    {flipped ? '↩ Front' : '↻ Flip Card'}
+                  </RippleBtn>
+                  <RippleBtn onClick={() => { setIdx(i=>Math.min(words.length-1,i+1)); setFlipped(false); }}
+                    style={{ flex:1, background:`${TC.teal}1A`, color:TC.tealD,
+                      border:`1px solid ${TC.teal}66`, borderRadius:10, padding:'12px 0',
+                      fontSize:12, fontWeight:700, cursor:'pointer',
+                      fontFamily:"'Cinzel',serif", letterSpacing:'0.05em' }}>
+                    Next ▶
+                  </RippleBtn>
+                </div>
+                <div style={{ display:'flex', gap:8,
+                  maxWidth:bp.isLarge?560:bp.isTablet?500:430, margin:'0 auto' }}>
+                  {[['hard','✗ Hard',TC.crimson],['ok','≈ Review',TC.amber],['known','✓ Easy',TC.jade]].map(([s,l,c])=>(
+                    <RippleBtn key={s} onClick={() => mark(s)}
+                      style={{ flex:1, background:`${c}18`, color:c, border:`1px solid ${c}40`,
+                        borderRadius:10, padding:'11px', fontSize:12, fontWeight:800,
+                        cursor:'pointer', fontFamily:"'Cinzel',serif" }}>
+                      {l}
+                    </RippleBtn>
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {tab === 'quiz' && (
-          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
-            <div style={{ textAlign:'center', color:'#7c3aed' }}>
-              <div style={{ fontSize:40, marginBottom:12 }}>🧠</div>
-              <div style={{ fontSize:16, fontWeight:700 }}>Quiz mode coming soon!</div>
-              <div style={{ fontSize:13, color:'#94a3b8', marginTop:8 }}>Use Study mode for now.</div>
+          {tab === 'browse' && (
+            <div style={{ flex:1, overflowY:'auto', padding:'16px',
+              WebkitOverflowScrolling:'touch' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))',
+                gap:10, maxWidth:620, margin:'0 auto' }}>
+                {words.map((w) => {
+                  const wcs = cardStates[w.id] || { status:'new', starred:false };
+                  const st = STATUS[wcs.status];
+                  return (
+                    <div key={w.id} style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
+                      borderRadius:12, padding:'12px',
+                      border:`1px solid ${st.color}40`,
+                      boxShadow:`0 2px 10px rgba(0,0,0,0.3)` }}>
+                      <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight,
+                        fontFamily:'"Zen Old Mincho",serif', marginBottom:2 }}>{w.w}</div>
+                      <div style={{ fontSize:11, color:TC.tealD, marginBottom:4 }}>{w.r}</div>
+                      <div style={{ fontSize:11, color:TC.starlight }}>{w.m}</div>
+                      <div style={{ fontSize:9, color:st.color, marginTop:4,
+                        fontWeight:700 }}>{st.emoji} {st.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {tab === 'srs' && (
-          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
-            <div style={{ textAlign:'center', color:'#7c3aed' }}>
-              <div style={{ fontSize:40, marginBottom:12 }}>📋</div>
-              <div style={{ fontSize:16, fontWeight:700 }}>SRS coming soon!</div>
-              <div style={{ fontSize:13, color:'#94a3b8', marginTop:8 }}>Progress is tracked in Stats.</div>
+          {tab === 'stats' && (
+            <div style={{ flex:1, overflowY:'auto', padding:'20px',
+              WebkitOverflowScrolling:'touch' }}>
+              <div style={{ maxWidth:420, margin:'0 auto' }}>
+                {[['Known','known',TC.jade],['Review','ok',TC.amber],['Hard','hard',TC.crimson],['New','new',TC.nebula]].map(([label,status,color])=>{
+                  const count = Object.values(cardStates).filter(s=>s.status===status).length;
+                  const pct = words.length > 0 ? Math.round(count/words.length*100) : 0;
+                  return (
+                    <div key={status} style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
+                      borderRadius:14, padding:'16px 20px', marginBottom:10,
+                      display:'flex', alignItems:'center', justifyContent:'space-between',
+                      border:`1px solid ${color}30`,
+                      boxShadow:`0 2px 10px rgba(0,0,0,0.3)` }}>
+                      <div>
+                        <div style={{ fontSize:14, fontWeight:800, color }}>{label}</div>
+                        <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight }}>{count}</div>
+                      </div>
+                      <div style={{ textAlign:'right' }}>
+                        <div style={{ width:80, height:8, background:`${TC.border}80`, borderRadius:4 }}>
+                          <div style={{ width:`${pct}%`, height:'100%', background:color, borderRadius:4 }}/>
+                        </div>
+                        <div style={{ fontSize:12, color, marginTop:4, fontWeight:700 }}>{pct}%</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{ background:`linear-gradient(135deg,${TC.aurora}22,${TC.jade}22)`,
+                  borderRadius:14, padding:'16px 20px', color:TC.moonlight, marginTop:10,
+                  border:`1px solid ${TC.aurora}30` }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:TC.aurora,
+                    fontFamily:"'Cinzel',serif" }}>Session</div>
+                  <div style={{ display:'flex', gap:20, marginTop:4 }}>
+                    <div><div style={{ fontSize:22, fontWeight:900 }}>{sessCorrect}</div><div style={{ fontSize:11, color:TC.nebula }}>correct</div></div>
+                    <div><div style={{ fontSize:22, fontWeight:900 }}>{sessWrong}</div><div style={{ fontSize:11, color:TC.nebula }}>hard</div></div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {tab === 'awards' && (
-          <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
-            <div style={{ textAlign:'center', color:'#7c3aed' }}>
-              <div style={{ fontSize:40, marginBottom:12 }}>🏆</div>
-              <div style={{ fontSize:16, fontWeight:700 }}>Achievements coming soon!</div>
-              <div style={{ fontSize:13, color:'#94a3b8', marginTop:8 }}>Keep studying to unlock awards.</div>
+          {tab === 'awards' && (
+            <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+              <div style={{ textAlign:'center', color:TC.aurora }}>
+                <div style={{ fontSize:40, marginBottom:12 }}>🏆</div>
+                <div style={{ fontSize:16, fontWeight:700, color:TC.moonlight,
+                  fontFamily:"'Cinzel',serif" }}>Achievements coming soon!</div>
+                <div style={{ fontSize:13, color:TC.nebula, marginTop:8 }}>Keep studying to unlock awards.</div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
 
-      {/* Bottom Nav */}
-      <div style={{ display:'flex', background:'rgba(255,255,255,0.95)',
-        borderTop:'1px solid rgba(124,58,237,0.15)', backdropFilter:'blur(12px)' }}>
-        {VTABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            style={{ flex:1, padding:'8px 4px', border:'none', cursor:'pointer',
-              background:'transparent', display:'flex', flexDirection:'column',
-              alignItems:'center', gap:2,
-              borderTop: tab===t.id ? '2px solid #7c3aed' : '2px solid transparent' }}>
-            <span style={{ fontSize:18 }}>{t.icon}</span>
-            <span style={{ fontSize:9, fontWeight:700,
-              color: tab===t.id ? '#7c3aed' : '#94a3b8', letterSpacing:0.5 }}>
-              {t.label.toUpperCase()}
-            </span>
-          </button>
-        ))}
+          {tab === 'settings' && (
+            <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch' }}>
+              <SettingsView
+                shuffled={false} setShuffled={()=>{}}
+                mode={'all'} setMode={()=>{}} setDeckIdx={()=>{}} setFlipped={()=>{}}
+                resetProgress={()=>{}}
+                rainMode={false} setRainMode={()=>{}}
+                theme={theme} setTheme={setTheme || (()=>{})}
+                bp={bp}/>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom Nav */}
+        <div style={{ display:'flex', background:`${TC.card}F2`,
+          borderTop:`1px solid ${TC.aurora}25`, backdropFilter:'blur(12px)', flexShrink:0 }}>
+          {VTABS.map(t => (
+            <RippleBtn key={t.id} onClick={() => setTab(t.id)}
+              style={{ flex:1, padding:'8px 4px', border:'none', cursor:'pointer',
+                background:'transparent', display:'flex', flexDirection:'column',
+                alignItems:'center', gap:2,
+                borderTop: tab===t.id ? `2px solid ${TC.aurora}` : '2px solid transparent' }}>
+              <span style={{ fontSize:18 }}>{t.icon}</span>
+              <span style={{ fontSize:9, fontWeight:700, letterSpacing:0.5,
+                color: tab===t.id ? TC.aurora : TC.dim }}>
+                {t.label.toUpperCase()}
+              </span>
+            </RippleBtn>
+          ))}
+        </div>
       </div>
     </div>
   );
