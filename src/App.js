@@ -12802,6 +12802,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
           {tab === 'quiz' && (
             <VocabQuizView words={words} bp={bp} theme={theme}/>
           )}
+        </div>
 
         <div style={{ display:'flex', background:`${TC.card}F2`,
           borderTop:`1px solid ${TC.aurora}25`, backdropFilter:'blur(12px)', flexShrink:0 }}>
