@@ -10324,7 +10324,7 @@ const VD = {
     {id:718,w:'専ら',r:'もっぱら',m:'exclusively / solely',pos:'adv',ex:[{j:'専ら研究に打ち込む。',e:'I devote myself exclusively to research.'},{j:'専ら自分の利益を追求する。',e:'I pursue solely my own interests.'}]},
     {id:719,w:'余儀なく',r:'よぎなく',m:'unavoidably / compelled',pos:'adv',ex:[{j:'余儀なく中止した。',e:'I was compelled to cancel.'},{j:'余儀なく変更された。',e:'It was unavoidably changed.'}]},
     {id:720,w:'ひとえに',r:'ひとえに',m:'solely / entirely',pos:'adv',ex:[{j:'ひとえに努力の結果だ。',e:'It is solely the result of effort.'},{j:'ひとえに皆様のおかげです。',e:'It is entirely thanks to everyone.'}]},
-    {id:721,w:'逐次',r:'ちくじ',m:'one by one / successively',pos:'adv',ex:[{j:'逐次報告する。',e:'I report successively.'},{j:'逐次処理する。',e:'I process one by one.'}]}
+    {id:721,w:'逐次',r:'ちくじ',m:'one by one / successively',pos:'adv',ex:[{j:'逐次報告する。',e:'I report successively.'},{j:'逐次処理する。',e:'I process one by one.'}]},
     {id:722,w:'差し出す',r:'さしだす',m:'to present / hand over',pos:'verb',ex:[{j:'書類を差し出す。',e:'I hand over the documents.'},{j:'手を差し出した。',e:'I held out my hand.'}]},
     {id:723,w:'申し出る',r:'もうしでる',m:'to offer / propose',pos:'verb',ex:[{j:'協力を申し出る。',e:'I offer cooperation.'},{j:'辞退を申し出た。',e:'I proposed withdrawal.'}]},
     {id:724,w:'受け継ぐ',r:'うけつぐ',m:'to inherit / succeed to',pos:'verb',ex:[{j:'伝統を受け継ぐ。',e:'I inherit the tradition.'},{j:'遺産を受け継いだ。',e:'I inherited the legacy.'}]},
