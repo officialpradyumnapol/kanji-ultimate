@@ -11417,7 +11417,6 @@ function VocabFlipBurst({ color, TC }) {
    VOCAB WORD CARD
 ═══════════════════════════════════════════════════════════════════════════ */
 function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky', level='N5' }) {
-function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky', level='N5' }) {
   const TC = (THEMES[theme]||THEMES.sky).C;
   const uid = useRef('vg' + Math.random().toString(36).slice(2, 6)).current;
   const [burst, setBurst] = useState(false);
@@ -12008,7 +12007,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
   const bp = useBreakpoint();
   const [level, setLevel] = useState('N5');
   const [tab, setTab] = useState('study');
-  const [flipped, setFlipped] = useState(false);
+  const [flipped, setFlipped] = useState(false); 
   const [idx, setIdx] = useState(0);
   const [showLevelSelect, setShowLevelSelect] = useState(true);
   const [levelComplete, setLevelComplete] = useState(false);
@@ -12823,5 +12822,4 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
       </div>
     </div>
   );
-  }}
-
+}
