@@ -12002,7 +12002,7 @@ function VocabQuizView({ words, bp, theme='sky' }) {
 ═══════════════════════════════════════════════════════════════════════════ */
 const JLPT_LEVELS = ['N5','N4','N3','N2','N1'];
 
-function VocabApp({ onBack, theme='sky', setTheme }) {
+function VocabApp({ onBack, theme='sky', setTheme }) {{
   const TC = (THEMES[theme]||THEMES.sky).C;
   const bp = useBreakpoint();
   const [level, setLevel] = useState('N5');
@@ -12822,4 +12822,4 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
       </div>
     </div>
   );
-}
+}}
