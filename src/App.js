@@ -2496,7 +2496,56 @@ const GLOBAL_CSS = `
   @keyframes orbFloat { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-40px) scale(1.15)} 66%{transform:translate(-20px,20px) scale(0.88)} }
   @keyframes streak { 0%{transform:scaleX(0)} 100%{transform:scaleX(1)} }
   @keyframes progressFill { from{width:0} to{width:var(--target-width)} }
+
+  /* ── VOCAB 3D ANIMATIONS ── */
+  @keyframes vocab3dOrbit {
+    0%   { transform: rotateZ(0deg)   translateX(var(--r)) rotateZ(0deg);   opacity:var(--op); }
+    100% { transform: rotateZ(360deg) translateX(var(--r)) rotateZ(-360deg); opacity:var(--op); }
+  }
+  @keyframes vocab3dOrbitRev {
+    0%   { transform: rotateZ(0deg)    translateX(var(--r)) rotateZ(0deg);    opacity:var(--op); }
+    100% { transform: rotateZ(-360deg) translateX(var(--r)) rotateZ(360deg);  opacity:var(--op); }
+  }
+  @keyframes vocab3dPlanet {
+    0%,100% { transform: translate(-50%,-50%) rotateX(72deg) rotateZ(0deg); }
+    100%    { transform: translate(-50%,-50%) rotateX(72deg) rotateZ(360deg); }
+  }
+  @keyframes vocab3dPlanetRev {
+    0%,100% { transform: translate(-50%,-50%) rotateX(72deg) rotateZ(0deg); }
+    100%    { transform: translate(-50%,-50%) rotateX(72deg) rotateZ(-360deg); }
+  }
+  @keyframes vocab3dFloat {
+    0%,100% { transform: translateY(0px) rotateX(0deg); }
+    50%     { transform: translateY(-12px) rotateX(3deg); }
+  }
+  @keyframes vocab3dGlow {
+    0%,100% { opacity:0.18; transform:scale(1); }
+    50%     { opacity:0.55; transform:scale(1.08); }
+  }
+  @keyframes vocab3dSpark {
+    0%   { transform:translate(-50%,-50%) scale(0) rotate(0deg); opacity:1; }
+    60%  { opacity:0.8; }
+    100% { transform:translate(var(--sx),var(--sy)) scale(0.2) rotate(var(--sr)); opacity:0; }
+  }
+  @keyframes vocab3dInkRing {
+    0%   { transform:translate(-50%,-50%) scale(0); opacity:0.8; }
+    100% { transform:translate(-50%,-50%) scale(1);  opacity:0;   }
+  }
+  @keyframes vocab3dParticle {
+    0%   { transform:translateY(0)   translateX(0)   scale(1);   opacity:var(--pop); }
+    100% { transform:translateY(var(--py)) translateX(var(--px)) scale(0.2); opacity:0; }
+  }
+  @keyframes vocab3dBobble {
+    0%,100% { transform:translateY(0) rotate(0deg) scale(1); }
+    25%     { transform:translateY(-6px) rotate(2deg) scale(1.02); }
+    75%     { transform:translateY(4px) rotate(-1.5deg) scale(0.98); }
+  }
+  @keyframes vocabRingPulse {
+    0%,100% { transform:translate(-50%,-50%) rotateX(var(--rx)) scale(1);   opacity:0.22; }
+    50%     { transform:translate(-50%,-50%) rotateX(var(--rx)) scale(1.06); opacity:0.44; }
+  }
 `;
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    RAIN DROPS (deterministic)
@@ -11201,11 +11250,250 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   VOCAB 3D SCENE — Orbiting rings + floating particles around the card
+═══════════════════════════════════════════════════════════════════════════ */
+function Vocab3DScene({ status, TC, flipped, word }) {
+  const st = STATUS[status] || STATUS.new;
+  const color = st.color;
+
+  // Deterministic particles around the card
+  const DOTS = Array.from({ length: 22 }, (_, i) => ({
+    r:   80 + (i % 4) * 28,
+    dur: 7 + (i % 5) * 2.4,
+    rev: i % 2 === 0,
+    sz:  i % 5 === 0 ? 5 : i % 3 === 0 ? 3.5 : 2,
+    op:  0.18 + (i % 4) * 0.08,
+    startDeg: (i * 31.7) % 360,
+    color: i % 3 === 0 ? color : i % 3 === 1 ? TC.teal : TC.aurora,
+  }));
+
+  // Three orbital rings at different tilt angles
+  const RINGS = [
+    { rx:'65deg',  dur:12, rev:false, color, w:1.2, opacity:0.25, r:108 },
+    { rx:'42deg',  dur:18, rev:true,  color:TC.teal, w:0.9, opacity:0.18, r:126 },
+    { rx:'80deg',  dur:9,  rev:false, color:TC.aurora, w:0.7, opacity:0.14, r:142 },
+  ];
+
+  return (
+    <div style={{
+      position:'absolute', inset:0, pointerEvents:'none', zIndex:0,
+      overflow:'visible',
+    }}>
+      {/* ── Pulsing glow halo behind card ── */}
+      <div style={{
+        position:'absolute', left:'50%', top:'50%',
+        width:320, height:320, borderRadius:'50%',
+        transform:'translate(-50%,-50%)',
+        background:`radial-gradient(ellipse at 50% 50%, ${color}30 0%, ${color}08 55%, transparent 75%)`,
+        animation:'vocab3dGlow 3.2s ease-in-out infinite',
+        filter:'blur(18px)',
+      }}/>
+
+      {/* ── Three 3-D orbital rings (CSS perspective trick) ── */}
+      {RINGS.map((ring, i) => (
+        <div key={i} style={{
+          position:'absolute', left:'50%', top:'50%',
+          width: ring.r * 2, height: ring.r * 2,
+          marginLeft: -ring.r, marginTop: -ring.r,
+          borderRadius:'50%',
+          border:`${ring.w}px solid ${ring.color}`,
+          opacity: ring.opacity,
+          '--rx': ring.rx,
+          transform:`translate(-50%,-50%) rotateX(${ring.rx})`,
+          animation:`vocabRingPulse ${ring.dur * 0.8}s ease-in-out infinite`,
+          animationDelay:`${i * 1.1}s`,
+        }}>
+          {/* Orbiting dot on this ring */}
+          <div style={{
+            position:'absolute', left:'50%', top:'50%',
+            '--r': `${ring.r}px`,
+            '--op': String(ring.opacity + 0.3),
+            width: 6, height: 6, marginLeft:-3, marginTop:-3,
+            borderRadius:'50%',
+            background: ring.color,
+            boxShadow:`0 0 8px ${ring.color}, 0 0 16px ${ring.color}80`,
+            animation:`${ring.rev ? 'vocab3dOrbitRev' : 'vocab3dOrbit'} ${ring.dur}s linear infinite`,
+          }}/>
+        </div>
+      ))}
+
+      {/* ── Floating mini-dots orbiting at various radii ── */}
+      {DOTS.map((d, i) => (
+        <div key={i} style={{
+          position:'absolute', left:'50%', top:'55%',
+          '--r': `${d.r}px`,
+          '--op': String(d.op),
+          width: d.sz, height: d.sz,
+          marginLeft: -d.sz/2, marginTop: -d.sz/2,
+          borderRadius:'50%',
+          background: d.color,
+          boxShadow:`0 0 ${d.sz * 3}px ${d.color}`,
+          animation:`${d.rev ? 'vocab3dOrbitRev' : 'vocab3dOrbit'} ${d.dur}s linear infinite`,
+          animationDelay:`${(i * 0.41) % d.dur}s`,
+        }}/>
+      ))}
+
+      {/* ── Corner 3D accent diamonds ── */}
+      {[
+        { x:'8%',  y:'12%', rot:45,  sz:8,  dur:4.2, delay:0 },
+        { x:'88%', y:'10%', rot:30,  sz:6,  dur:5.5, delay:1.2 },
+        { x:'6%',  y:'82%', rot:60,  sz:7,  dur:3.8, delay:0.7 },
+        { x:'90%', y:'80%', rot:15,  sz:5,  dur:6.1, delay:2.1 },
+      ].map((d, i) => (
+        <div key={i} style={{
+          position:'absolute', left:d.x, top:d.y,
+          width:d.sz, height:d.sz,
+          background: i % 2 === 0 ? color : TC.teal,
+          opacity: 0.55,
+          transform:`rotate(${d.rot}deg)`,
+          animation:`vocab3dBobble ${d.dur}s ease-in-out infinite`,
+          animationDelay:`${d.delay}s`,
+          boxShadow:`0 0 6px ${i % 2 === 0 ? color : TC.teal}`,
+        }}/>
+      ))}
+
+      {/* ── Status-coloured depth lines (perspective rails) ── */}
+      <svg style={{ position:'absolute', inset:0, width:'100%', height:'100%', overflow:'visible' }}>
+        {[0.2, 0.4, 0.6, 0.8].map((t, i) => (
+          <line key={i}
+            x1={`${t * 100}%`} y1="0%"
+            x2={`${50}%`}      y2="50%"
+            stroke={color} strokeWidth="0.5" strokeOpacity={0.08 + i * 0.03}
+            strokeDasharray="4 8"
+          />
+        ))}
+        {[0.2, 0.4, 0.6, 0.8].map((t, i) => (
+          <line key={`b${i}`}
+            x1={`${t * 100}%`} y1="100%"
+            x2={`${50}%`}      y2="50%"
+            stroke={TC.aurora} strokeWidth="0.5" strokeOpacity={0.06 + i * 0.02}
+            strokeDasharray="3 10"
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+/* ── Ink-burst on flip: rings + sparks expanding outward ── */
+function VocabFlipBurst({ color, TC }) {
+  return (
+    <div style={{ position:'absolute', left:'50%', top:'50%', pointerEvents:'none', zIndex:20 }}>
+      {/* Expanding rings */}
+      {[0, 1, 2].map(i => (
+        <div key={i} style={{
+          position:'absolute',
+          width: 60 + i * 55, height: 60 + i * 55,
+          borderRadius:'50%',
+          border:`${2 - i * 0.4}px solid ${i === 0 ? color : i === 1 ? TC.teal : TC.aurora}`,
+          animation:'vocab3dInkRing 0.65s cubic-bezier(0.2,0.8,0.4,1) both',
+          animationDelay:`${i * 0.07}s`,
+        }}/>
+      ))}
+      {/* Sparks */}
+      {Array.from({ length: 10 }, (_, i) => {
+        const angle = (i / 10) * 360;
+        const dist  = 55 + (i % 3) * 18;
+        const sx = `${Math.cos(angle * Math.PI/180) * dist}px`;
+        const sy = `${Math.sin(angle * Math.PI/180) * dist}px`;
+        return (
+          <div key={i} style={{
+            position:'absolute', left:'50%', top:'50%',
+            width: i % 2 === 0 ? 5 : 3, height: i % 2 === 0 ? 5 : 3,
+            borderRadius:'50%',
+            background: i % 3 === 0 ? color : i % 3 === 1 ? TC.teal : TC.aurora,
+            '--sx': sx, '--sy': sy, '--sr': `${angle * 2}deg`,
+            boxShadow:`0 0 6px ${color}`,
+            animation:'vocab3dSpark 0.55s cubic-bezier(0.1,0.8,0.4,1) both',
+            animationDelay:`${i * 0.025}s`,
+          }}/>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    VOCAB WORD CARD
 ═══════════════════════════════════════════════════════════════════════════ */
 function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky', level='N5' }) {
+function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky', level='N5' }) {
   const TC = (THEMES[theme]||THEMES.sky).C;
   const uid = useRef('vg' + Math.random().toString(36).slice(2, 6)).current;
+  const [burst, setBurst] = useState(false);
+  const innerRef = useRef(null);
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+  const prevFlipped = useRef(flipped);
+
+  // Trigger burst on flip
+  useEffect(() => {
+    if (flipped !== prevFlipped.current) {
+      prevFlipped.current = flipped;
+      setBurst(true);
+      setTimeout(() => setBurst(false), 700);
+    }
+  }, [flipped]);
+
+  // Canvas particle stream — particles drift up from card bottom edge
+  const st0 = STATUS[cs?.status] || STATUS.new;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width = canvas.offsetWidth;
+    const H = canvas.height = canvas.offsetHeight;
+    const colors = [st0.color, TC.teal, TC.aurora, TC.jade];
+    const particles = [];
+
+    const spawn = () => {
+      const side = Math.floor(Math.random() * 4); // 0=bottom,1=left,2=right,3=top
+      let x, y, vx, vy;
+      if (side === 0) { x = Math.random() * W; y = H + 4; vx = (Math.random()-0.5)*0.6; vy = -(0.5 + Math.random()*1.2); }
+      else if (side === 1) { x = -4; y = Math.random() * H; vx = 0.5 + Math.random()*1; vy = (Math.random()-0.5)*0.6; }
+      else if (side === 2) { x = W + 4; y = Math.random() * H; vx = -(0.5 + Math.random()*1); vy = (Math.random()-0.5)*0.6; }
+      else { x = Math.random() * W; y = -4; vx = (Math.random()-0.5)*0.6; vy = 0.5 + Math.random()*0.8; }
+      particles.push({
+        x, y, vx, vy,
+        r: 1.2 + Math.random() * 2.4,
+        life: 1,
+        decay: 0.008 + Math.random() * 0.012,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.04 + Math.random() * 0.05,
+      });
+    };
+
+    let frame = 0;
+    const tick = () => {
+      ctx.clearRect(0, 0, W, H);
+      frame++;
+      if (frame % 3 === 0) spawn(); // emit ~20fps
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.wobble += p.wobbleSpeed;
+        p.x += p.vx + Math.sin(p.wobble) * 0.25;
+        p.y += p.vy;
+        p.life -= p.decay;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+
+        ctx.save();
+        ctx.globalAlpha = p.life * 0.7;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = p.r * 4;
+        ctx.fill();
+        ctx.restore();
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => { cancelAnimationFrame(rafRef.current); ctx.clearRect(0, 0, W, H); };
+  }, [cs?.status, theme]);
+
   if (!word) return null;
   const st    = STATUS[cs?.status] || STATUS.new;
   const cardH = bp?.isLarge?500:bp?.isTablet?440:390;
@@ -11229,10 +11517,27 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
     <div ref={outerRef}
       style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative',
         perspective:1400, willChange:'transform,opacity' }}>
-      <div style={{ width:'100%', height:'100%', position:'relative',
-        transformStyle:'preserve-3d',
-        transform:flipped?'rotateY(180deg)':'rotateY(0deg)',
-        transition:'transform 0.6s cubic-bezier(0.4,0.2,0.2,1)' }}>
+
+      {/* 3D orbiting scene behind the card */}
+      <Vocab3DScene status={cs?.status || 'new'} TC={TC} flipped={flipped} word={word}/>
+
+      {/* Canvas particle stream around card edges */}
+      <canvas ref={canvasRef} style={{
+        position:'absolute', inset:-30, width:'calc(100% + 60px)', height:'calc(100% + 60px)',
+        pointerEvents:'none', zIndex:1,
+      }}/>
+
+      {/* Flip burst */}
+      {burst && <VocabFlipBurst color={st.color} TC={TC}/>}
+
+      <div ref={innerRef}
+        style={{ width:'100%', height:'100%', position:'relative',
+          transformStyle:'preserve-3d',
+          transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+          transition:'transform 0.6s cubic-bezier(0.4,0.2,0.2,1)',
+          animation:'vocab3dFloat 5s ease-in-out infinite',
+          zIndex:2,
+        }}>
 
         {/* ──── FRONT ──── */}
         <div style={{ ...faceBase,
@@ -11748,6 +12053,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
     setCardStates(p => ({ ...p, [card.id]: { ...p[card.id], status } }));
     if (status === 'known') setSessCorrect(c => c+1);
     if (status === 'hard') setSessWrong(c => c+1);
+    bumpDaily();
     setFlipped(false);
     if (idx < words.length - 1) {
       setIdx(i => i + 1);
@@ -11759,13 +12065,185 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
   const totalKnown = Object.values(cardStates).filter(s => s.status==='known').length;
   const prog = words.length > 0 ? idx / words.length : 0;
 
+  // ── Circular-carousel swipe (cards on a huge-radius wheel) ──
+  // The card sits at angle=0 on a circle of radius R. Dragging rotates
+  // the wheel: x offset = R*sin(θ), y offset = R*(1-cos(θ)) — so the card
+  // arcs gently upward as it sweeps left/right, exactly like riding a ferris
+  // wheel with a very large radius.
+  const CAROUSEL_R = 1800; // px — very high radius → almost-flat arc
+  const vTouchRef = useRef(null);
+  const vDragRef  = useRef({ active:false, x:0, startY:0, wasDragged:false });
+  const vCardRef  = useRef(null);
+  const vSuppressClickRef = useRef(false);
+  const vRafRef   = useRef(null);
+
+  // Apply the arc transform for a given drag delta-x
+  const applyCarouselFrame = (dx) => {
+    if(!vCardRef.current) return;
+    const clamp = Math.max(-280, Math.min(280, dx));
+    // angle on the wheel (radians): arc length / radius
+    const theta = clamp / CAROUSEL_R;
+    // position on circle
+    const tx = CAROUSEL_R * Math.sin(theta);      // horizontal
+    const ty = CAROUSEL_R * (1 - Math.cos(theta)); // lifts slightly (always positive, tiny)
+    // slight tilt into the curve
+    const rz = -(theta * 180 / Math.PI) * 0.15;   // very small z-rotation
+    const sc = Math.max(0.88, 1 - Math.abs(theta) * 0.12);
+    const op = Math.max(0.35, 1 - Math.abs(theta) * 2.2);
+    vCardRef.current.style.transform =
+      `translateX(${tx}px) translateY(${ty}px) rotateZ(${rz}deg) scale(${sc})`;
+    vCardRef.current.style.opacity = String(op);
+  };
+
+  const snapCarouselBack = (callback) => {
+    if(!vCardRef.current) { callback && callback(); return; }
+    vCardRef.current.style.transition = 'transform 0.38s cubic-bezier(0.22,1,0.36,1), opacity 0.38s ease';
+    vCardRef.current.style.transform  = 'translateX(0) translateY(0) rotateZ(0deg) scale(1)';
+    vCardRef.current.style.opacity    = '1';
+    setTimeout(() => {
+      if(vCardRef.current) vCardRef.current.style.transition = '';
+      callback && callback();
+    }, 380);
+  };
+
+  const flyCarouselOff = (direction, callback) => {
+    // direction: -1 = fly left (next), +1 = fly right (prev)
+    if(!vCardRef.current) { callback && callback(); return; }
+    const tx = direction * -CAROUSEL_R * Math.sin(0.18);
+    const ty = CAROUSEL_R * (1 - Math.cos(0.18));
+    const rz = direction * -0.18 * (180/Math.PI) * 0.15;
+    vCardRef.current.style.transition = 'transform 0.28s cubic-bezier(0.4,0,1,1), opacity 0.22s ease';
+    vCardRef.current.style.transform  = `translateX(${tx}px) translateY(${ty}px) rotateZ(${rz}deg) scale(0.88)`;
+    vCardRef.current.style.opacity    = '0';
+    setTimeout(() => {
+      if(vCardRef.current) {
+        // instantly position incoming card from opposite side, then spring to center
+        const inTx = direction * CAROUSEL_R * Math.sin(0.18);
+        vCardRef.current.style.transition = 'none';
+        vCardRef.current.style.transform  = `translateX(${inTx}px) translateY(${ty}px) rotateZ(${-rz}deg) scale(0.88)`;
+        vCardRef.current.style.opacity    = '0';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if(vCardRef.current) {
+              vCardRef.current.style.transition = 'transform 0.38s cubic-bezier(0.22,1,0.36,1), opacity 0.32s ease';
+              vCardRef.current.style.transform  = 'translateX(0) translateY(0) rotateZ(0deg) scale(1)';
+              vCardRef.current.style.opacity    = '1';
+            }
+            callback && callback();
+          });
+        });
+      }
+    }, 260);
+  };
+
+  const handleVTouchStart = e => {
+    if(e.target && e.target.closest && (e.target.closest('button') || e.target.closest('[data-speaker]') || e.target.closest('[data-star]'))) return;
+    if(vCardRef.current) vCardRef.current.style.transition = '';
+    vTouchRef.current = { x:e.touches[0].clientX, y:e.touches[0].clientY };
+    vDragRef.current = { x:e.touches[0].clientX, startY:e.touches[0].clientY, active:true, wasDragged:false };
+  };
+  const handleVTouchMove = e => {
+    if(!vDragRef.current?.active) return;
+    const dx = e.touches[0].clientX - vDragRef.current.x;
+    const dy = e.touches[0].clientY - vDragRef.current.startY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+      e.preventDefault();
+      vDragRef.current.wasDragged = true;
+      applyCarouselFrame(dx);
+    }
+  };
+  const handleVTouchEnd = e => {
+    if(!vTouchRef.current) return;
+    if(e.target && e.target.closest && (e.target.closest('button') || e.target.closest('[data-speaker]') || e.target.closest('[data-star]'))) {
+      vTouchRef.current = null; vDragRef.current = { active:false, x:0, startY:0, wasDragged:false }; return;
+    }
+    const dx = e.changedTouches[0].clientX - vTouchRef.current.x;
+    const dy = e.changedTouches[0].clientY - vTouchRef.current.y;
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    const wasDragging = vDragRef.current?.wasDragged || false;
+    vDragRef.current = { active:false, x:0, startY:0, wasDragged:false };
+
+    // Short tap = flip
+    if(ax < 18 && ay < 18) {
+      e.preventDefault();
+      snapCarouselBack();
+      vSuppressClickRef.current = true;
+      setTimeout(() => { vSuppressClickRef.current = false; }, 600);
+      setFlipped(f => !f);
+      vTouchRef.current = null; return;
+    }
+
+    // Horizontal swipe → carousel navigate
+    if(ax > ay && ax > 50) {
+      if(dx > 0) {
+        // swipe right = go to PREVIOUS card
+        flyCarouselOff(1, () => {});
+        setIdx(i => Math.max(0, i-1));
+        setFlipped(false);
+      } else {
+        // swipe left = go to NEXT card
+        flyCarouselOff(-1, () => {});
+        setIdx(i => Math.min(words.length-1, i+1));
+        setFlipped(false);
+      }
+      vTouchRef.current = null; return;
+    }
+
+    // Small drag but not enough → snap back
+    if(wasDragging) { snapCarouselBack(); }
+
+    // Vertical swipe = mark
+    if(!wasDragging && ax <= ay) {
+      if(dy < -80) mark('known');
+      else if(dy > 80) mark('hard');
+    }
+    vTouchRef.current = null;
+  };
+
   const VTABS = [
     { id:'study',    label:'Study',    icon:'📖' },
     { id:'quiz',     label:'Quiz',     icon:'🧠' },
     { id:'browse',   label:'Browse',   icon:'🗂'  },
+    { id:'starred',  label:'Starred',  icon:'⭐' },
     { id:'stats',    label:'Stats',    icon:'📊' },
-    { id:'settings', label:'Settings', icon:'⚙️' },
   ];
+
+  // ── Daily goal tracking ──
+  const todayKey = new Date().toISOString().slice(0,10);
+  const [dailyCount, setDailyCount] = useState(() => {
+    try { const d = JSON.parse(localStorage.getItem(`vocab_daily_${level}`) || '{}'); return d.date === todayKey ? d.count : 0; } catch { return 0; }
+  });
+  const [streak7, setStreak7] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(`vocab_streak`) || '0'); } catch { return 0; }
+  });
+  const DAILY_GOAL = 20;
+
+  const bumpDaily = () => {
+    setDailyCount(c => {
+      const next = c + 1;
+      try {
+        const prev = JSON.parse(localStorage.getItem(`vocab_daily_${level}`) || '{}');
+        const wasYesterday = prev.date === new Date(Date.now()-86400000).toISOString().slice(0,10);
+        localStorage.setItem(`vocab_daily_${level}`, JSON.stringify({ date:todayKey, count:next }));
+        if (next === 1) {
+          const newStreak = wasYesterday ? streak7 + 1 : 1;
+          setStreak7(newStreak);
+          localStorage.setItem(`vocab_streak`, JSON.stringify(newStreak));
+        }
+      } catch {}
+      return next;
+    });
+  };
+
+  // ── Browse search ──
+  const [browseSearch, setBrowseSearch] = useState('');
+
+  // ── Starred quick-study ──
+  const [starIdx, setStarIdx] = useState(0);
+  const [starFlipped, setStarFlipped] = useState(false);
+  const starredWords = words.filter(w => cardStates[w.id]?.starred);
+  const starCard = starredWords[starIdx] || null;
+  const starCs = starCard ? (cardStates[starCard.id] || { starred:true, status:'new' }) : null;
 
   // Level Complete Popup
   if (levelComplete) {
@@ -11916,9 +12394,29 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
               fontFamily:"'Cinzel',serif" }}>語彙 {level}</div>
             <div style={{ fontSize:10, color:TC.nebula }}>{totalKnown}/{words.length} known</div>
           </div>
-          <div style={{ fontSize:13, fontWeight:800, color:TC.moonlight,
-            fontFamily:"'Cinzel',serif" }}>
-            {idx+1}/{words.length}
+          {/* Daily goal ring */}
+          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2, cursor:'default' }}
+            title={`Daily goal: ${dailyCount}/${DAILY_GOAL} · Streak: ${streak7} days`}>
+            <div style={{ position:'relative', width:38, height:38 }}>
+              <svg width="38" height="38" style={{ position:'absolute', inset:0, transform:'rotate(-90deg)' }}>
+                <circle cx="19" cy="19" r="15" fill="none" stroke={`${TC.aurora}28`} strokeWidth="3"/>
+                <circle cx="19" cy="19" r="15" fill="none"
+                  stroke={dailyCount >= DAILY_GOAL ? TC.jade : TC.aurora}
+                  strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${Math.min(dailyCount/DAILY_GOAL,1)*94.2} 94.2`}
+                  style={{ transition:'stroke-dasharray 0.5s ease' }}/>
+              </svg>
+              <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center',
+                justifyContent:'center', fontSize:10, fontWeight:900,
+                color: dailyCount >= DAILY_GOAL ? TC.jade : TC.aurora }}>
+                {dailyCount >= DAILY_GOAL ? '✓' : dailyCount}
+              </div>
+            </div>
+            {streak7 > 0 && (
+              <div style={{ fontSize:8, color:TC.amber, fontWeight:800, letterSpacing:0.5 }}>
+                🔥{streak7}d
+              </div>
+            )}
           </div>
         </div>
 
@@ -11937,12 +12435,21 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
               {/* Card zone */}
               <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center',
                 padding: bp.isLarge?'16px 40px':bp.isTablet?'12px 26px':'10px 14px',
-                overflow:'hidden' }}
+                overflow:'hidden', position:'relative' }}
+                onTouchStart={handleVTouchStart}
+                onTouchMove={handleVTouchMove}
+                onTouchEnd={handleVTouchEnd}
                 onClick={e => {
+                  if(vSuppressClickRef.current) return;
                   if(e.target.closest('button') || e.target.closest('[data-speaker]')) return;
                   setFlipped(f=>!f);
                 }}>
-                <div style={{ width:'100%', maxWidth:bp.isLarge?560:bp.isTablet?500:430,
+                {/* Swipe hint arrows */}
+                <div style={{ position:'absolute', left:6, top:'50%', transform:'translateY(-50%)',
+                  fontSize:18, color:`${TC.aurora}50`, pointerEvents:'none', userSelect:'none', zIndex:5 }}>{'◀'}</div>
+                <div style={{ position:'absolute', right:6, top:'50%', transform:'translateY(-50%)',
+                  fontSize:18, color:`${TC.aurora}50`, pointerEvents:'none', userSelect:'none', zIndex:5 }}>{'▶'}</div>
+                <div ref={vCardRef} style={{ width:'100%', maxWidth:bp.isLarge?560:bp.isTablet?500:430,
                   position:'relative', perspective:1200 }}>
                   {cs?.status==='known' && (
                     <div style={{ position:'absolute', inset:-3, borderRadius:26, zIndex:0,
@@ -11969,7 +12476,10 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
                 flexShrink:0 }}>
                 <div style={{ display:'flex', gap:8, marginBottom:8,
                   maxWidth:bp.isLarge?560:bp.isTablet?500:430, margin:'0 auto 8px' }}>
-                  <RippleBtn onClick={() => { setIdx(i=>Math.max(0,i-1)); setFlipped(false); }}
+                  <RippleBtn onClick={() => {
+                    flyCarouselOff(1, () => {});
+                    setIdx(i=>Math.max(0,i-1)); setFlipped(false);
+                  }}
                     style={{ flex:1, background:`${TC.aurora}1A`, color:TC.auroraD,
                       border:`1px solid ${TC.aurora}66`, borderRadius:10, padding:'12px 0',
                       fontSize:12, fontWeight:700, cursor:'pointer',
@@ -11985,7 +12495,10 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
                       boxShadow:`0 4px 20px ${TC.aurora}59` }}>
                     {flipped ? '↩ Front' : '↻ Flip Card'}
                   </RippleBtn>
-                  <RippleBtn onClick={() => { setIdx(i=>Math.min(words.length-1,i+1)); setFlipped(false); }}
+                  <RippleBtn onClick={() => {
+                    flyCarouselOff(-1, () => {});
+                    setIdx(i=>Math.min(words.length-1,i+1)); setFlipped(false);
+                  }}
                     style={{ flex:1, background:`${TC.teal}1A`, color:TC.tealD,
                       border:`1px solid ${TC.teal}66`, borderRadius:10, padding:'12px 0',
                       fontSize:12, fontWeight:700, cursor:'pointer',
@@ -12009,89 +12522,287 @@ function VocabApp({ onBack, theme='sky', setTheme }) {
           )}
 
           {tab === 'browse' && (
-            <div style={{ flex:1, overflowY:'auto', padding:'16px',
-              WebkitOverflowScrolling:'touch' }}>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(160px,1fr))',
-                gap:10, maxWidth:620, margin:'0 auto' }}>
-                {words.map((w) => {
-                  const wcs = cardStates[w.id] || { status:'new', starred:false };
-                  const st = STATUS[wcs.status];
-                  return (
-                    <div key={w.id} style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
-                      borderRadius:12, padding:'12px',
-                      border:`1px solid ${st.color}40`,
-                      boxShadow:`0 2px 10px rgba(0,0,0,0.3)` }}>
-                      <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight,
-                        fontFamily:'"Zen Old Mincho",serif', marginBottom:2 }}>{w.w}</div>
-                      <div style={{ fontSize:11, color:TC.tealD, marginBottom:4 }}>{w.r}</div>
-                      <div style={{ fontSize:11, color:TC.starlight }}>{w.m}</div>
-                      <div style={{ fontSize:9, color:st.color, marginTop:4,
-                        fontWeight:700 }}>{st.emoji} {st.label}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {tab === 'stats' && (
-            <div style={{ flex:1, overflowY:'auto', padding:'20px',
-              WebkitOverflowScrolling:'touch' }}>
-              <div style={{ maxWidth:420, margin:'0 auto' }}>
-                {[['Known','known',TC.jade],['Review','ok',TC.amber],['Hard','hard',TC.crimson],['New','new',TC.nebula]].map(([label,status,color])=>{
-                  const count = Object.values(cardStates).filter(s=>s.status===status).length;
-                  const pct = words.length > 0 ? Math.round(count/words.length*100) : 0;
-                  return (
-                    <div key={status} style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
-                      borderRadius:14, padding:'16px 20px', marginBottom:10,
-                      display:'flex', alignItems:'center', justifyContent:'space-between',
-                      border:`1px solid ${color}30`,
-                      boxShadow:`0 2px 10px rgba(0,0,0,0.3)` }}>
-                      <div>
-                        <div style={{ fontSize:14, fontWeight:800, color }}>{label}</div>
-                        <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight }}>{count}</div>
-                      </div>
-                      <div style={{ textAlign:'right' }}>
-                        <div style={{ width:80, height:8, background:`${TC.border}80`, borderRadius:4 }}>
-                          <div style={{ width:`${pct}%`, height:'100%', background:color, borderRadius:4 }}/>
-                        </div>
-                        <div style={{ fontSize:12, color, marginTop:4, fontWeight:700 }}>{pct}%</div>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div style={{ background:`linear-gradient(135deg,${TC.aurora}22,${TC.jade}22)`,
-                  borderRadius:14, padding:'16px 20px', color:TC.moonlight, marginTop:10,
-                  border:`1px solid ${TC.aurora}30` }}>
-                  <div style={{ fontSize:14, fontWeight:700, color:TC.aurora,
-                    fontFamily:"'Cinzel',serif" }}>Session</div>
-                  <div style={{ display:'flex', gap:20, marginTop:4 }}>
-                    <div><div style={{ fontSize:22, fontWeight:900 }}>{sessCorrect}</div><div style={{ fontSize:11, color:TC.nebula }}>correct</div></div>
-                    <div><div style={{ fontSize:22, fontWeight:900 }}>{sessWrong}</div><div style={{ fontSize:11, color:TC.nebula }}>hard</div></div>
+            <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+              {/* Search bar */}
+              <div style={{ padding:'10px 16px 8px', background:`${TC.card}EE`, flexShrink:0,
+                borderBottom:`1px solid ${TC.border}60` }}>
+                <div style={{ position:'relative', maxWidth:480, margin:'0 auto' }}>
+                  <span style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)',
+                    fontSize:14, color:TC.nebula, pointerEvents:'none' }}>🔍</span>
+                  <input
+                    value={browseSearch}
+                    onChange={e => setBrowseSearch(e.target.value)}
+                    placeholder="Search word, reading or meaning…"
+                    style={{ width:'100%', background:`${TC.lifted}CC`,
+                      border:`1.5px solid ${browseSearch ? TC.aurora : TC.border}`,
+                      borderRadius:12, padding:'9px 14px 9px 36px',
+                      fontSize:13, color:TC.moonlight, outline:'none',
+                      transition:'border-color 0.2s',
+                      fontFamily:'"Noto Sans JP",system-ui,sans-serif',
+                      boxShadow: browseSearch ? `0 0 0 3px ${TC.aurora}20` : 'none' }}/>
+                  {browseSearch && (
+                    <button onClick={() => setBrowseSearch('')}
+                      style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)',
+                        background:'none', border:'none', color:TC.nebula, cursor:'pointer',
+                        fontSize:16, padding:'2px 4px', lineHeight:1 }}>✕</button>
+                  )}
+                </div>
+                {browseSearch && (
+                  <div style={{ textAlign:'center', fontSize:10, color:TC.nebula, marginTop:5 }}>
+                    {words.filter(w => {
+                      const q = browseSearch.toLowerCase();
+                      return w.w.includes(browseSearch) || w.r.includes(browseSearch) || w.m.toLowerCase().includes(q);
+                    }).length} results
                   </div>
+                )}
+              </div>
+              <div style={{ flex:1, overflowY:'auto', padding:'12px 16px',
+                WebkitOverflowScrolling:'touch' }}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(155px,1fr))',
+                  gap:10, maxWidth:620, margin:'0 auto' }}>
+                  {words
+                    .filter(w => {
+                      if (!browseSearch) return true;
+                      const q = browseSearch.toLowerCase();
+                      return w.w.includes(browseSearch) || w.r.includes(browseSearch) || w.m.toLowerCase().includes(q);
+                    })
+                    .map((w) => {
+                      const wcs = cardStates[w.id] || { status:'new', starred:false };
+                      const st = STATUS[wcs.status];
+                      return (
+                        <RippleBtn key={w.id}
+                          onClick={() => { setIdx(words.indexOf(w)); setTab('study'); setFlipped(false); }}
+                          style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
+                            borderRadius:12, padding:'12px', textAlign:'left',
+                            border:`1px solid ${st.color}40`,
+                            boxShadow:`0 2px 10px rgba(0,0,0,0.3)`,
+                            cursor:'pointer', transition:'all 0.18s' }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:2 }}>
+                            <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight,
+                              fontFamily:'"Zen Old Mincho",serif' }}>{w.w}</div>
+                            {wcs.starred && <span style={{ fontSize:12, color:TC.amber }}>★</span>}
+                          </div>
+                          <div style={{ fontSize:11, color:TC.tealD, marginBottom:3, fontFamily:'serif' }}>{w.r}</div>
+                          <div style={{ fontSize:11, color:TC.starlight, lineHeight:1.35 }}>{w.m}</div>
+                          <div style={{ fontSize:9, color:st.color, marginTop:5, fontWeight:700 }}>{st.emoji} {st.label}</div>
+                        </RippleBtn>
+                      );
+                    })}
                 </div>
               </div>
             </div>
           )}
 
+          {tab === 'starred' && (
+            <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+              {starredWords.length === 0 ? (
+                <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
+                  justifyContent:'center', gap:14, padding:'30px' }}>
+                  <div style={{ fontSize:48 }}>⭐</div>
+                  <div style={{ fontSize:16, fontWeight:800, color:TC.moonlight,
+                    fontFamily:"'Cinzel',serif" }}>No starred words yet</div>
+                  <div style={{ fontSize:13, color:TC.nebula, textAlign:'center', lineHeight:1.6 }}>
+                    Tap ☆ on any card while studying to star it for focused review here.
+                  </div>
+                  <RippleBtn onClick={() => setTab('study')}
+                    style={{ background:`linear-gradient(135deg,${TC.aurora},${TC.jade}88)`,
+                      color:TC.card, border:'none', borderRadius:12, padding:'12px 28px',
+                      fontSize:13, fontWeight:800, cursor:'pointer', fontFamily:"'Cinzel',serif",
+                      boxShadow:`0 4px 18px ${TC.aurora}44` }}>
+                    Go Study →
+                  </RippleBtn>
+                </div>
+              ) : (
+                <>
+                  {/* Header */}
+                  <div style={{ padding:'10px 16px', background:`${TC.lifted}DD`,
+                    borderBottom:`1px solid ${TC.amber}30`, flexShrink:0,
+                    display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <span style={{ fontSize:16 }}>⭐</span>
+                      <span style={{ fontSize:13, fontWeight:800, color:TC.amber,
+                        fontFamily:"'Cinzel',serif" }}>Starred Review</span>
+                    </div>
+                    <div style={{ fontSize:12, color:TC.nebula, fontWeight:700 }}>
+                      {starIdx+1} / {starredWords.length}
+                    </div>
+                  </div>
+
+                  {/* Mini progress bar */}
+                  <div style={{ height:3, background:TC.border, flexShrink:0 }}>
+                    <div style={{ height:'100%', background:`linear-gradient(90deg,${TC.amber},${TC.jade})`,
+                      width:`${((starIdx+1)/starredWords.length)*100}%`,
+                      transition:'width 0.4s ease', borderRadius:2 }}/>
+                  </div>
+
+                  {/* Card */}
+                  <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center',
+                    padding:'12px 16px', overflow:'hidden' }}
+                    onClick={e => { if(e.target.closest('button')) return; setStarFlipped(f=>!f); }}>
+                    <div style={{ width:'100%', maxWidth:440, position:'relative', perspective:1200 }}>
+                      <VocabCard word={starCard} cs={starCs} flipped={starFlipped}
+                        onFlip={() => setStarFlipped(f=>!f)}
+                        onStar={() => setCardStates(p=>({...p,[starCard.id]:{...p[starCard.id],starred:!p[starCard.id].starred}}))}
+                        bp={bp} theme={theme} level={level}/>
+                    </div>
+                  </div>
+
+                  {/* Controls */}
+                  <div style={{ padding:'10px 16px 14px', background:`${TC.card}F7`,
+                    borderTop:`1px solid ${TC.amber}30`, flexShrink:0 }}>
+                    <div style={{ display:'flex', gap:8, maxWidth:440, margin:'0 auto 8px' }}>
+                      <RippleBtn onClick={() => { setStarIdx(i=>Math.max(0,i-1)); setStarFlipped(false); }}
+                        style={{ flex:1, background:`${TC.amber}15`, color:TC.amber,
+                          border:`1px solid ${TC.amber}40`, borderRadius:10, padding:'11px 0',
+                          fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:"'Cinzel',serif" }}>
+                        ◀ Prev
+                      </RippleBtn>
+                      <RippleBtn onClick={() => setStarFlipped(f=>!f)}
+                        style={{ flex:2, background:`linear-gradient(135deg,${TC.amber},${TC.aurora}88)`,
+                          color:TC.card, border:'none', borderRadius:10, padding:'11px 0',
+                          fontSize:13, fontWeight:800, cursor:'pointer', fontFamily:"'Cinzel',serif",
+                          boxShadow:`0 4px 16px ${TC.amber}44` }}>
+                        {starFlipped ? '↩ Front' : '↻ Flip'}
+                      </RippleBtn>
+                      <RippleBtn onClick={() => { setStarIdx(i=>Math.min(starredWords.length-1,i+1)); setStarFlipped(false); }}
+                        style={{ flex:1, background:`${TC.jade}15`, color:TC.jade,
+                          border:`1px solid ${TC.jade}40`, borderRadius:10, padding:'11px 0',
+                          fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:"'Cinzel',serif" }}>
+                        Next ▶
+                      </RippleBtn>
+                    </div>
+                    {/* Unstar button */}
+                    <div style={{ maxWidth:440, margin:'0 auto' }}>
+                      <RippleBtn onClick={() => {
+                        setCardStates(p=>({...p,[starCard.id]:{...p[starCard.id],starred:false}}));
+                        setStarIdx(i => Math.min(i, starredWords.length-2));
+                        setStarFlipped(false);
+                      }}
+                        style={{ width:'100%', background:`${TC.crimson}12`, color:TC.crimson,
+                          border:`1px solid ${TC.crimson}30`, borderRadius:10, padding:'10px',
+                          fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:"'Cinzel',serif" }}>
+                        ✕ Unstar this word
+                      </RippleBtn>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {tab === 'stats' && (
+            <div style={{ flex:1, overflowY:'auto', padding:'16px',
+              WebkitOverflowScrolling:'touch' }}>
+              <div style={{ maxWidth:440, margin:'0 auto', display:'flex', flexDirection:'column', gap:12 }}>
+
+                {/* Daily goal card */}
+                <div style={{ background:`linear-gradient(135deg,${TC.aurora}22,${TC.jade}18)`,
+                  borderRadius:18, padding:'18px 20px',
+                  border:`1px solid ${TC.aurora}35`,
+                  boxShadow:`0 4px 20px rgba(0,0,0,0.25)` }}>
+                  <div style={{ fontSize:11, color:TC.aurora, fontWeight:800, letterSpacing:2,
+                    fontFamily:"'Cinzel',serif", marginBottom:10 }}>DAILY GOAL</div>
+                  <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+                    {/* Big arc */}
+                    <div style={{ position:'relative', width:72, height:72, flexShrink:0 }}>
+                      <svg width="72" height="72" style={{ transform:'rotate(-90deg)' }}>
+                        <circle cx="36" cy="36" r="28" fill="none" stroke={`${TC.aurora}25`} strokeWidth="5"/>
+                        <circle cx="36" cy="36" r="28" fill="none"
+                          stroke={dailyCount >= DAILY_GOAL ? TC.jade : TC.aurora}
+                          strokeWidth="5" strokeLinecap="round"
+                          strokeDasharray={`${Math.min(dailyCount/DAILY_GOAL,1)*175.9} 175.9`}
+                          style={{ transition:'stroke-dasharray 0.6s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                      </svg>
+                      <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
+                        alignItems:'center', justifyContent:'center' }}>
+                        <div style={{ fontSize:18, fontWeight:900,
+                          color: dailyCount >= DAILY_GOAL ? TC.jade : TC.moonlight }}>{dailyCount}</div>
+                        <div style={{ fontSize:8, color:TC.nebula }}>/{DAILY_GOAL}</div>
+                      </div>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:14, fontWeight:900, color:TC.moonlight, marginBottom:4 }}>
+                        {dailyCount >= DAILY_GOAL ? '🎉 Goal reached!' : `${DAILY_GOAL - dailyCount} more to go`}
+                      </div>
+                      <div style={{ fontSize:11, color:TC.nebula, marginBottom:8 }}>Cards reviewed today</div>
+                      {streak7 > 0 && (
+                        <div style={{ display:'inline-flex', alignItems:'center', gap:5,
+                          background:`${TC.amber}20`, borderRadius:8, padding:'4px 10px',
+                          border:`1px solid ${TC.amber}40` }}>
+                          <span style={{ fontSize:13 }}>🔥</span>
+                          <span style={{ fontSize:12, fontWeight:800, color:TC.amber }}>{streak7}-day streak</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Level progress */}
+                <div style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
+                  borderRadius:18, padding:'18px 20px',
+                  border:`1px solid ${TC.border}`,
+                  boxShadow:`0 4px 20px rgba(0,0,0,0.25)` }}>
+                  <div style={{ fontSize:11, color:TC.aurora, fontWeight:800, letterSpacing:2,
+                    fontFamily:"'Cinzel',serif", marginBottom:12 }}>LEVEL PROGRESS · {level}</div>
+                  {[['Known','known',TC.jade],['Review','ok',TC.amber],['Hard','hard',TC.crimson],['New','new',TC.nebula]].map(([label,status,color])=>{
+                    const count = Object.values(cardStates).filter(s=>s.status===status).length;
+                    const pct = words.length > 0 ? count/words.length : 0;
+                    return (
+                      <div key={status} style={{ marginBottom:10 }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+                          <span style={{ fontSize:12, fontWeight:700, color }}>{label}</span>
+                          <span style={{ fontSize:12, color:TC.nebula }}>{count} <span style={{ fontSize:10 }}>({Math.round(pct*100)}%)</span></span>
+                        </div>
+                        <div style={{ height:7, background:`${TC.border}60`, borderRadius:4, overflow:'hidden' }}>
+                          <div style={{ height:'100%', borderRadius:4,
+                            width:`${pct*100}%`,
+                            background:`linear-gradient(90deg,${color},${color}AA)`,
+                            transition:'width 0.6s cubic-bezier(0.34,1.2,0.64,1)',
+                            boxShadow:`0 0 6px ${color}60` }}/>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Session + starred */}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                  <div style={{ background:`linear-gradient(135deg,${TC.jade}20,${TC.teal}12)`,
+                    borderRadius:16, padding:'16px', border:`1px solid ${TC.jade}30`,
+                    boxShadow:`0 4px 16px rgba(0,0,0,0.2)` }}>
+                    <div style={{ fontSize:9, color:TC.jade, fontWeight:800, letterSpacing:1.5,
+                      fontFamily:"'Cinzel',serif", marginBottom:8 }}>SESSION</div>
+                    <div style={{ fontSize:28, fontWeight:900, color:TC.moonlight }}>{sessCorrect}</div>
+                    <div style={{ fontSize:10, color:TC.nebula }}>correct this session</div>
+                    <div style={{ marginTop:6, fontSize:13, color:TC.crimson, fontWeight:700 }}>
+                      {sessWrong > 0 ? `${sessWrong} hard` : ''}
+                    </div>
+                  </div>
+                  <div style={{ background:`linear-gradient(135deg,${TC.amber}20,${TC.aurora}12)`,
+                    borderRadius:16, padding:'16px', border:`1px solid ${TC.amber}30`,
+                    boxShadow:`0 4px 16px rgba(0,0,0,0.2)` }}>
+                    <div style={{ fontSize:9, color:TC.amber, fontWeight:800, letterSpacing:1.5,
+                      fontFamily:"'Cinzel',serif", marginBottom:8 }}>STARRED</div>
+                    <div style={{ fontSize:28, fontWeight:900, color:TC.moonlight }}>
+                      {Object.values(cardStates).filter(s=>s.starred).length}
+                    </div>
+                    <div style={{ fontSize:10, color:TC.nebula }}>words starred</div>
+                    <RippleBtn onClick={() => setTab('starred')}
+                      style={{ marginTop:8, background:`${TC.amber}20`, color:TC.amber,
+                        border:`1px solid ${TC.amber}40`, borderRadius:8,
+                        padding:'5px 10px', fontSize:10, fontWeight:700, cursor:'pointer' }}>
+                      Review →
+                    </RippleBtn>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
           {tab === 'quiz' && (
             <VocabQuizView words={words} bp={bp} theme={theme}/>
           )}
 
-          {tab === 'settings' && (
-            <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch' }}>
-              <SettingsView
-                shuffled={false} setShuffled={()=>{}}
-                mode={'all'} setMode={()=>{}} setDeckIdx={()=>{}} setFlipped={()=>{}}
-                resetProgress={()=>{}}
-                rainMode={false} setRainMode={()=>{}}
-                theme={theme} setTheme={setTheme || (()=>{})}
-                bp={bp}/>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Nav */}
         <div style={{ display:'flex', background:`${TC.card}F2`,
           borderTop:`1px solid ${TC.aurora}25`, backdropFilter:'blur(12px)', flexShrink:0 }}>
           {VTABS.map(t => (
