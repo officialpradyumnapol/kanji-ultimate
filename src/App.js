@@ -3477,11 +3477,7 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               {card.ex.map((ex,i)=>(
-                <div key={i} data-speaker="1"
-                  onClick={e => e.stopPropagation()}
-                  onTouchStart={e => e.stopPropagation()}
-                  onTouchEnd={e => e.stopPropagation()}
-                  style={{ display:'flex', alignItems:'center', gap:10,
+                <div key={i} data-speaker="1" style={{ display:'flex', alignItems:'center', gap:10,
                   padding:'10px 14px',
                   background:`linear-gradient(135deg,${C.lifted}E6,${C.abyss}D9)`,
                   borderRadius:14, border:`1px solid ${C.jade}28`,
@@ -3645,10 +3641,16 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
   };
   const handleTouchEnd = e=>{
     if(!touchRef.current) return;
-    // Don't flip if touch ended on a speaker button or any interactive button
-    if(e.target && e.target.closest && (
-      e.target.closest('[data-speaker]') || e.target.closest('button')
-    )) {
+    // Don't flip if touch ended on (or near) a speaker button or interactive element.
+    // IMPORTANT: e.target is the touchstart element, NOT where the finger lifted.
+    // Use elementFromPoint to find what's actually under the finger at lift-off.
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const elUnder = document.elementFromPoint(endX, endY);
+    const isInteractive = el => el && el.closest && (
+      el.closest('[data-speaker]') || el.closest('button')
+    );
+    if(isInteractive(e.target) || isInteractive(elUnder)) {
       touchRef.current = null;
       dragRef.current = {active:false, x:0, startY:0, wasDragged:false};
       return;
@@ -3754,11 +3756,13 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
           // If a touch-tap already flipped the card, the browser fires a synthetic
           // click right after — suppress it so we don't flip back immediately.
           if(suppressClickRef.current){ suppressClickRef.current = false; return; }
-          // Don't flip if clicking speaker, star button, or any other interactive element
-          if(e.target && e.target.closest && (
-            e.target.closest('[data-speaker]') ||
-            e.target.closest('button')
-          )) return;
+          // Don't flip if clicking speaker, star button, or any other interactive element.
+          // Check both e.target (may be touchstart origin) and actual element at pointer position.
+          const elAt = document.elementFromPoint(e.clientX, e.clientY);
+          const isInteractive = el => el && el.closest && (
+            el.closest('[data-speaker]') || el.closest('button')
+          );
+          if(isInteractive(e.target) || isInteractive(elAt)) return;
           if(!animState.current.busy) setFlipped(f=>!f);
         }}>
 
@@ -12351,7 +12355,13 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
   };
   const handleVTouchEnd = e => {
     if(!vTouchRef.current) return;
-    if(e.target && e.target.closest && (e.target.closest('button') || e.target.closest('[data-speaker]') || e.target.closest('[data-star]'))) {
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const elUnder = document.elementFromPoint(endX, endY);
+    const isVInteractive = el => el && el.closest && (
+      el.closest('button') || el.closest('[data-speaker]') || el.closest('[data-star]')
+    );
+    if(isVInteractive(e.target) || isVInteractive(elUnder)) {
       vTouchRef.current = null; vDragRef.current = { active:false, x:0, startY:0, wasDragged:false }; return;
     }
     const dx = e.changedTouches[0].clientX - vTouchRef.current.x;
