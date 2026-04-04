@@ -3477,7 +3477,11 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
               {card.ex.map((ex,i)=>(
-                <div key={i} data-speaker="1" style={{ display:'flex', alignItems:'center', gap:10,
+                <div key={i} data-speaker="1"
+                  onClick={e => e.stopPropagation()}
+                  onTouchStart={e => e.stopPropagation()}
+                  onTouchEnd={e => e.stopPropagation()}
+                  style={{ display:'flex', alignItems:'center', gap:10,
                   padding:'10px 14px',
                   background:`linear-gradient(135deg,${C.lifted}E6,${C.abyss}D9)`,
                   borderRadius:14, border:`1px solid ${C.jade}28`,
@@ -11657,7 +11661,6 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
             </div>
             <div style={{ display:'flex', alignItems:'center', gap:8, position:'relative' }}>
               <SpeakerBtn text={word.w} lang="ja-JP" size={18} color={TC.jade}/>
-              <SpeakerBtn text={word.m} lang="en-US" size={18} color={TC.teal}/>
             </div>
           </div>
 
