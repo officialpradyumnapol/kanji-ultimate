@@ -3518,7 +3518,8 @@ function FlashCard({ card, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
    STUDY VIEW
 ═══════════════════════════════════════════════════════════════════════════ */
 function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mark, toggleStar,
-                     mode, setMode, setDeckIdx, shuffled, setShuffled, bp, confettiTrig, theme = 'sky' }) {
+                     mode, setMode, setDeckIdx, shuffled, setShuffled, bp, confettiTrig, theme = 'sky',
+                     kanjiLevel, onSelectLevel }) {
   const touchRef        = useRef(null);
   const dragRef         = useRef({active:false, x:0, startY:0});
   const cardRef         = useRef(null);   // ref to FlashCard outer div — JS animates this directly
@@ -3701,6 +3702,32 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
 
   return (
     <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+      {/* JLPT Level chip — only shown when level prop is passed */}
+      {kanjiLevel && onSelectLevel && (
+        <div style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 14px 6px',
+          background:`${C.card}F8`, borderBottom:`1px solid ${C.aurora}25`, flexShrink:0 }}>
+          {(() => {
+            const lvColor = kanjiLevel==='N5'?'#60A5C8':kanjiLevel==='N4'?'#7BB8D4':kanjiLevel==='N3'?'#818CF8':kanjiLevel==='N2'?'#8B5CF6':'#C9A84C';
+            const lvDesc  = kanjiLevel==='N5'?'Beginner':kanjiLevel==='N4'?'Elementary':kanjiLevel==='N3'?'Intermediate':kanjiLevel==='N2'?'Upper-Intermediate':'Advanced';
+            return (
+              <>
+                <RippleBtn onClick={onSelectLevel}
+                  style={{ background:`${lvColor}20`, border:`1px solid ${lvColor}55`,
+                    borderRadius:10, padding:'5px 14px', fontSize:12, color:lvColor,
+                    cursor:'pointer', fontWeight:900, fontFamily:"'Cinzel',serif",
+                    letterSpacing:0.5, boxShadow:`0 2px 8px ${lvColor}30`,
+                    display:'flex', alignItems:'center', gap:6 }}>
+                  ← {kanjiLevel}
+                </RippleBtn>
+                <span style={{ fontSize:11, color:C.nebula }}>{lvDesc}</span>
+                <span style={{ marginLeft:'auto', fontSize:10, color:C.dim }}>
+                  {deck.length} kanji
+                </span>
+              </>
+            );
+          })()}
+        </div>
+      )}
       {/* Mode chips */}
       <div style={{ display:'flex', gap:6, padding:'8px 14px 7px',
         background:`${C.lifted}F5`, borderBottom:`1px solid ${C.teal}40`,
@@ -5790,6 +5817,8 @@ export default function KanjiApp() {
   const [appMode,      setAppMode]     = useState('home');
   const [tab,          setTab]         = useState(_saved?.tab || 'study');
   const [mode,         setMode]        = useState(_saved?.mode || 'all');
+  const [kanjiLevel,   setKanjiLevel]  = useState(_saved?.kanjiLevel || 'N5');
+  const [showKanjiLevelSelect, setShowKanjiLevelSelect] = useState(!_saved?.kanjiLevel);
   const [shuffle,      setShuffle]     = useState(_saved?.shuffle || false);
   const [flipped,      setFlipped]     = useState(false);
   const [deckIdx,      setDeckIdx]     = useState(_saved?.deckIdx || 0);
@@ -5896,7 +5925,7 @@ export default function KanjiApp() {
   useEffect(()=>{
     const data = {
       cardStates, deckIdx, tab, mode, shuffle, rainMode, theme, streak,
-      sessCorrect, sessWrong, sessOk,
+      sessCorrect, sessWrong, sessOk, kanjiLevel,
       seen: [...seen],
       prevAchs: [...prevAchs],
     };
@@ -5911,16 +5940,18 @@ export default function KanjiApp() {
   const removeToast=id=>setToasts(ts=>ts.filter(x=>x.id!==id));
 
   // Deck
+  const levelKD = useMemo(()=> KD.filter(k => k.lv === kanjiLevel), [kanjiLevel]);
+
   const deck=useMemo(()=>{
     let d;
-    if(mode==='starred')  d=KD.filter(k=>cardStates[k.id]?.starred);
-    else if(mode==='unknown') d=KD.filter(k=>['new','hard'].includes(cardStates[k.id]?.status));
-    else if(mode==='known')   d=KD.filter(k=>cardStates[k.id]?.status==='known');
-    else d=[...KD];
-    if(!d.length) d=[...KD];
+    if(mode==='starred')  d=levelKD.filter(k=>cardStates[k.id]?.starred);
+    else if(mode==='unknown') d=levelKD.filter(k=>['new','hard'].includes(cardStates[k.id]?.status));
+    else if(mode==='known')   d=levelKD.filter(k=>cardStates[k.id]?.status==='known');
+    else d=[...levelKD];
+    if(!d.length) d=[...levelKD];
     if(shuffle) d=[...d].sort(()=>Math.random()-0.5);
     return d;
-  },[mode,cardStates,shuffle]);
+  },[mode,cardStates,shuffle,levelKD]);
 
   const safeIdx=Math.min(deckIdx,deck.length-1);
   const card=deck[safeIdx]||null;
@@ -5955,6 +5986,15 @@ export default function KanjiApp() {
     const s={}; KD.forEach(k=>{ s[k.id]={starred:false,status:'new'}; });
     setCardStates(s); setSessCorrect(0); setSessWrong(0); setSessOk(0);
     setSeen(new Set()); setSessionTime(0); setStreak(0);
+  };
+
+  const switchKanjiLevel = (lv) => {
+    setKanjiLevel(lv);
+    setDeckIdx(0);
+    setFlipped(false);
+    setMode('all');
+    setShowKanjiLevelSelect(false);
+    setSessCorrect(0); setSessWrong(0); setSessOk(0);
   };
 
   const totalKnown=Object.values(cardStates).filter(s=>s.status==='known').length;
@@ -5994,12 +6034,65 @@ export default function KanjiApp() {
 
           <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden',
             animation:'fadeIn 0.3s ease' }} key={tab}>
-            {tab==='study' && (
+            {tab==='study' && showKanjiLevelSelect && (
+              /* ── Kanji Level Selector ── */
+              <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'auto',
+                background:'transparent' }}>
+                <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center',
+                  justifyContent:'center', padding:'24px 20px' }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:C.aurora, marginBottom:6,
+                    letterSpacing:3, fontFamily:"'Cinzel',serif" }}>漢字 KANJI</div>
+                  <div style={{ fontSize:11, fontWeight:700, color:C.nebula, marginBottom:28,
+                    letterSpacing:2 }}>— SELECT LEVEL —</div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:12,
+                    width:'100%', maxWidth:360 }}>
+                    {['N5','N4','N3','N2','N1'].map(lv => {
+                      const lvKanji = KD.filter(k => k.lv === lv);
+                      const total = lvKanji.length;
+                      const known = lvKanji.filter(k => cardStates[k.id]?.status==='known').length;
+                      const pct = total > 0 ? Math.round(known/total*100) : 0;
+                      const lvColor = lv==='N5'?'#60A5C8':lv==='N4'?'#7BB8D4':lv==='N3'?'#818CF8':lv==='N2'?'#8B5CF6':'#C9A84C';
+                      const isActive = lv === kanjiLevel;
+                      const lvDesc = lv==='N5'?'Beginner':lv==='N4'?'Elementary':lv==='N3'?'Intermediate':lv==='N2'?'Upper-Intermediate':'Advanced';
+                      return (
+                        <RippleBtn key={lv} onClick={() => switchKanjiLevel(lv)}
+                          style={{ background:`linear-gradient(135deg, ${C.card}F0, ${C.lifted}E0)`,
+                            border:`1.5px solid ${isActive ? lvColor+'AA' : C.border}`,
+                            borderRadius:16, padding:'16px 20px', cursor:'pointer',
+                            display:'flex', alignItems:'center', justifyContent:'space-between',
+                            boxShadow: isActive ? `0 4px 20px ${lvColor}40` : `0 2px 12px rgba(0,0,0,0.3)`,
+                            transition:'all 0.2s ease' }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                            <span style={{ fontSize:22, fontWeight:900, color:lvColor,
+                              fontFamily:"'Cinzel',serif",
+                              textShadow:`0 0 12px ${lvColor}60` }}>{lv}</span>
+                            <div>
+                              <div style={{ fontSize:12, color:C.starlight, fontWeight:700 }}>{lvDesc}</div>
+                              <div style={{ fontSize:10, color:C.nebula }}>{total} kanji</div>
+                            </div>
+                          </div>
+                          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                            <div style={{ width:64, height:6, background:`${C.border}80`, borderRadius:3 }}>
+                              <div style={{ width:`${pct}%`, height:'100%',
+                                background:`linear-gradient(90deg,${lvColor},${lvColor}AA)`, borderRadius:3,
+                                transition:'width 0.4s ease' }}/>
+                            </div>
+                            <span style={{ fontSize:11, color:lvColor, fontWeight:700, minWidth:30 }}>{pct}%</span>
+                          </div>
+                        </RippleBtn>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+            {tab==='study' && !showKanjiLevelSelect && (
               <StudyView deck={deck} deckIdx={safeIdx} card={card} cs={cs} theme={theme}
                 flipped={flipped} setFlipped={setFlipped} navigate={navigate}
                 mark={mark} toggleStar={toggleStar} mode={mode} setMode={setMode}
                 setDeckIdx={setDeckIdx} shuffled={shuffle} setShuffled={setShuffle}
-                bp={bp} confettiTrig={confetti}/>
+                bp={bp} confettiTrig={confetti}
+                kanjiLevel={kanjiLevel} onSelectLevel={()=>setShowKanjiLevelSelect(true)}/>
             )}
             {tab==='quiz'    && <QuizView bp={bp}/>}
             {tab==='write'   && <WriteView bp={bp}/>}
