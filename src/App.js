@@ -11529,13 +11529,17 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
       {/* Flip burst */}
       {burst && <VocabFlipBurst color={st.color} TC={TC}/>}
 
+      {/* Float wrapper: animates translateY/rotateX without touching rotateY */}
+      <div style={{ width:'100%', height:'100%', position:'relative',
+          transformStyle:'preserve-3d',
+          animation:'vocab3dFloat 5s ease-in-out infinite',
+          zIndex:2,
+        }}>
       <div ref={innerRef}
         style={{ width:'100%', height:'100%', position:'relative',
           transformStyle:'preserve-3d',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
           transition:'transform 0.6s cubic-bezier(0.4,0.2,0.2,1)',
-          animation:'vocab3dFloat 5s ease-in-out infinite',
-          zIndex:2,
         }}>
 
         {/* ──── FRONT ──── */}
@@ -11711,6 +11715,7 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
           </div>
         </div>
       </div>
+      </div>{/* end float wrapper */}
     </div>
   );
 }
