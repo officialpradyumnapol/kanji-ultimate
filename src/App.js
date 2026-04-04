@@ -12008,6 +12008,186 @@ function VocabQuizView({ words, bp, theme='sky' }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   VOCAB SETTINGS VIEW — mirrors Kanji SettingsView
+═══════════════════════════════════════════════════════════════════════════ */
+function VocabSettingsView({ theme, setTheme, shuffle, setShuffle, rainMode, setRainMode,
+                              level, words, cardStates, setCardStates,
+                              setIdx, setFlipped, setSessCorrect, setSessWrong, bp }) {
+  const TC = (THEMES[theme]||THEMES.sky).C;
+
+  const resetProgress = () => {
+    if (!window.confirm(`Reset ALL progress for ${level}?`)) return;
+    const s = {};
+    words.forEach(w => { s[w.id] = { starred:false, status:'new' }; });
+    setCardStates(p => ({ ...p, ...s }));
+    setIdx(0); setFlipped(false);
+    setSessCorrect(0); setSessWrong(0);
+    try { localStorage.removeItem(`vocab_progress_${level}`); } catch(e) {}
+  };
+
+  return (
+    <div style={{ flex:1, overflowY:'auto', overflowX:'hidden',
+      padding: bp?.isLarge?'16px 34px':bp?.isTablet?'14px 22px':'12px 14px',
+      display:'flex', flexDirection:'column', gap:10,
+      WebkitOverflowScrolling:'touch' }}>
+
+      {/* ── THEME PICKER ── */}
+      <Glass animate style={{ padding:'20px 20px' }}>
+        <div style={{ fontSize:11, fontWeight:800, letterSpacing:2,
+          color:TC.nebula, marginBottom:16, display:'flex', alignItems:'center', gap:8 }}>
+          🎨 <span>THEMES</span>
+          <span style={{ marginLeft:'auto', fontSize:10, color:TC.dim, fontWeight:500 }}>tap to apply</span>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+          {Object.entries(THEMES).map(([key, th]) => {
+            const isActive = theme === key;
+            return (
+              <RippleBtn key={key} onClick={() => setTheme(key)}
+                style={{ position:'relative', borderRadius:16, padding:'14px 14px',
+                  cursor:'pointer', overflow:'hidden', transition:'all 0.25s',
+                  border: isActive ? `2px solid ${th.preview[0]}` : `1.5px solid ${th.dark?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.10)'}`,
+                  background: th.dark
+                    ? `linear-gradient(145deg, ${th.C.card}, ${th.C.slate})`
+                    : `linear-gradient(145deg, ${th.C.card}, ${th.C.lifted})`,
+                  boxShadow: isActive
+                    ? `0 0 0 3px ${th.preview[0]}40, 0 6px 24px ${th.preview[0]}30`
+                    : `0 2px 8px rgba(0,0,0,0.12)` }}>
+                {isActive && (
+                  <div style={{ position:'absolute', top:8, right:8,
+                    width:20, height:20, borderRadius:10,
+                    background:th.preview[0], display:'flex', alignItems:'center',
+                    justifyContent:'center', fontSize:11, fontWeight:900,
+                    color:'#fff', boxShadow:`0 2px 8px ${th.preview[0]}60`,
+                    animation:'pop 0.3s cubic-bezier(0.34,1.5,0.64,1) both' }}>✓</div>
+                )}
+                <div style={{ display:'flex', gap:4, marginBottom:10 }}>
+                  {th.preview.slice(0,3).map((col,i) => (
+                    <div key={i} style={{ flex:1, height:6, borderRadius:3, background:col,
+                      boxShadow:`0 1px 4px ${col}50`,
+                      animation:isActive?`pop 0.3s ${i*0.06}s ease both`:undefined }}/>
+                  ))}
+                </div>
+                <div style={{ fontSize:12, fontWeight:800,
+                  color: th.dark ? '#fff' : '#1E3A5F', marginBottom:2 }}>
+                  {th.emoji} {th.name}
+                </div>
+                <div style={{ fontSize:10,
+                  color: th.dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)' }}>
+                  {isActive ? '● Active' : '○ Select'}
+                </div>
+              </RippleBtn>
+            );
+          })}
+        </div>
+      </Glass>
+
+      {/* ── BRAND CARD ── */}
+      <Glass animate style={{ padding:'26px 22px', textAlign:'center', position:'relative',
+        overflow:'hidden', background:`linear-gradient(145deg,${TC.card},${TC.lifted})` }}>
+        <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center',
+          justifyContent:'center', opacity:0.04, fontSize:200,
+          fontFamily:'"Noto Sans JP",serif', color:TC.aurora, pointerEvents:'none' }}>語</div>
+        <div style={{ fontSize:56, fontFamily:'"Zen Old Mincho","Shippori Mincho","Noto Serif JP",serif',
+          position:'relative', color: TC.aurora,
+          textShadow:`0 0 24px ${TC.aurora}99, 0 0 48px ${TC.teal}66`,
+          filter:`drop-shadow(0 0 20px ${TC.aurora}80)` }}>語彙</div>
+        <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight, marginTop:4 }}>Vocabulary Flashcards</div>
+        <div style={{ fontSize:12, color:TC.nebula, marginTop:6 }}>
+          JLPT N5–N1 · {Object.values(VD).reduce((a,b)=>a+b.length,0)} Words · All Levels
+        </div>
+        <div style={{ display:'flex', justifyContent:'center', gap:12, marginTop:16 }}>
+          {[TC.aurora,TC.teal,TC.jade,TC.amber,TC.sakura,TC.violet].map((c,i) => (
+            <div key={i} style={{ width:10, height:10, borderRadius:5, background:c,
+              boxShadow:`0 0 12px ${c},0 0 28px ${c}60`,
+              animation:`pop 0.4s ${0.08+i*0.1}s ease both` }}/>
+          ))}
+        </div>
+      </Glass>
+
+      {/* ── TOGGLES ── */}
+      {[
+        { icon:'⇄', label:'Shuffle Mode', sub: shuffle ? 'Cards are randomized' : 'Sequential order',
+          ctrl: <Toggle on={shuffle} onToggle={() => setShuffle(s=>!s)}/> },
+        { icon:'🌧️', label:'Rain Effect',  sub: rainMode ? 'Rain simulation active' : 'Background is clear',
+          ctrl: <Toggle on={rainMode} onToggle={() => setRainMode(r=>!r)}/> },
+      ].map(r => (
+        <Glass key={r.label} animate style={{ padding:'16px 18px', display:'flex',
+          justifyContent:'space-between', alignItems:'center' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:13 }}>
+            <span style={{ fontSize:26 }}>{r.icon}</span>
+            <div>
+              <div style={{ fontSize:13, color:TC.moonlight, fontWeight:800 }}>{r.label}</div>
+              <div style={{ fontSize:11, color:TC.nebula, marginTop:1 }}>{r.sub}</div>
+            </div>
+          </div>
+          {r.ctrl}
+        </Glass>
+      ))}
+
+      {/* ── VOICE SETTINGS ── */}
+      <VoicePickerPanel/>
+
+      {/* ── GESTURE GUIDE ── */}
+      <Glass animate style={{ padding:'16px 18px' }}>
+        <div style={{ fontSize:10, color:TC.nebula, fontWeight:800, letterSpacing:2, marginBottom:12 }}>
+          GESTURE GUIDE
+        </div>
+        {[
+          ['TAP CARD',  'Flip to reveal answer'],
+          ['SWIPE ←',   'Previous card'],
+          ['SWIPE →',   'Next card'],
+          ['SWIPE ↑',   'Mark as Easy (Known)'],
+          ['SWIPE ↓',   'Mark as Hard'],
+          ['★',         'Bookmark word'],
+          ['↻ FLIP',    'Toggle card face'],
+          ['✗ Hard',    'Mark difficult'],
+          ['≈ Review',  'Mark for review'],
+          ['✓ Easy',    'Mark as known'],
+        ].map(([k,v]) => (
+          <div key={k} style={{ display:'flex', justifyContent:'space-between', alignItems:'center',
+            padding:'7px 0', borderBottom:`1px solid ${TC.border}44` }}>
+            <span style={{ fontSize:11, color:TC.aurora, fontWeight:900, letterSpacing:0.4 }}>{k}</span>
+            <span style={{ fontSize:11, color:TC.starlight }}>{v}</span>
+          </div>
+        ))}
+      </Glass>
+
+      {/* ── APP FEATURES ── */}
+      <Glass animate style={{ padding:'16px 18px' }}>
+        <div style={{ fontSize:10, color:TC.nebula, fontWeight:800, letterSpacing:2, marginBottom:12 }}>
+          APP FEATURES
+        </div>
+        {[
+          ['📖 Flashcards', '3D flip cards with examples'],
+          ['🧠 Quiz',       'Multiple choice quiz mode'],
+          ['🗂️ Browse',     'Search all vocabulary words'],
+          ['⭐ Starred',    'Quick review bookmarked words'],
+          ['📊 Stats',      'Progress by JLPT level'],
+          ['🔊 Audio',      'TTS pronunciation for all words'],
+          ['💾 Progress',   'Auto-saved per level'],
+          ['🎨 Themes',     'Shared themes with Kanji app'],
+        ].map(([k,v]) => (
+          <div key={k} style={{ display:'flex', justifyContent:'space-between',
+            padding:'6px 0', borderBottom:`1px solid ${TC.border}44` }}>
+            <span style={{ fontSize:11, color:TC.starlight }}>{k}</span>
+            <span style={{ fontSize:11, color:TC.aurora, fontWeight:600 }}>{v}</span>
+          </div>
+        ))}
+      </Glass>
+
+      {/* ── RESET ── */}
+      <RippleBtn onClick={resetProgress}
+        style={{ background:`${TC.crimson}14`, color:TC.crimson,
+          border:`1px solid ${TC.crimson}50`, borderRadius:14, padding:16,
+          fontSize:13, fontWeight:900, cursor:'pointer', transition:'all 0.2s' }}>
+        ↺  Reset {level} Progress
+      </RippleBtn>
+
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    VOCAB APP
 ═══════════════════════════════════════════════════════════════════════════ */
 const JLPT_LEVELS = ['N5','N4','N3','N2','N1'];
@@ -12017,12 +12197,18 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
   const bp = useBreakpoint();
   const [level, setLevel] = useState('N5');
   const [tab, setTab] = useState('study');
-  const [flipped, setFlipped] = useState(false); 
+  const [flipped, setFlipped] = useState(false);
+  const [rainMode, setRainMode] = useState(false);
+  const [shuffle, setShuffle] = useState(false);
   const [idx, setIdx] = useState(0);
   const [showLevelSelect, setShowLevelSelect] = useState(true);
   const [levelComplete, setLevelComplete] = useState(false);
 
-  const words = VD[level] || [];
+  const words = useMemo(() => {
+    const base = VD[level] || [];
+    return shuffle ? [...base].sort(() => Math.random() - 0.5) : base;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [level, shuffle]);
 
   const initStates = useCallback((lv) => {
     const saved = loadVocabProgress(lv);
@@ -12210,6 +12396,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
     { id:'browse',   label:'Browse',   icon:'🗂'  },
     { id:'starred',  label:'Starred',  icon:'⭐' },
     { id:'stats',    label:'Stats',    icon:'📊' },
+    { id:'settings', label:'Settings', icon:'⚙️' },
   ];
 
   // ── Daily goal tracking ──
@@ -12369,7 +12556,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
       fontFamily:'"Noto Sans JP",system-ui,sans-serif',
       background: THEMES[theme]?.bg?.base?.match(/#[A-Fa-f0-9]{6}/)?.[0] || TC.void }}>
 
-      <NatureBG rainMode={false} themeBg={THEMES[theme]?.bg}/>
+      <NatureBG rainMode={rainMode} themeBg={THEMES[theme]?.bg}/>
       <SparkleField/>
 
       <div style={{ position:'relative', zIndex:1, flex:1, display:'flex',
@@ -12800,6 +12987,18 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
           )}
           {tab === 'quiz' && (
             <VocabQuizView words={words} bp={bp} theme={theme}/>
+          )}
+          {tab === 'settings' && (
+            <VocabSettingsView
+              theme={theme} setTheme={setTheme}
+              shuffle={shuffle} setShuffle={setShuffle}
+              rainMode={rainMode} setRainMode={setRainMode}
+              level={level} words={words}
+              cardStates={cardStates} setCardStates={setCardStates}
+              setIdx={setIdx} setFlipped={setFlipped}
+              setSessCorrect={setSessCorrect} setSessWrong={setSessWrong}
+              bp={bp}
+            />
           )}
         </div>
 
