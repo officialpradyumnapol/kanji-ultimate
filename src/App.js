@@ -11514,6 +11514,11 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
 
   return (
     <div ref={outerRef}
+      onClick={e => {
+        if(e.target.closest('button') || e.target.closest('[data-speaker]') || e.target.closest('[data-star]')) return;
+        e.stopPropagation();
+        onFlip?.();
+      }}
       style={{ width:'100%', height:cardH, cursor:'pointer', position:'relative',
         perspective:1400, willChange:'transform,opacity' }}>
 
@@ -11531,13 +11536,13 @@ function VocabCard({ word, cs, flipped, onFlip, onStar, bp, outerRef, theme='sky
 
       {/* Float wrapper: animates translateY/rotateX without touching rotateY */}
       <div style={{ width:'100%', height:'100%', position:'relative',
-          transformStyle:'preserve-3d',
+          transformStyle:'preserve-3d', WebkitTransformStyle:'preserve-3d',
           animation:'vocab3dFloat 5s ease-in-out infinite',
           zIndex:2,
         }}>
       <div ref={innerRef}
         style={{ width:'100%', height:'100%', position:'relative',
-          transformStyle:'preserve-3d',
+          transformStyle:'preserve-3d', WebkitTransformStyle:'preserve-3d',
           transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
           transition:'transform 0.6s cubic-bezier(0.4,0.2,0.2,1)',
         }}>
@@ -12078,7 +12083,6 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
   const vTouchRef = useRef(null);
   const vDragRef  = useRef({ active:false, x:0, startY:0, wasDragged:false });
   const vCardRef  = useRef(null);
-  const vSuppressClickRef = useRef(false);
   const vRafRef   = useRef(null);
 
   // Apply the arc transform for a given drag delta-x
@@ -12167,13 +12171,9 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
     const wasDragging = vDragRef.current?.wasDragged || false;
     vDragRef.current = { active:false, x:0, startY:0, wasDragged:false };
 
-    // Short tap = flip
+    // Short tap — let the synthetic click bubble to VocabCard's onClick
     if(ax < 18 && ay < 18) {
-      e.preventDefault();
       snapCarouselBack();
-      vSuppressClickRef.current = true;
-      setTimeout(() => { vSuppressClickRef.current = false; }, 600);
-      setFlipped(f => !f);
       vTouchRef.current = null; return;
     }
 
@@ -12442,12 +12442,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
                 overflow:'hidden', position:'relative' }}
                 onTouchStart={handleVTouchStart}
                 onTouchMove={handleVTouchMove}
-                onTouchEnd={handleVTouchEnd}
-                onClick={e => {
-                  if(vSuppressClickRef.current) return;
-                  if(e.target.closest('button') || e.target.closest('[data-speaker]')) return;
-                  setFlipped(f=>!f);
-                }}>
+                onTouchEnd={handleVTouchEnd}>
                 {/* Swipe hint arrows */}
                 <div style={{ position:'absolute', left:6, top:'50%', transform:'translateY(-50%)',
                   fontSize:18, color:`${TC.aurora}50`, pointerEvents:'none', userSelect:'none', zIndex:5 }}>{'◀'}</div>
