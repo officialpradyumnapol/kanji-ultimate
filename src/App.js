@@ -3480,8 +3480,10 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
     }
 
     // ── HORIZONTAL SWIPE ──
+    // Wheel logic: swipe RIGHT = previous card (like rotating wheel right → card on left comes forward)
+    //              swipe LEFT  = next card
     if(ax > ay && ax > 50) {
-      doNav(dx > 0 ? 1 : -1);
+      doNav(dx > 0 ? -1 : 1);
       touchRef.current = null;
       return;
     }
@@ -10856,7 +10858,7 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
 
   /* ── Card style factory ───────────────────────────────────────────────── */
   const cardStyle = (key) => ({
-    flex: 1, maxWidth: 280, borderRadius: 24, padding: '36px 26px',
+    width: 220, minWidth: 220, maxWidth: 220, borderRadius: 24, padding: '36px 26px',
     cursor: 'pointer', display: 'flex', flexDirection: 'column',
     alignItems: 'center', gap: 14,
     transition: 'all 0.35s cubic-bezier(0.34,1.5,0.64,1)',
@@ -11124,17 +11126,19 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
         transition:'all 0.65s ease',
       }}>
         <div style={{
-          fontSize:52, lineHeight:1, marginBottom:10,
-          fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
+          fontSize:64, lineHeight:1, marginBottom:10,
+          fontFamily:'"Shippori Mincho","Zen Old Mincho","Noto Serif JP",serif',
           background: sc.titleGrad,
           WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
           filter: sc.titleGlow ? `drop-shadow(0 0 18px ${sc.titleGlow})` : undefined,
+          letterSpacing:6,
         }}>
           漢字 · 語彙
         </div>
         <div style={{
-          fontSize:12, color: sc.subtitleColor,
-          fontWeight:700, letterSpacing:5, textTransform:'uppercase',
+          fontSize:13, color: sc.subtitleColor,
+          fontWeight:800, letterSpacing:7, textTransform:'uppercase',
+          fontFamily:'"Cinzel","Cormorant Garamond",serif',
         }}>
           JLPT Study App
         </div>
@@ -11149,20 +11153,23 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
           onTouchStart={()=>setHover('kanji')} onTouchEnd={()=>{setHover(null);onSelectKanji();}}
           onClick={onSelectKanji}>
           <div style={{
-            fontSize:70, lineHeight:1,
-            fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
+            fontSize:80, lineHeight:1,
+            fontFamily:'"Shippori Mincho","Zen Old Mincho","Noto Serif JP",serif',
             background: sc.kanjiGrad,
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-            filter:`drop-shadow(0 3px 10px ${sc.cardBorderH})`,
+            filter:`drop-shadow(0 3px 12px ${sc.cardBorderH})`,
           }}>漢</div>
-          <div style={{ fontSize:20, fontWeight:800, color:sc.kanjiText, letterSpacing:1.5 }}>KANJI</div>
-          <div style={{ fontSize:12, color:sc.kanjiSub, textAlign:'center', lineHeight:1.7 }}>
+          <div style={{ fontSize:21, fontWeight:900, color:sc.kanjiText, letterSpacing:2,
+            fontFamily:'"Cinzel","Cormorant Garamond",serif' }}>KANJI</div>
+          <div style={{ fontSize:12, color:sc.kanjiSub, textAlign:'center', lineHeight:1.8,
+            fontFamily:'"Cinzel","Cormorant Garamond",serif', letterSpacing:0.5 }}>
             2,135 characters<br/>N5 → N1
           </div>
           <div style={{
             marginTop:6, background:sc.kanjiBtn, color:'white',
             borderRadius:12, padding:'10px 26px',
-            fontSize:12, fontWeight:800, letterSpacing:1.5,
+            fontSize:12, fontWeight:800, letterSpacing:2,
+            fontFamily:'"Cinzel",serif',
             boxShadow: sc.kanjiBtnShadow,
           }}>START →</div>
         </div>
@@ -11173,20 +11180,23 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
           onTouchStart={()=>setHover('vocab')} onTouchEnd={()=>{setHover(null);onSelectVocab();}}
           onClick={onSelectVocab}>
           <div style={{
-            fontSize:70, lineHeight:1,
-            fontFamily:'"Zen Old Mincho","Shippori Mincho",serif',
+            fontSize:80, lineHeight:1,
+            fontFamily:'"Shippori Mincho","Zen Old Mincho","Noto Serif JP",serif',
             background: sc.vocabGrad,
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-            filter:`drop-shadow(0 3px 10px ${sc.cardBorderH})`,
+            filter:`drop-shadow(0 3px 12px ${sc.cardBorderH})`,
           }}>語</div>
-          <div style={{ fontSize:20, fontWeight:800, color:sc.vocabText, letterSpacing:1.5 }}>VOCABULARY</div>
-          <div style={{ fontSize:12, color:sc.vocabSub, textAlign:'center', lineHeight:1.7 }}>
+          <div style={{ fontSize:21, fontWeight:900, color:sc.vocabText, letterSpacing:2,
+            fontFamily:'"Cinzel","Cormorant Garamond",serif' }}>VOCABULARY</div>
+          <div style={{ fontSize:12, color:sc.vocabSub, textAlign:'center', lineHeight:1.8,
+            fontFamily:'"Cinzel","Cormorant Garamond",serif', letterSpacing:0.5 }}>
             500 words<br/>N5 → N1
           </div>
           <div style={{
             marginTop:6, background:sc.vocabBtn, color:'white',
             borderRadius:12, padding:'10px 26px',
-            fontSize:12, fontWeight:800, letterSpacing:1.5,
+            fontSize:12, fontWeight:800, letterSpacing:2,
+            fontFamily:'"Cinzel",serif',
             boxShadow: sc.vocabBtnShadow,
           }}>START →</div>
         </div>
