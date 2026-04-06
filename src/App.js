@@ -12211,101 +12211,147 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
   const totalKnown = Object.values(cardStates).filter(s => s.status==='known').length;
   const prog = words.length > 0 ? idx / words.length : 0;
 
-  // ── Circular-carousel swipe (cards on a huge-radius wheel) ──
-  // The card sits at angle=0 on a circle of radius R. Dragging rotates
-  // the wheel: x offset = R*sin(θ), y offset = R*(1-cos(θ)) — so the card
-  // arcs gently upward as it sweeps left/right, exactly like riding a ferris
-  // wheel with a very large radius.
-  const CAROUSEL_R = 1800; // px — very high radius → almost-flat arc
-  const vTouchRef = useRef(null);
-  const vDragRef  = useRef({ active:false, x:0, startY:0, wasDragged:false });
-  const vCardRef  = useRef(null);
-  const vRafRef   = useRef(null);
+  // ── Circular-carousel swipe — fully rAF-driven, race-condition-free ─────
+  // Cards ride a wheel of radius CAROUSEL_R. Dragging sweeps the arc.
+  // rotateY adds a 3-D cylinder illusion. Busy-flag prevents stacked animations.
+  // shownWord/shownCs2 are snapshot states so content never changes mid-animation.
+  const CAROUSEL_R = 720; // px — lower = more visible arc curve
+  const vTouchRef  = useRef(null);
+  const vDragRef   = useRef({ active:false, x:0, startY:0, wasDragged:false });
+  const vCardRef   = useRef(null);
+  const vRafRef    = useRef(null);
+  const vBusy      = useRef(false);
+  const vDragXRef  = useRef(0); // last drag offset for snap-back start position
 
-  // Apply the arc transform for a given drag delta-x
-  const applyCarouselFrame = (dx) => {
-    if(!vCardRef.current) return;
-    const clamp = Math.max(-280, Math.min(280, dx));
-    // angle on the wheel (radians): arc length / radius
-    const theta = clamp / CAROUSEL_R;
-    // position on circle
-    const tx = CAROUSEL_R * Math.sin(theta);      // horizontal
-    const ty = CAROUSEL_R * (1 - Math.cos(theta)); // lifts slightly (always positive, tiny)
-    // slight tilt into the curve
-    const rz = -(theta * 180 / Math.PI) * 0.15;   // very small z-rotation
-    const sc = Math.max(0.88, 1 - Math.abs(theta) * 0.12);
-    const op = Math.max(0.35, 1 - Math.abs(theta) * 2.2);
+  // Snapshot — card content is frozen here during exit/enter animation
+  const [shownWord, setShownWord] = useState(card);
+  const [shownCs2,  setShownCs2]  = useState(cs);
+
+  // Sync snapshot whenever the real card changes and we're not mid-animation
+  useEffect(() => {
+    if (!vBusy.current) { setShownWord(card); setShownCs2(cs); }
+  }, [card, cs]);
+
+  // Sync snapshot INSIDE vNav after setIdx render completes
+  useEffect(() => {
+    if (vBusy.current && shownWord === null) { setShownWord(card); setShownCs2(cs); }
+  }, [card, cs, shownWord]);
+
+  // Cleanup rAF on unmount
+  useEffect(() => () => { if (vRafRef.current) cancelAnimationFrame(vRafRef.current); }, []);
+
+  // Easing helpers
+  const vEase   = t => 1 - Math.pow(1 - t, 3);          // ease-out cubic
+  const vSpring = t => {                                  // spring with slight overshoot
+    const c4 = (2 * Math.PI) / 3;
+    return t === 0 ? 0 : t === 1 ? 1
+      : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+  };
+
+  // Apply transform directly to DOM — zero React overhead
+  const vApply = (tx, ty, rz, ry, sc, op) => {
+    if (!vCardRef.current) return;
     vCardRef.current.style.transform =
-      `translateX(${tx}px) translateY(${ty}px) rotateZ(${rz}deg) scale(${sc})`;
-    vCardRef.current.style.opacity = String(op);
+      `translateX(${tx}px) translateY(${ty}px) rotateZ(${rz}deg) rotateY(${ry}deg) scale(${sc})`;
+    vCardRef.current.style.opacity = String(Math.max(0, Math.min(1, op)));
   };
 
-  const snapCarouselBack = (callback) => {
-    if(!vCardRef.current) { callback && callback(); return; }
-    vCardRef.current.style.transition = 'transform 0.38s cubic-bezier(0.22,1,0.36,1), opacity 0.38s ease';
-    vCardRef.current.style.transform  = 'translateX(0) translateY(0) rotateZ(0deg) scale(1)';
-    vCardRef.current.style.opacity    = '1';
-    setTimeout(() => {
-      if(vCardRef.current) vCardRef.current.style.transition = '';
-      callback && callback();
-    }, 380);
+  // Compute arc frame values for a given drag delta-x
+  const arcFor = (dx) => {
+    const clamped = Math.max(-260, Math.min(260, dx));
+    const theta   = clamped / CAROUSEL_R;
+    const tx = CAROUSEL_R * Math.sin(theta);
+    const ty = CAROUSEL_R * (1 - Math.cos(theta));
+    const rz = -(theta * 180 / Math.PI) * 0.22;
+    const ry = -(clamped / 260) * 30;  // 3-D cylinder depth
+    const sc = Math.max(0.78, 1 - Math.abs(theta) * 0.28);
+    const op = Math.max(0.10, 1 - Math.abs(theta) * 4.0);
+    return { tx, ty, rz, ry, sc, op };
   };
 
-  const flyCarouselOff = (direction, callback) => {
-    // direction: -1 = fly left (next), +1 = fly right (prev)
-    if(!vCardRef.current) { callback && callback(); return; }
-    const tx = direction * -CAROUSEL_R * Math.sin(0.18);
-    const ty = CAROUSEL_R * (1 - Math.cos(0.18));
-    const rz = direction * -0.18 * (180/Math.PI) * 0.15;
-    vCardRef.current.style.transition = 'transform 0.28s cubic-bezier(0.4,0,1,1), opacity 0.22s ease';
-    vCardRef.current.style.transform  = `translateX(${tx}px) translateY(${ty}px) rotateZ(${rz}deg) scale(0.88)`;
-    vCardRef.current.style.opacity    = '0';
-    setTimeout(() => {
-      if(vCardRef.current) {
-        // instantly position incoming card from opposite side, then spring to center
-        const inTx = direction * CAROUSEL_R * Math.sin(0.18);
-        vCardRef.current.style.transition = 'none';
-        vCardRef.current.style.transform  = `translateX(${inTx}px) translateY(${ty}px) rotateZ(${-rz}deg) scale(0.88)`;
-        vCardRef.current.style.opacity    = '0';
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            if(vCardRef.current) {
-              vCardRef.current.style.transition = 'transform 0.38s cubic-bezier(0.22,1,0.36,1), opacity 0.32s ease';
-              vCardRef.current.style.transform  = 'translateX(0) translateY(0) rotateZ(0deg) scale(1)';
-              vCardRef.current.style.opacity    = '1';
-            }
-            callback && callback();
-          });
+  // rAF tween between two arc-frame objects
+  const vTween = (from, to, dur, easeFn, onDone) => {
+    if (vRafRef.current) cancelAnimationFrame(vRafRef.current);
+    const keys  = ['tx','ty','rz','ry','sc','op'];
+    const start = performance.now();
+    const tick  = (now) => {
+      const raw = Math.min(1, (now - start) / dur);
+      const t   = easeFn(raw);
+      const cur = {};
+      keys.forEach(k => { cur[k] = from[k] + (to[k] - from[k]) * t; });
+      vApply(cur.tx, cur.ty, cur.rz, cur.ry, cur.sc, cur.op);
+      if (raw < 1) { vRafRef.current = requestAnimationFrame(tick); }
+      else { vApply(to.tx, to.ty, to.rz, to.ry, to.sc, to.op); onDone && onDone(); }
+    };
+    vRafRef.current = requestAnimationFrame(tick);
+  };
+
+  const CENTER = { tx:0, ty:0, rz:0, ry:0, sc:1, op:1 };
+
+  // Navigate with full wheel animation — no race condition
+  const vNav = useCallback((newIdx) => {
+    if (vBusy.current) return;
+    if (newIdx === idx) return;
+    vBusy.current = true;
+    if (vRafRef.current) cancelAnimationFrame(vRafRef.current);
+
+    const dir    = newIdx > idx ? -1 : 1;  // -1 = exits left, +1 = exits right
+    const exitF  = arcFor(dir * -260);     // full-arc exit position
+    const enterF = arcFor(dir * 260);      // new card enters from opposite side
+
+    // Phase 1: exit current card (210ms)
+    vTween(CENTER, exitF, 210, vEase, () => {
+      // Swap the index — React will re-render with new word
+      setIdx(newIdx);
+      setTimeout(() => {
+        setShownWord(null); // cleared → useEffect above re-syncs after render
+        // Teleport new card to enter position (invisible)
+        vApply(enterF.tx, enterF.ty, enterF.rz, enterF.ry, enterF.sc, 0);
+        // Phase 2: spring new card to center (330ms)
+        vTween({ ...enterF, op:0 }, CENTER, 330, vSpring, () => {
+          vApply(0, 0, 0, 0, 1, 1);
+          vBusy.current = false;
         });
-      }
-    }, 260);
+      }, 16);
+    });
+  }, [idx]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // During drag: apply live arc frame
+  const applyCarouselFrame = (dx) => {
+    vDragXRef.current = dx;
+    const f = arcFor(dx);
+    vApply(f.tx, f.ty, f.rz, f.ry, f.sc, f.op);
+  };
+
+  // Snap back to center from current drag position
+  const snapCarouselBack = (callback) => {
+    const fromF = arcFor(vDragXRef.current);
+    vDragXRef.current = 0;
+    vTween(fromF, CENTER, 230, vEase, callback);
   };
 
   const handleVTouchStart = e => {
-    if(e.target && e.target.closest && (e.target.closest('button') || e.target.closest('[data-speaker]') || e.target.closest('[data-star]'))) return;
-    if(vCardRef.current) vCardRef.current.style.transition = '';
-    vTouchRef.current = { x:e.touches[0].clientX, y:e.touches[0].clientY };
-    vDragRef.current = { x:e.touches[0].clientX, startY:e.touches[0].clientY, active:true, wasDragged:false };
+    if (e.target?.closest?.('button') || e.target?.closest?.('[data-speaker]') || e.target?.closest?.('[data-star]')) return;
+    vTouchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    vDragRef.current  = { x: e.touches[0].clientX, startY: e.touches[0].clientY, active: true, wasDragged: false };
   };
   const handleVTouchMove = e => {
-    if(!vDragRef.current?.active) return;
+    if (!vDragRef.current?.active || vBusy.current) return;
     const dx = e.touches[0].clientX - vDragRef.current.x;
     const dy = e.touches[0].clientY - vDragRef.current.startY;
-    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
       e.preventDefault();
       vDragRef.current.wasDragged = true;
       applyCarouselFrame(dx);
     }
   };
   const handleVTouchEnd = e => {
-    if(!vTouchRef.current) return;
+    if (!vTouchRef.current) return;
     const endX = e.changedTouches[0].clientX;
     const endY = e.changedTouches[0].clientY;
     const elUnder = document.elementFromPoint(endX, endY);
-    const isVInteractive = el => el && el.closest && (
-      el.closest('button') || el.closest('[data-speaker]') || el.closest('[data-star]')
-    );
-    if(isVInteractive(e.target) || isVInteractive(elUnder)) {
+    const isVInteractive = el => el?.closest?.('button') || el?.closest?.('[data-speaker]') || el?.closest?.('[data-star]');
+    if (isVInteractive(e.target) || isVInteractive(elUnder)) {
       vTouchRef.current = null; vDragRef.current = { active:false, x:0, startY:0, wasDragged:false }; return;
     }
     const dx = e.changedTouches[0].clientX - vTouchRef.current.x;
@@ -12314,35 +12360,26 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
     const wasDragging = vDragRef.current?.wasDragged || false;
     vDragRef.current = { active:false, x:0, startY:0, wasDragged:false };
 
-    // Short tap — let the synthetic click bubble to VocabCard's onClick
-    if(ax < 18 && ay < 18) {
-      snapCarouselBack();
+    // Short tap → flip card (snap back silently, let click bubble)
+    if (ax < 18 && ay < 18) {
+      vDragXRef.current = 0; vTouchRef.current = null; return;
+    }
+
+    // Horizontal swipe → wheel navigate
+    if (ax > ay && ax > 50) {
+      const target = dx > 0 ? Math.max(0, idx-1) : Math.min(words.length-1, idx+1);
+      vNav(target);
+      setFlipped(false);
       vTouchRef.current = null; return;
     }
 
-    // Horizontal swipe → carousel navigate
-    if(ax > ay && ax > 50) {
-      if(dx > 0) {
-        // swipe right = go to PREVIOUS card
-        flyCarouselOff(1, () => {});
-        setIdx(i => Math.max(0, i-1));
-        setFlipped(false);
-      } else {
-        // swipe left = go to NEXT card
-        flyCarouselOff(-1, () => {});
-        setIdx(i => Math.min(words.length-1, i+1));
-        setFlipped(false);
-      }
-      vTouchRef.current = null; return;
-    }
+    // Partial drag → spring back
+    if (wasDragging) snapCarouselBack();
 
-    // Small drag but not enough → snap back
-    if(wasDragging) { snapCarouselBack(); }
-
-    // Vertical swipe = mark
-    if(!wasDragging && ax <= ay) {
-      if(dy < -80) mark('known');
-      else if(dy > 80) mark('hard');
+    // Vertical swipe → mark
+    if (!wasDragging && ax <= ay) {
+      if (dy < -80) mark('known');
+      else if (dy > 80) mark('hard');
     }
     vTouchRef.current = null;
   };
@@ -12583,7 +12620,8 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
               {/* Card zone */}
               <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center',
                 padding: bp.isLarge?'16px 40px':bp.isTablet?'12px 26px':'10px 14px',
-                overflow:'hidden', position:'relative' }}
+                overflow:'hidden', position:'relative',
+                perspective:1400, perspectiveOrigin:'50% 50%' }}
                 onTouchStart={handleVTouchStart}
                 onTouchMove={handleVTouchMove}
                 onTouchEnd={handleVTouchEnd}>
@@ -12593,7 +12631,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
                 <div style={{ position:'absolute', right:6, top:'50%', transform:'translateY(-50%)',
                   fontSize:18, color:`${TC.aurora}50`, pointerEvents:'none', userSelect:'none', zIndex:5 }}>{'▶'}</div>
                 <div ref={vCardRef} style={{ width:'100%', maxWidth:bp.isLarge?560:bp.isTablet?500:430,
-                  position:'relative', perspective:1200 }}>
+                  position:'relative', transformStyle:'preserve-3d' }}>
                   {cs?.status==='known' && (
                     <div style={{ position:'absolute', inset:-3, borderRadius:26, zIndex:0,
                       border:`2px solid ${TC.jade}40`,
@@ -12605,10 +12643,12 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
                       border:`2px solid ${TC.crimson}30`, boxShadow:`0 0 20px ${TC.crimson}15`,
                       pointerEvents:'none' }}/>
                   )}
-                  <VocabCard word={card} cs={cs} flipped={flipped}
-                    onFlip={() => setFlipped(f=>!f)}
-                    onStar={() => setCardStates(p=>({...p,[card.id]:{...p[card.id],starred:!p[card.id].starred}}))}
-                    bp={bp} theme={theme} level={level}/>
+                  {shownWord && (
+                    <VocabCard word={shownWord} cs={shownCs2||cs} flipped={flipped}
+                      onFlip={() => setFlipped(f=>!f)}
+                      onStar={() => setCardStates(p=>({...p,[shownWord.id]:{...p[shownWord.id],starred:!p[shownWord.id]?.starred}}))}
+                      bp={bp} theme={theme} level={level}/>
+                  )}
                 </div>
               </div>
 
@@ -12619,10 +12659,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
                 flexShrink:0 }}>
                 <div style={{ display:'flex', gap:8, marginBottom:8,
                   maxWidth:bp.isLarge?560:bp.isTablet?500:430, margin:'0 auto 8px' }}>
-                  <RippleBtn onClick={() => {
-                    flyCarouselOff(1, () => {});
-                    setIdx(i=>Math.max(0,i-1)); setFlipped(false);
-                  }}
+                  <RippleBtn onClick={() => { vNav(Math.max(0, idx-1)); setFlipped(false); }}
                     style={{ flex:1, background:`${TC.aurora}1A`, color:TC.auroraD,
                       border:`1px solid ${TC.aurora}66`, borderRadius:10, padding:'12px 0',
                       fontSize:12, fontWeight:700, cursor:'pointer',
@@ -12638,10 +12675,7 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
                       boxShadow:`0 4px 20px ${TC.aurora}59` }}>
                     {flipped ? '↩ Front' : '↻ Flip Card'}
                   </RippleBtn>
-                  <RippleBtn onClick={() => {
-                    flyCarouselOff(-1, () => {});
-                    setIdx(i=>Math.min(words.length-1,i+1)); setFlipped(false);
-                  }}
+                  <RippleBtn onClick={() => { vNav(Math.min(words.length-1, idx+1)); setFlipped(false); }}
                     style={{ flex:1, background:`${TC.teal}1A`, color:TC.tealD,
                       border:`1px solid ${TC.teal}66`, borderRadius:10, padding:'12px 0',
                       fontSize:12, fontWeight:700, cursor:'pointer',
