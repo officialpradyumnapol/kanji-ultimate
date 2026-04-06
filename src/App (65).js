@@ -10885,181 +10885,15 @@ function HomeScreen({ onSelectKanji, onSelectVocab, theme = 'sky' }) {
       alignItems:'center', justifyContent:'center',
       fontFamily:'"Noto Sans JP","SF Pro Display",system-ui,sans-serif',
       overflow:'hidden', position:'relative',
-      background: sc.skyTop,
+      background: '#0a0a1a',
     }}>
 
-      {/* ── Full-screen SVG scene ────────────────────────────────────────── */}
-      <svg viewBox="0 0 1440 540" preserveAspectRatio="xMidYMid slice"
-        style={{ position:'absolute', inset:0, width:'100%', height:'100%', pointerEvents:'none' }}>
-        <defs>
-          <linearGradient id={`hSky_${theme}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor={sc.skyTop}/>
-            <stop offset="35%"  stopColor={sc.skyMid}/>
-            <stop offset="72%"  stopColor={sc.skyHorizon}/>
-            <stop offset="100%" stopColor={sc.skyBase}/>
-          </linearGradient>
-          <linearGradient id={`hFuji_${theme}`} x1="0.3" y1="0" x2="0.7" y2="1">
-            <stop offset="0%"   stopColor={sc.fujiTop}/>
-            <stop offset="55%"  stopColor={sc.fujiMid}/>
-            <stop offset="100%" stopColor={sc.fujiBot}/>
-          </linearGradient>
-          <linearGradient id={`hFuji2_${theme}`} x1="0.5" y1="0" x2="0.5" y2="1">
-            <stop offset="0%"   stopColor={sc.fujiTop} stopOpacity="0.35"/>
-            <stop offset="100%" stopColor={sc.fujiBot} stopOpacity="0.6"/>
-          </linearGradient>
-          <linearGradient id={`hSnow_${theme}`} x1="0.5" y1="0" x2="0.5" y2="1">
-            <stop offset="0%"   stopColor={sc.snowA}/>
-            <stop offset="100%" stopColor={sc.snowB}/>
-          </linearGradient>
-          <linearGradient id={`hWater_${theme}`} x1="0.5" y1="0" x2="0.5" y2="1">
-            <stop offset="0%"   stopColor={sc.waterSheen}/>
-            <stop offset="100%" stopColor={sc.waterFill}/>
-          </linearGradient>
-          <radialGradient id={`hSun_${theme}`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stopColor={sc.celestialColor}/>
-            <stop offset="65%"  stopColor={sc.celestialColor}/>
-            <stop offset="100%" stopColor={sc.celestialColor} stopOpacity="0"/>
-          </radialGradient>
-          <radialGradient id={`hVolcanic_${theme}`} cx="50%" cy="0%" r="80%">
-            <stop offset="0%"   stopColor="rgba(239,68,68,0.18)"/>
-            <stop offset="100%" stopColor="transparent"/>
-          </radialGradient>
-          <filter id="hBlur3"><feGaussianBlur stdDeviation="3"/></filter>
-          <filter id="hBlur6"><feGaussianBlur stdDeviation="6"/></filter>
-          <filter id="hBlur12"><feGaussianBlur stdDeviation="12"/></filter>
-          <clipPath id={`hFujiClip_${theme}`}><path d={fujiFull}/></clipPath>
-        </defs>
-
-        {/* Sky */}
-        <rect x="0" y="0" width="1440" height="540" fill={`url(#hSky_${theme})`}/>
-
-        {/* Space nebula glow */}
-        {sc.hasNebula && <>
-          <ellipse cx="320" cy="160" rx="280" ry="150" fill="rgba(167,139,250,0.1)" filter="url(#hBlur12)"/>
-          <ellipse cx="1150" cy="130" rx="240" ry="120" fill="rgba(0,212,245,0.08)" filter="url(#hBlur12)"/>
-          <ellipse cx="720" cy="80" rx="200" ry="100" fill="rgba(255,126,179,0.06)" filter="url(#hBlur12)"/>
-        </>}
-
-        {/* Ember volcanic horizon glow */}
-        {theme==='ember' && <>
-          <ellipse cx="720" cy="540" rx="700" ry="160" fill="rgba(239,68,68,0.18)" filter="url(#hBlur12)"/>
-          <ellipse cx="720" cy="480" rx="500" ry="80"  fill="rgba(245,158,11,0.14)" filter="url(#hBlur6)"/>
-        </>}
-
-        {/* Sun / Moon */}
-        {sc.hasCelestial && <>
-          {/* Glow halo */}
-          <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+28}
-            fill={sc.celestialGlow} filter="url(#hBlur12)"/>
-          <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+10}
-            fill={sc.celestialGlow} filter="url(#hBlur6)"/>
-          {/* Body */}
-          <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR}
-            fill={sc.celestialColor}/>
-          {/* Sun rays (light themes) */}
-          {!sc.isMoon && theme!=='sakura' && [0,30,60,90,120,150,180,210,240,270,300,330].map((a,i)=>(
-            <line key={i}
-              x1={sc.celestialX + Math.cos(a*Math.PI/180)*(sc.celestialR+3)}
-              y1={sc.celestialY + Math.sin(a*Math.PI/180)*(sc.celestialR+3)}
-              x2={sc.celestialX + Math.cos(a*Math.PI/180)*(sc.celestialR+12+((i%3)*4))}
-              y2={sc.celestialY + Math.sin(a*Math.PI/180)*(sc.celestialR+12+((i%3)*4))}
-              stroke={sc.celestialColor} strokeWidth="2" opacity="0.5"/>
-          ))}
-          {/* Moon crescent shadow */}
-          {sc.hasCrescent && (
-            <circle cx={sc.celestialX+8} cy={sc.celestialY-5} r={sc.celestialR-2}
-              fill={sc.skyMid} opacity="0.7"/>
-          )}
-          {/* Sakura sun soft ring */}
-          {theme==='sakura' && <>
-            <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+8}
-              fill="none" stroke="rgba(255,180,220,0.4)" strokeWidth="3"/>
-            <circle cx={sc.celestialX} cy={sc.celestialY} r={sc.celestialR+16}
-              fill="none" stroke="rgba(255,180,220,0.2)" strokeWidth="2"/>
-          </>}
-        </>}
-
-        {/* Clouds (sky + sakura) */}
-        {sc.hasClouds && [
-          {cx:200, cy:130, rx:90,  ry:30},
-          {cx:360, cy:112, rx:70,  ry:24},
-          {cx:260, cy:108, rx:60,  ry:20},
-          {cx:1080,cy:145, rx:100, ry:32},
-          {cx:1220,cy:128, rx:75,  ry:26},
-          {cx:1150,cy:120, rx:65,  ry:22},
-          {cx:620, cy:100, rx:55,  ry:18},
-          {cx:850, cy:118, rx:65,  ry:22},
-        ].map((c,i) => (
-          <ellipse key={i} cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry}
-            fill={sc.cloudColor} filter="url(#hBlur3)"/>
-        ))}
-
-        {/* Distant haze range */}
-        <path fill={sc.fujiTop} opacity="0.22" filter="url(#hBlur6)"
-          d="M0,380 C180,340 360,368 540,348 C720,328 900,295 1080,320 C1260,345 1380,355 1440,342 L1440,540 L0,540 Z"/>
-
-        {/* Mid mountain range */}
-        <path fill={sc.fujiMid} opacity="0.4" filter="url(#hBlur3)"
-          d="M0,428 C120,398 248,418 380,402 C512,386 608,370 740,388 C872,406 980,388 1120,400 C1260,412 1360,405 1440,392 L1440,540 L0,540 Z"/>
-
-        {/* ── Mt Fuji main body ───────────────────────────────────────── */}
-        <path d={fujiFull} fill={`url(#hFuji_${theme})`}/>
-
-        {/* Subtle left-face highlight */}
-        <path d="M720,78 C706,110 675,152 638,198 C596,252 528,302 438,355 L460,355 C548,302 614,252 654,200 C690,154 718,114 720,78 Z"
-          fill="rgba(255,255,255,0.05)" clipPath={`url(#hFujiClip_${theme})`}/>
-
-        {/* Snow cap */}
-        <path d={fujiSnow} fill={`url(#hSnow_${theme})`}
-          clipPath={`url(#hFujiClip_${theme})`}/>
-        {/* Snow soft-glow edge */}
-        <path d={fujiSnow} fill={sc.snowA} opacity="0.55"
-          clipPath={`url(#hFujiClip_${theme})`} filter="url(#hBlur3)"/>
-
-        {/* Lava / ember glow at base of Fuji */}
-        {theme==='ember' && (
-          <ellipse cx="720" cy="498" rx="340" ry="22"
-            fill="rgba(239,68,68,0.22)" filter="url(#hBlur6)"/>
-        )}
-
-        {/* Water / lake strip */}
-        <rect x="0" y="490" width="1440" height="50" fill={`url(#hWater_${theme})`} opacity="0.85"/>
-        {/* Lake reflections */}
-        <path d="M720,540 C700,526 655,515 595,510 C520,505 430,503 320,506 C200,509 100,514 0,518 L0,540 Z"
-          fill={sc.waterSheen} opacity="0.4"/>
-        <path d="M720,540 C740,526 785,515 845,510 C920,505 1010,503 1120,506 C1240,509 1340,514 1440,518 L1440,540 Z"
-          fill={sc.waterSheen} opacity="0.4"/>
-        {/* Fuji reflection shimmer */}
-        <ellipse cx="720" cy="515" rx="80" ry="6"
-          fill={sc.snowA} opacity="0.18" filter="url(#hBlur3)"/>
-
-        {/* Mist bands */}
-        <ellipse cx="720" cy="492" rx="680" ry="36"
-          fill={sc.fogA} filter="url(#hBlur12)"/>
-        <ellipse cx="380" cy="500" rx="320" ry="24"
-          fill={sc.fogB} filter="url(#hBlur6)"/>
-        <ellipse cx="1060" cy="500" rx="320" ry="24"
-          fill={sc.fogB} filter="url(#hBlur6)"/>
-
-        {/* Pine tree silhouettes — left cluster */}
-        {[52,90,130,175,218,262,300,340].map((x,i) => {
-          const h = 46+i%3*10; const w = 10+i%3*4;
-          const yb = 494-i%2*4;
-          return (<g key={i}>
-            <polygon points={`${x},${yb-h} ${x-w},${yb} ${x+w},${yb}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.9"/>
-            <polygon points={`${x},${yb-h*0.65} ${x-w*0.8},${yb-h*0.28} ${x+w*0.8},${yb-h*0.28}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.7"/>
-          </g>);
-        })}
-        {/* Pine tree silhouettes — right cluster */}
-        {[1100,1140,1178,1220,1260,1300,1352,1392].map((x,i) => {
-          const h = 46+i%3*10; const w = 10+i%3*4;
-          const yb = 494-i%2*4;
-          return (<g key={i}>
-            <polygon points={`${x},${yb-h} ${x-w},${yb} ${x+w},${yb}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.9"/>
-            <polygon points={`${x},${yb-h*0.65} ${x-w*0.8},${yb-h*0.28} ${x+w*0.8},${yb-h*0.28}`} fill={i%2===0?sc.treeA:sc.treeB} opacity="0.7"/>
-          </g>);
-        })}
-      </svg>
+      {/* ── Full-screen Photo Background ──────────────────────────────────── */}
+      <img src="data:image/jpeg;base64,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"
+        style={{ position:'absolute', inset:0, width:'100%', height:'100%',
+          objectFit:'cover', objectPosition:'center', pointerEvents:'none' }}
+        alt="Mt Fuji with Torii Gate"
+      />
 
       {/* ── Stars (dark themes) ─────────────────────────────────────────── */}
       {sc.hasStars && (
@@ -12273,8 +12107,8 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
     const clamped = Math.max(-260, Math.min(260, dx));
     const theta   = clamped / CAROUSEL_R;
     const tx = CAROUSEL_R * Math.sin(theta);
-    const ty = -CAROUSEL_R * (1 - Math.cos(theta)); // negative = arcs upward (wheel turning over top)
-    const rz = -(theta * 180 / Math.PI) * 0.22;
+    const ty = CAROUSEL_R * (1 - Math.cos(theta)); // positive = arcs downward (wheel rolling forward)
+    const rz = -(theta * 180 / Math.PI) * 0.08;  // reduced tilt (was 0.22)
     const ry = -(clamped / 260) * 30;  // 3-D cylinder depth
     const sc = Math.max(0.78, 1 - Math.abs(theta) * 0.28);
     const op = Math.max(0.10, 1 - Math.abs(theta) * 4.0);
@@ -12879,115 +12713,225 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
             </div>
           )}
 
-          {tab === 'stats' && (
-            <div style={{ flex:1, overflowY:'auto', padding:'16px',
+          {tab === 'stats' && (() => {
+            const knownCount  = Object.values(cardStates).filter(s=>s.status==='known').length;
+            const hardCount   = Object.values(cardStates).filter(s=>s.status==='hard').length;
+            const okCount     = Object.values(cardStates).filter(s=>s.status==='ok').length;
+            const newCount    = Object.values(cardStates).filter(s=>s.status==='new').length;
+            const starCount   = Object.values(cardStates).filter(s=>s.starred).length;
+            const total       = words.length || 1;
+            const mastPct     = Math.round(knownCount/total*100);
+            const dailyPct    = Math.min(1, dailyCount/DAILY_GOAL);
+            const totalSess   = sessCorrect + sessWrong;
+            const accuracy    = totalSess > 0 ? Math.round(sessCorrect/totalSess*100) : 0;
+            // Donut arc helpers
+            const R=44, CIRC=2*Math.PI*R;
+            const seg=(pct)=> `${pct*CIRC} ${CIRC}`;
+            const knownPct=knownCount/total, okPct=okCount/total, hardPct=hardCount/total;
+            // Running dash offsets for stacked donut
+            const offKnown=0;
+            const offOk   = knownPct*CIRC;
+            const offHard = (knownPct+okPct)*CIRC;
+            const offNew  = (knownPct+okPct+hardPct)*CIRC;
+            return (
+            <div style={{ flex:1, overflowY:'auto', padding:'14px 14px 24px',
               WebkitOverflowScrolling:'touch' }}>
-              <div style={{ maxWidth:440, margin:'0 auto', display:'flex', flexDirection:'column', gap:12 }}>
+              <div style={{ maxWidth:440, margin:'0 auto', display:'flex', flexDirection:'column', gap:14 }}>
 
-                {/* Daily goal card */}
-                <div style={{ background:`linear-gradient(135deg,${TC.aurora}22,${TC.jade}18)`,
-                  borderRadius:18, padding:'18px 20px',
-                  border:`1px solid ${TC.aurora}35`,
-                  boxShadow:`0 4px 20px rgba(0,0,0,0.25)` }}>
-                  <div style={{ fontSize:11, color:TC.aurora, fontWeight:800, letterSpacing:2,
-                    fontFamily:"'Cinzel',serif", marginBottom:10 }}>DAILY GOAL</div>
-                  <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-                    {/* Big arc */}
-                    <div style={{ position:'relative', width:72, height:72, flexShrink:0 }}>
-                      <svg width="72" height="72" style={{ transform:'rotate(-90deg)' }}>
-                        <circle cx="36" cy="36" r="28" fill="none" stroke={`${TC.aurora}25`} strokeWidth="5"/>
-                        <circle cx="36" cy="36" r="28" fill="none"
-                          stroke={dailyCount >= DAILY_GOAL ? TC.jade : TC.aurora}
+                {/* ── HERO: Mastery donut + daily ring ── */}
+                <div style={{ background:`linear-gradient(145deg,${TC.card}F8,${TC.lifted}E8)`,
+                  borderRadius:22, padding:'20px', border:`1px solid ${TC.aurora}28`,
+                  boxShadow:`0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 ${TC.aurora}18` }}>
+                  <div style={{ fontSize:10, color:TC.aurora, fontWeight:800, letterSpacing:2.5,
+                    fontFamily:"'Cinzel',serif", marginBottom:16 }}>MASTERY OVERVIEW</div>
+                  <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+
+                    {/* Stacked donut */}
+                    <div style={{ position:'relative', flexShrink:0 }}>
+                      <svg width="108" height="108" viewBox="0 0 108 108" style={{ transform:'rotate(-90deg)' }}>
+                        {/* track */}
+                        <circle cx="54" cy="54" r={R} fill="none" stroke={`${TC.border}50`} strokeWidth="10"/>
+                        {/* known */}
+                        <circle cx="54" cy="54" r={R} fill="none" stroke={TC.jade}
+                          strokeWidth="10" strokeLinecap="butt"
+                          strokeDasharray={seg(knownPct)} strokeDashoffset={-offKnown}
+                          style={{ transition:'stroke-dasharray 0.8s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                        {/* ok/review */}
+                        <circle cx="54" cy="54" r={R} fill="none" stroke={TC.amber}
+                          strokeWidth="10" strokeLinecap="butt"
+                          strokeDasharray={seg(okPct)} strokeDashoffset={-offOk}
+                          style={{ transition:'stroke-dasharray 0.8s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                        {/* hard */}
+                        <circle cx="54" cy="54" r={R} fill="none" stroke={TC.crimson}
+                          strokeWidth="10" strokeLinecap="butt"
+                          strokeDasharray={seg(hardPct)} strokeDashoffset={-offHard}
+                          style={{ transition:'stroke-dasharray 0.8s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                      </svg>
+                      <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
+                        alignItems:'center', justifyContent:'center', gap:1 }}>
+                        <div style={{ fontSize:24, fontWeight:900,
+                          background:`linear-gradient(135deg,${TC.jade},${TC.aurora})`,
+                          WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>{mastPct}%</div>
+                        <div style={{ fontSize:8, color:TC.nebula, letterSpacing:1, fontWeight:700 }}>MASTERED</div>
+                      </div>
+                    </div>
+
+                    {/* Legend + counts */}
+                    <div style={{ flex:1, display:'flex', flexDirection:'column', gap:8 }}>
+                      {[
+                        ['Known',  knownCount, TC.jade,   '✓'],
+                        ['Review', okCount,    TC.amber,  '≈'],
+                        ['Hard',   hardCount,  TC.crimson,'✗'],
+                        ['New',    newCount,   TC.nebula, '○'],
+                      ].map(([label,count,color,icon])=>(
+                        <div key={label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          <div style={{ width:22, height:22, borderRadius:7, flexShrink:0,
+                            background:`${color}22`, border:`1.5px solid ${color}55`,
+                            display:'flex', alignItems:'center', justifyContent:'center',
+                            fontSize:11, color, fontWeight:900 }}>{icon}</div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ height:5, background:`${TC.border}40`, borderRadius:3, overflow:'hidden' }}>
+                              <div style={{ height:'100%', borderRadius:3, width:`${count/total*100}%`,
+                                background:`linear-gradient(90deg,${color},${color}99)`,
+                                boxShadow:`0 0 8px ${color}60`,
+                                transition:'width 0.7s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                            </div>
+                          </div>
+                          <div style={{ fontSize:12, fontWeight:800, color, minWidth:28, textAlign:'right' }}>{count}</div>
+                          <div style={{ fontSize:10, color:TC.dim, minWidth:32, textAlign:'right' }}>{Math.round(count/total*100)}%</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── ROW: Daily Goal + Streak ── */}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+
+                  {/* Daily goal */}
+                  <div style={{ background:`linear-gradient(145deg,${TC.aurora}18,${TC.teal}10)`,
+                    borderRadius:18, padding:'16px', border:`1px solid ${TC.aurora}30`,
+                    boxShadow:`0 4px 20px rgba(0,0,0,0.22)` }}>
+                    <div style={{ fontSize:9, color:TC.aurora, fontWeight:800, letterSpacing:2,
+                      fontFamily:"'Cinzel',serif", marginBottom:10 }}>DAILY GOAL</div>
+                    <div style={{ position:'relative', width:58, height:58, margin:'0 auto 10px' }}>
+                      <svg width="58" height="58" viewBox="0 0 58 58" style={{ transform:'rotate(-90deg)' }}>
+                        <circle cx="29" cy="29" r="23" fill="none" stroke={`${TC.aurora}20`} strokeWidth="5"/>
+                        <circle cx="29" cy="29" r="23" fill="none"
+                          stroke={dailyPct>=1 ? TC.jade : TC.aurora}
                           strokeWidth="5" strokeLinecap="round"
-                          strokeDasharray={`${Math.min(dailyCount/DAILY_GOAL,1)*175.9} 175.9`}
-                          style={{ transition:'stroke-dasharray 0.6s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                          strokeDasharray={`${dailyPct*144.5} 144.5`}
+                          style={{ transition:'stroke-dasharray 0.7s cubic-bezier(0.34,1.2,0.64,1)',
+                            filter:`drop-shadow(0 0 4px ${dailyPct>=1?TC.jade:TC.aurora}80)` }}/>
                       </svg>
                       <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column',
                         alignItems:'center', justifyContent:'center' }}>
-                        <div style={{ fontSize:18, fontWeight:900,
-                          color: dailyCount >= DAILY_GOAL ? TC.jade : TC.moonlight }}>{dailyCount}</div>
-                        <div style={{ fontSize:8, color:TC.nebula }}>/{DAILY_GOAL}</div>
+                        <div style={{ fontSize:15, fontWeight:900,
+                          color: dailyPct>=1 ? TC.jade : TC.moonlight }}>{dailyPct>=1?'✓':dailyCount}</div>
+                        <div style={{ fontSize:7, color:TC.dim }}>/{DAILY_GOAL}</div>
                       </div>
                     </div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:14, fontWeight:900, color:TC.moonlight, marginBottom:4 }}>
-                        {dailyCount >= DAILY_GOAL ? '🎉 Goal reached!' : `${DAILY_GOAL - dailyCount} more to go`}
-                      </div>
-                      <div style={{ fontSize:11, color:TC.nebula, marginBottom:8 }}>Cards reviewed today</div>
-                      {streak7 > 0 && (
-                        <div style={{ display:'inline-flex', alignItems:'center', gap:5,
-                          background:`${TC.amber}20`, borderRadius:8, padding:'4px 10px',
-                          border:`1px solid ${TC.amber}40` }}>
-                          <span style={{ fontSize:13 }}>🔥</span>
-                          <span style={{ fontSize:12, fontWeight:800, color:TC.amber }}>{streak7}-day streak</span>
-                        </div>
-                      )}
+                    <div style={{ textAlign:'center', fontSize:11, fontWeight:700,
+                      color: dailyPct>=1 ? TC.jade : TC.moonlight }}>
+                      {dailyPct>=1 ? '🎉 Done!' : `${DAILY_GOAL-dailyCount} to go`}
                     </div>
+                  </div>
+
+                  {/* Streak */}
+                  <div style={{ background:`linear-gradient(145deg,${TC.amber}18,${TC.crimson}08)`,
+                    borderRadius:18, padding:'16px', border:`1px solid ${TC.amber}30`,
+                    boxShadow:`0 4px 20px rgba(0,0,0,0.22)` }}>
+                    <div style={{ fontSize:9, color:TC.amber, fontWeight:800, letterSpacing:2,
+                      fontFamily:"'Cinzel',serif", marginBottom:10 }}>STREAK</div>
+                    <div style={{ textAlign:'center', marginBottom:6 }}>
+                      <div style={{ fontSize:38, lineHeight:1,
+                        filter:`drop-shadow(0 0 12px ${TC.amber}80)` }}>🔥</div>
+                    </div>
+                    <div style={{ textAlign:'center' }}>
+                      <span style={{ fontSize:26, fontWeight:900, color:TC.amber,
+                        textShadow:`0 0 18px ${TC.amber}60` }}>{streak7}</span>
+                      <span style={{ fontSize:11, color:TC.dim, marginLeft:4 }}>days</span>
+                    </div>
+                    {streak7===0 && (
+                      <div style={{ textAlign:'center', fontSize:10, color:TC.dim, marginTop:4 }}>
+                        Study today to start!
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Level progress */}
-                <div style={{ background:`linear-gradient(135deg,${TC.card}F0,${TC.lifted}E0)`,
-                  borderRadius:18, padding:'18px 20px',
-                  border:`1px solid ${TC.border}`,
-                  boxShadow:`0 4px 20px rgba(0,0,0,0.25)` }}>
-                  <div style={{ fontSize:11, color:TC.aurora, fontWeight:800, letterSpacing:2,
-                    fontFamily:"'Cinzel',serif", marginBottom:12 }}>LEVEL PROGRESS · {level}</div>
-                  {[['Known','known',TC.jade],['Review','ok',TC.amber],['Hard','hard',TC.crimson],['New','new',TC.nebula]].map(([label,status,color])=>{
-                    const count = Object.values(cardStates).filter(s=>s.status===status).length;
-                    const pct = words.length > 0 ? count/words.length : 0;
-                    return (
-                      <div key={status} style={{ marginBottom:10 }}>
-                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
-                          <span style={{ fontSize:12, fontWeight:700, color }}>{label}</span>
-                          <span style={{ fontSize:12, color:TC.nebula }}>{count} <span style={{ fontSize:10 }}>({Math.round(pct*100)}%)</span></span>
-                        </div>
-                        <div style={{ height:7, background:`${TC.border}60`, borderRadius:4, overflow:'hidden' }}>
-                          <div style={{ height:'100%', borderRadius:4,
-                            width:`${pct*100}%`,
-                            background:`linear-gradient(90deg,${color},${color}AA)`,
-                            transition:'width 0.6s cubic-bezier(0.34,1.2,0.64,1)',
-                            boxShadow:`0 0 6px ${color}60` }}/>
-                        </div>
+                {/* ── Session accuracy ── */}
+                <div style={{ background:`linear-gradient(145deg,${TC.card}F8,${TC.lifted}E0)`,
+                  borderRadius:18, padding:'16px 18px', border:`1px solid ${TC.border}`,
+                  boxShadow:`0 4px 20px rgba(0,0,0,0.22)` }}>
+                  <div style={{ fontSize:10, color:TC.aurora, fontWeight:800, letterSpacing:2,
+                    fontFamily:"'Cinzel',serif", marginBottom:14 }}>THIS SESSION</div>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:10, marginBottom:14 }}>
+                    {[
+                      ['✓ Easy', sessCorrect, TC.jade],
+                      ['✗ Hard', sessWrong,   TC.crimson],
+                      ['📚 Total', totalSess, TC.aurora],
+                    ].map(([label,val,color])=>(
+                      <div key={label} style={{ textAlign:'center',
+                        background:`${color}12`, borderRadius:12, padding:'10px 6px',
+                        border:`1px solid ${color}25` }}>
+                        <div style={{ fontSize:20, fontWeight:900, color,
+                          textShadow:`0 0 14px ${color}60` }}>{val}</div>
+                        <div style={{ fontSize:9, color:TC.dim, marginTop:2, fontWeight:700 }}>{label}</div>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
+                  {/* Accuracy bar */}
+                  {totalSess > 0 && (<>
+                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
+                      <span style={{ fontSize:11, color:TC.nebula, fontWeight:700 }}>Accuracy</span>
+                      <span style={{ fontSize:11, fontWeight:900,
+                        color: accuracy>=80 ? TC.jade : accuracy>=50 ? TC.amber : TC.crimson }}>{accuracy}%</span>
+                    </div>
+                    <div style={{ height:8, background:`${TC.border}40`, borderRadius:6, overflow:'hidden' }}>
+                      <div style={{ height:'100%', borderRadius:6,
+                        width:`${accuracy}%`,
+                        background: accuracy>=80
+                          ? `linear-gradient(90deg,${TC.jade},${TC.teal})`
+                          : accuracy>=50
+                          ? `linear-gradient(90deg,${TC.amber},${TC.jade}80)`
+                          : `linear-gradient(90deg,${TC.crimson},${TC.amber}80)`,
+                        boxShadow:`0 0 10px ${accuracy>=80?TC.jade:accuracy>=50?TC.amber:TC.crimson}60`,
+                        transition:'width 0.8s cubic-bezier(0.34,1.2,0.64,1)' }}/>
+                    </div>
+                  </>)}
+                  {totalSess === 0 && (
+                    <div style={{ textAlign:'center', fontSize:11, color:TC.dim, padding:'4px 0' }}>
+                      No cards reviewed yet this session
+                    </div>
+                  )}
                 </div>
 
-                {/* Session + starred */}
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-                  <div style={{ background:`linear-gradient(135deg,${TC.jade}20,${TC.teal}12)`,
-                    borderRadius:16, padding:'16px', border:`1px solid ${TC.jade}30`,
-                    boxShadow:`0 4px 16px rgba(0,0,0,0.2)` }}>
-                    <div style={{ fontSize:9, color:TC.jade, fontWeight:800, letterSpacing:1.5,
-                      fontFamily:"'Cinzel',serif", marginBottom:8 }}>SESSION</div>
-                    <div style={{ fontSize:28, fontWeight:900, color:TC.moonlight }}>{sessCorrect}</div>
-                    <div style={{ fontSize:10, color:TC.nebula }}>correct this session</div>
-                    <div style={{ marginTop:6, fontSize:13, color:TC.crimson, fontWeight:700 }}>
-                      {sessWrong > 0 ? `${sessWrong} hard` : ''}
-                    </div>
+                {/* ── Starred + quick-action ── */}
+                <div style={{ background:`linear-gradient(145deg,${TC.amber}16,${TC.sakura||TC.aurora}08)`,
+                  borderRadius:18, padding:'16px 18px', border:`1px solid ${TC.amber}28`,
+                  boxShadow:`0 4px 20px rgba(0,0,0,0.2)`,
+                  display:'flex', alignItems:'center', gap:14 }}>
+                  <div style={{ fontSize:36, filter:`drop-shadow(0 0 10px ${TC.amber}80)` }}>⭐</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:9, color:TC.amber, fontWeight:800, letterSpacing:2,
+                      fontFamily:"'Cinzel',serif", marginBottom:4 }}>STARRED WORDS</div>
+                    <div style={{ fontSize:22, fontWeight:900, color:TC.moonlight, lineHeight:1 }}>{starCount}</div>
+                    <div style={{ fontSize:10, color:TC.dim, marginTop:2 }}>saved for review</div>
                   </div>
-                  <div style={{ background:`linear-gradient(135deg,${TC.amber}20,${TC.aurora}12)`,
-                    borderRadius:16, padding:'16px', border:`1px solid ${TC.amber}30`,
-                    boxShadow:`0 4px 16px rgba(0,0,0,0.2)` }}>
-                    <div style={{ fontSize:9, color:TC.amber, fontWeight:800, letterSpacing:1.5,
-                      fontFamily:"'Cinzel',serif", marginBottom:8 }}>STARRED</div>
-                    <div style={{ fontSize:28, fontWeight:900, color:TC.moonlight }}>
-                      {Object.values(cardStates).filter(s=>s.starred).length}
-                    </div>
-                    <div style={{ fontSize:10, color:TC.nebula }}>words starred</div>
-                    <RippleBtn onClick={() => setTab('starred')}
-                      style={{ marginTop:8, background:`${TC.amber}20`, color:TC.amber,
-                        border:`1px solid ${TC.amber}40`, borderRadius:8,
-                        padding:'5px 10px', fontSize:10, fontWeight:700, cursor:'pointer' }}>
-                      Review →
-                    </RippleBtn>
-                  </div>
+                  <RippleBtn onClick={() => setTab('starred')}
+                    style={{ background:`linear-gradient(135deg,${TC.amber}30,${TC.aurora}18)`,
+                      color:TC.amber, border:`1.5px solid ${TC.amber}50`, borderRadius:12,
+                      padding:'10px 14px', fontSize:11, fontWeight:800, cursor:'pointer',
+                      boxShadow:`0 0 14px ${TC.amber}30`, whiteSpace:'nowrap' }}>
+                    Review ★
+                  </RippleBtn>
                 </div>
 
               </div>
             </div>
-          )}
+            );
+          })()}
           {tab === 'quiz' && (
             <VocabQuizView words={words} bp={bp} theme={theme}/>
           )}
