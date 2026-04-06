@@ -4901,14 +4901,14 @@ function SettingsView({ shuffled, setShuffled, mode, setMode, setDeckIdx, setFli
    NAVIGATION
 ═══════════════════════════════════════════════════════════════════════════ */
 const NAV = [
-  {id:'study',   icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4d6.svg', label:'Study'   },
-  {id:'quiz',    icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg', label:'Quiz'    },
-  {id:'write',   icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/270d-fe0f.svg', label:'Write'   },
-  {id:'srs',     icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f5d3-fe0f.svg', label:'SRS'     },
-  {id:'browse',  icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f5c2-fe0f.svg', label:'Browse'  },
-  {id:'stats',   icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg', label:'Stats'   },
-  {id:'achieve', icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f3c6.svg', label:'Awards'  },
-  {id:'settings',icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2699-fe0f.svg', label:'Settings'},
+  {id:'study',   icon:'📖', label:'Study'   },
+  {id:'quiz',    icon:'🧠', label:'Quiz'    },
+  {id:'write',   icon:'✍️', label:'Write'   },
+  {id:'srs',     icon:'🗓️', label:'SRS'     },
+  {id:'browse',  icon:'🗂️', label:'Browse'  },
+  {id:'stats',   icon:'📊', label:'Stats'   },
+  {id:'achieve', icon:'🏆', label:'Awards'  },
+  {id:'settings',icon:'⚙️', label:'Settings'},
 ];
 
 function BottomNav({ tab, setTab }) {
@@ -4930,9 +4930,9 @@ function BottomNav({ tab, setTab }) {
                 width:28, height:3, background:`linear-gradient(90deg,#7BB8D4,${C.jade})`,
                 borderRadius:'0 0 4px 4px', boxShadow:`0 0 14px ${C.jade}` }}/>
             )}
-            <img src={icon} alt={label} style={{ width:20, height:20, objectFit:'contain',
+            <span style={{ fontSize:20, lineHeight:1,
               filter:active?`drop-shadow(0 0 6px ${C.jade})`:'none',
-              transition:'filter 0.25s' }}/>
+              transition:'filter 0.25s' }}>{icon}</span>
             <span style={{ fontSize:7.5, fontWeight:active?900:400, letterSpacing:0.2,
               opacity:active?1:0.7 }}>{label}</span>
           </button>
@@ -5005,12 +5005,12 @@ function SideNav({ tab, setTab, bp }) {
                 background:`linear-gradient(90deg,transparent,${ac}90,transparent)`,
                 borderRadius:1 }}/>
             )}
-            <img src={icon} alt={label} style={{
-              width:bp.isLarge?24:20, height:bp.isLarge?24:20,
+            <span style={{
+              fontSize: bp.isLarge?24:20, lineHeight:1,
               filter: active ? `drop-shadow(0 0 6px ${ac}) drop-shadow(0 0 14px ${ac}80)` : 'none',
               transition:'filter 0.25s, transform 0.2s',
               transform: active ? 'scale(1.12)' : 'scale(1)',
-              display:'block', objectFit:'contain' }}/>
+              display:'block' }}>{icon}</span>
             <span style={{
               fontSize:bp.isLarge?8.5:7.5, fontWeight:active?900:500,
               letterSpacing: active?0.8:0.3,
@@ -12386,12 +12386,12 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
   };
 
   const VTABS = [
-    { id:'study',    label:'Study',    icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4d6.svg' },
-    { id:'quiz',     label:'Quiz',     icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9e0.svg' },
-    { id:'browse',   label:'Browse',   icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f5c2-fe0f.svg' },
-    { id:'starred',  label:'Starred',  icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f48e.svg' },
-    { id:'stats',    label:'Stats',    icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4ca.svg' },
-    { id:'settings', label:'Settings', icon:'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2699-fe0f.svg' },
+    { id:'study',    label:'Study',    icon:'📖' },
+    { id:'quiz',     label:'Quiz',     icon:'🧠' },
+    { id:'browse',   label:'Browse',   icon:'🗂️' },
+    { id:'starred',  label:'Starred',  icon:'💎' },
+    { id:'stats',    label:'Stats',    icon:'📊' },
+    { id:'settings', label:'Settings', icon:'⚙️' },
   ];
 
   // ── Daily goal tracking ──
@@ -13002,9 +13002,9 @@ function VocabApp({ onBack, theme='sky', setTheme }) {{
                 background:'transparent', display:'flex', flexDirection:'column',
                 alignItems:'center', gap:2,
                 borderTop: tab===t.id ? `2px solid ${TC.aurora}` : '2px solid transparent' }}>
-              <img src={t.icon} alt={t.label} style={{ width:22, height:22, objectFit:'contain',
+              <span style={{ fontSize:20, lineHeight:1,
                 filter: tab===t.id ? `drop-shadow(0 0 6px ${TC.aurora})` : 'none',
-                transition:'filter 0.25s' }}/>
+                transition:'filter 0.25s' }}>{t.icon}</span>
               <span style={{ fontSize:9, fontWeight:700, letterSpacing:0.5,
                 color: tab===t.id ? TC.aurora : TC.dim }}>
                 {t.label.toUpperCase()}
