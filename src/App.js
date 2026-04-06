@@ -5775,6 +5775,7 @@ export default function KanjiApp() {
 
   // Deck
   const levelKD = useMemo(()=> KD.filter(k => k.lv === kanjiLevel), [kanjiLevel]);
+  const kdIndexMap = useMemo(()=>{ const m={}; KD.forEach((k,i)=>m[k.id]=i); return m; },[]);
 
   const deck=useMemo(()=>{
     let d;
@@ -5784,9 +5785,9 @@ export default function KanjiApp() {
     else d=[...levelKD];
     if(!d.length) d=[...levelKD];
     if(shuffle) d=[...d].sort(()=>Math.random()-0.5);
-    else d=[...d].sort((a,b)=>a.cat<b.cat?-1:a.cat>b.cat?1:0);
+    else d=[...d].sort((a,b)=>kdIndexMap[a.id]-kdIndexMap[b.id]);
     return d;
-  },[mode,cardStates,shuffle,levelKD]);
+  },[mode,cardStates,shuffle,levelKD,kdIndexMap]);
 
   const safeIdx=Math.min(deckIdx,deck.length-1);
   const card=deck[safeIdx]||null;
@@ -5841,7 +5842,7 @@ export default function KanjiApp() {
     else if(mode==='known') d=lvKD.filter(x=>cardStates[x.id]?.status==='known');
     else d=[...lvKD];
     if(!d.length) d=[...lvKD];
-    d=[...d].sort((a,b)=>a.cat<b.cat?-1:a.cat>b.cat?1:0);
+    d=[...d].sort((a,b)=>KD.indexOf(a)-KD.indexOf(b));
     const idx=d.findIndex(x=>x.id===k.id);
     setKanjiLevel(k.lv);
     setShowKanjiLevelSelect(false);
