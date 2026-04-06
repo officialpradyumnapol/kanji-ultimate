@@ -97,13 +97,13 @@ const KD = [
   {id:92,k:'新',m:'new',on:'シン',ku:'あたら- にい-',lv:'N4',st:13,cat:'description',rad:'斤',mn:'Standing tree chopped = new',ex:[{w:'新しい',r:'あたらしい',e:'new'},{w:'新聞',r:'しんぶん',e:'newspaper'}]},
   {id:93,k:'場',m:'place / field',on:'ジョウ',ku:'ば',lv:'N4',st:12,cat:'place',rad:'土',mn:'Sun + earth = open place',ex:[{w:'場所',r:'ばしょ',e:'place'},{w:'工場',r:'こうじょう',e:'factory'}]},
   {id:94,k:'員',m:'member',on:'イン',ku:'',lv:'N4',st:10,cat:'people',rad:'口',mn:'Pot + shell = member of group',ex:[{w:'会員',r:'かいいん',e:'member'},{w:'店員',r:'てんいん',e:'store clerk'}]},
-  {id:95,k:'立',m:'stand',on:'リツ・リュウ',ku:'た-',lv:'N4',st:5,cat:'action',rad:'立',mn:'Person standing on ground',ex:[{w:'立つ',r:'たつ',e:'to stand'},{w:'国立',r:'こくりつ',e:'national'}]},
+  {id:95,k:'立',m:'stand',on:'リツ・リュウ',ku:'た-',lv:'N5',st:5,cat:'action',rad:'立',mn:'Person standing on ground',ex:[{w:'立つ',r:'たつ',e:'to stand'},{w:'国立',r:'こくりつ',e:'national'}]},
   {id:96,k:'開',m:'open',on:'カイ',ku:'ひら- あ-',lv:'N4',st:12,cat:'action',rad:'門',mn:'Hands opening gate = open',ex:[{w:'開く',r:'ひらく',e:'to open'},{w:'開始',r:'かいし',e:'start'}]},
-  {id:98,k:'力',m:'power / strength',on:'リョク・リキ',ku:'ちから',lv:'N4',st:2,cat:'body',rad:'力',mn:'Flexed muscle = strength',ex:[{w:'力持ち',r:'ちからもち',e:'strong person'},{w:'努力',r:'どりょく',e:'effort'}]},
+  {id:98,k:'力',m:'power / strength',on:'リョク・リキ',ku:'ちから',lv:'N5',st:2,cat:'body',rad:'力',mn:'Flexed muscle = strength',ex:[{w:'力持ち',r:'ちからもち',e:'strong person'},{w:'努力',r:'どりょく',e:'effort'}]},
   {id:99,k:'問',m:'question / problem',on:'モン',ku:'と-',lv:'N4',st:11,cat:'school',rad:'口',mn:'Mouth + gate = to question',ex:[{w:'問題',r:'もんだい',e:'problem'},{w:'質問',r:'しつもん',e:'question'}]},
   {id:100,k:'代',m:'generation / substitute',on:'ダイ・タイ',ku:'か- よ',lv:'N4',st:5,cat:'time',rad:'人',mn:'Person with lance = replace',ex:[{w:'時代',r:'じだい',e:'era'},{w:'代わり',r:'かわり',e:'substitute'}]},
   {id:101,k:'知',m:'know',on:'チ',ku:'し-',lv:'N4',st:8,cat:'action',rad:'矢',mn:'Arrow reaching target = know',ex:[{w:'知る',r:'しる',e:'to know'},{w:'知識',r:'ちしき',e:'knowledge'}]},
-  {id:103,k:'正',m:'correct / right',on:'セイ・ショウ',ku:'ただ- まさ-',lv:'N4',st:5,cat:'description',rad:'止',mn:'Foot going straight = correct',ex:[{w:'正しい',r:'ただしい',e:'correct'},{w:'正月',r:'しょうがつ',e:'New Year'}]},
+  {id:103,k:'正',m:'correct / right',on:'セイ・ショウ',ku:'ただ- まさ-',lv:'N5',st:5,cat:'description',rad:'止',mn:'Foot going straight = correct',ex:[{w:'正しい',r:'ただしい',e:'correct'},{w:'正月',r:'しょうがつ',e:'New Year'}]},
   {id:104,k:'道',m:'road / way',on:'ドウ・トウ',ku:'みち',lv:'N4',st:12,cat:'place',rad:'行',mn:'Head + walking = path/way',ex:[{w:'道路',r:'どうろ',e:'road'},{w:'北海道',r:'ほっかいどう',e:'Hokkaido'}]},
   {id:105,k:'意',m:'meaning / intention',on:'イ',ku:'',lv:'N4',st:13,cat:'mind',rad:'心',mn:'Sound from the heart = intention',ex:[{w:'意味',r:'いみ',e:'meaning'},{w:'注意',r:'ちゅうい',e:'caution'}]},
   {id:106,k:'毎',m:'every',on:'マイ',ku:'',lv:'N4',st:6,cat:'time',rad:'母',mn:'Every mother = every time',ex:[{w:'毎日',r:'まいにち',e:'every day'},{w:'毎朝',r:'まいあさ',e:'every morning'}]},
@@ -120,22 +120,22 @@ const KD = [
   {id:117,k:'明',m:'bright / clear',on:'メイ・ミョウ',ku:'あか- あき- あ-',lv:'N4',st:8,cat:'description',rad:'日',mn:'Sun + moon = bright',ex:[{w:'明るい',r:'あかるい',e:'bright'},{w:'説明',r:'せつめい',e:'explanation'}]},
   {id:118,k:'近',m:'near',on:'キン',ku:'ちか-',lv:'N4',st:7,cat:'direction',rad:'辶',mn:'Walking near axe = close',ex:[{w:'近い',r:'ちかい',e:'near'},{w:'近所',r:'きんじょ',e:'neighborhood'}]},
   {id:119,k:'遠',m:'far',on:'エン・オン',ku:'とお-',lv:'N4',st:13,cat:'direction',rad:'辶',mn:'Long road = far away',ex:[{w:'遠い',r:'とおい',e:'far'},{w:'遠足',r:'えんそく',e:'field trip'}]},
-  {id:120,k:'早',m:'early / fast',on:'ソウ・サッ',ku:'はや-',lv:'N4',st:6,cat:'time',rad:'日',mn:'Sun barely over horizon = early',ex:[{w:'早い',r:'はやい',e:'early / fast'},{w:'早朝',r:'そうちょう',e:'early morning'}]},
+  {id:120,k:'早',m:'early / fast',on:'ソウ・サッ',ku:'はや-',lv:'N5',st:6,cat:'time',rad:'日',mn:'Sun barely over horizon = early',ex:[{w:'早い',r:'はやい',e:'early / fast'},{w:'早朝',r:'そうちょう',e:'early morning'}]},
   {id:121,k:'黒',m:'black',on:'コク',ku:'くろ-',lv:'N4',st:11,cat:'color',rad:'黒',mn:'Smudged window = black',ex:[{w:'黒い',r:'くろい',e:'black'},{w:'黒板',r:'こくばん',e:'blackboard'}]},
   {id:122,k:'色',m:'color',on:'ショク・シキ',ku:'いろ',lv:'N4',st:6,cat:'color',rad:'色',mn:'Kneeling person = desire/color',ex:[{w:'色々',r:'いろいろ',e:'various'},{w:'茶色',r:'ちゃいろ',e:'brown'}]},
   {id:123,k:'体',m:'body',on:'タイ・テイ',ku:'からだ',lv:'N4',st:7,cat:'body',rad:'人',mn:'Person + origin = body',ex:[{w:'体育',r:'たいいく',e:'physical education'},{w:'体重',r:'たいじゅう',e:'body weight'}]},
   {id:124,k:'頭',m:'head',on:'トウ・ズ・ト',ku:'あたま・かしら',lv:'N4',st:16,cat:'body',rad:'頁',mn:'Bean + head = head',ex:[{w:'頭痛',r:'ずつう',e:'headache'},{w:'頭がいい',r:'あたまがいい',e:'smart'}]},
-  {id:125,k:'足',m:'foot / enough',on:'ソク',ku:'あし た-',lv:'N4',st:7,cat:'body',rad:'足',mn:'Leg + knee = foot',ex:[{w:'足',r:'あし',e:'foot / leg'},{w:'満足',r:'まんぞく',e:'satisfaction'}]},
+  {id:125,k:'足',m:'foot / enough',on:'ソク',ku:'あし た-',lv:'N5',st:7,cat:'body',rad:'足',mn:'Leg + knee = foot',ex:[{w:'足',r:'あし',e:'foot / leg'},{w:'満足',r:'まんぞく',e:'satisfaction'}]},
   {id:126,k:'顔',m:'face',on:'ガン',ku:'かお',lv:'N4',st:18,cat:'body',rad:'頁',mn:'River + head = face',ex:[{w:'顔色',r:'かおいろ',e:'complexion'},{w:'笑顔',r:'えがお',e:'smiling face'}]},
   {id:127,k:'心',m:'heart / mind',on:'シン',ku:'こころ',lv:'N4',st:4,cat:'mind',rad:'心',mn:'Three drops in organ = heart',ex:[{w:'心配',r:'しんぱい',e:'worry'},{w:'安心',r:'あんしん',e:'relief'}]},
   {id:128,k:'声',m:'voice',on:'セイ・ショウ',ku:'こえ',lv:'N4',st:7,cat:'body',rad:'士',mn:'Hammering sound = voice',ex:[{w:'声',r:'こえ',e:'voice'},{w:'大声',r:'おおごえ',e:'loud voice'}]},
-  {id:129,k:'名',m:'name / famous',on:'メイ・ミョウ',ku:'な',lv:'N4',st:6,cat:'other',rad:'夕',mn:'Evening + mouth = call by name',ex:[{w:'名前',r:'なまえ',e:'name'},{w:'有名',r:'ゆうめい',e:'famous'}]},
+  {id:129,k:'名',m:'name / famous',on:'メイ・ミョウ',ku:'な',lv:'N5',st:6,cat:'other',rad:'夕',mn:'Evening + mouth = call by name',ex:[{w:'名前',r:'なまえ',e:'name'},{w:'有名',r:'ゆうめい',e:'famous'}]},
   {id:130,k:'友',m:'friend',on:'ユウ',ku:'とも',lv:'N4',st:4,cat:'people',rad:'又',mn:'Two hands clasping = friend',ex:[{w:'友達',r:'ともだち',e:'friend'},{w:'友人',r:'ゆうじん',e:'friend (formal)'}]},
   {id:131,k:'家',m:'house / family',on:'カ・ケ',ku:'いえ・や',lv:'N4',st:10,cat:'place',rad:'宀',mn:'Pig under roof = household',ex:[{w:'家族',r:'かぞく',e:'family'},{w:'家庭',r:'かてい',e:'home'}]},
   {id:132,k:'店',m:'shop',on:'テン',ku:'みせ',lv:'N4',st:8,cat:'place',rad:'广',mn:'Shelter + divination = shop',ex:[{w:'店員',r:'てんいん',e:'store clerk'},{w:'本店',r:'ほんてん',e:'main shop'}]},
-  {id:133,k:'町',m:'town',on:'チョウ',ku:'まち',lv:'N4',st:7,cat:'place',rad:'田',mn:'Rice field + stake = town',ex:[{w:'町',r:'まち',e:'town'},{w:'下町',r:'したまち',e:'old town'}]},
+  {id:133,k:'町',m:'town',on:'チョウ',ku:'まち',lv:'N5',st:7,cat:'place',rad:'田',mn:'Rice field + stake = town',ex:[{w:'町',r:'まち',e:'town'},{w:'下町',r:'したまち',e:'old town'}]},
   {id:134,k:'市',m:'city',on:'シ',ku:'いち',lv:'N4',st:5,cat:'place',rad:'巾',mn:'Streets meeting = market/city',ex:[{w:'市場',r:'いちば',e:'market'},{w:'都市',r:'とし',e:'city'}]},
-  {id:135,k:'村',m:'village',on:'ソン',ku:'むら',lv:'N4',st:7,cat:'place',rad:'木',mn:'Tree + measurement = village',ex:[{w:'村',r:'むら',e:'village'},{w:'農村',r:'のうそん',e:'farming village'}]},
+  {id:135,k:'村',m:'village',on:'ソン',ku:'むら',lv:'N5',st:7,cat:'place',rad:'木',mn:'Tree + measurement = village',ex:[{w:'村',r:'むら',e:'village'},{w:'農村',r:'のうそん',e:'farming village'}]},
   {id:136,k:'強',m:'strong',on:'キョウ・ゴウ',ku:'つよ-',lv:'N4',st:11,cat:'description',rad:'弓',mn:'Bow + beetle = strong',ex:[{w:'強い',r:'つよい',e:'strong'},{w:'勉強',r:'べんきょう',e:'study'}]},
   {id:137,k:'弱',m:'weak',on:'ジャク',ku:'よわ-',lv:'N4',st:10,cat:'description',rad:'弓',mn:'Two wilted bows = weak',ex:[{w:'弱い',r:'よわい',e:'weak'},{w:'弱点',r:'じゃくてん',e:'weakness'}]},
   {id:138,k:'太',m:'fat / thick',on:'タイ・タ',ku:'ふと-',lv:'N4',st:4,cat:'description',rad:'大',mn:'Big + dot = fat',ex:[{w:'太い',r:'ふとい',e:'fat / thick'},{w:'太陽',r:'たいよう',e:'sun'}]},
@@ -184,15 +184,15 @@ const KD = [
   {id:181,k:'写',m:'copy / photograph',on:'シャ',ku:'うつ-',lv:'N4',st:5,cat:'action',rad:'宀',mn:'Nest + bird = copy',ex:[{w:'写真',r:'しゃしん',e:'photograph'},{w:'写す',r:'うつす',e:'to copy'}]},
   {id:182,k:'歌',m:'song',on:'カ',ku:'うた-',lv:'N4',st:14,cat:'art',rad:'欠',mn:'Two mouths + can = sing',ex:[{w:'歌う',r:'うたう',e:'to sing'},{w:'歌手',r:'かしゅ',e:'singer'}]},
   {id:183,k:'絵',m:'picture / drawing',on:'カイ・エ',ku:'',lv:'N4',st:12,cat:'art',rad:'糸',mn:'Thread + combining = picture',ex:[{w:'絵',r:'え',e:'picture'},{w:'絵画',r:'かいが',e:'painting'}]},
-  {id:184,k:'音',m:'sound',on:'オン・イン',ku:'おと・ね',lv:'N4',st:9,cat:'art',rad:'日',mn:'Sun + standing = sound',ex:[{w:'音楽',r:'おんがく',e:'music'},{w:'音声',r:'おんせい',e:'audio'}]},
+  {id:184,k:'音',m:'sound',on:'オン・イン',ku:'おと・ね',lv:'N5',st:9,cat:'art',rad:'日',mn:'Sun + standing = sound',ex:[{w:'音楽',r:'おんがく',e:'music'},{w:'音声',r:'おんせい',e:'audio'}]},
   {id:185,k:'池',m:'pond',on:'チ',ku:'いけ',lv:'N4',st:6,cat:'nature',rad:'水',mn:'Water + snake winding = pond',ex:[{w:'池',r:'いけ',e:'pond'},{w:'電池',r:'でんち',e:'battery'}]},
   {id:186,k:'海',m:'sea / ocean',on:'カイ',ku:'うみ',lv:'N4',st:9,cat:'nature',rad:'水',mn:'Water + every = ocean',ex:[{w:'海',r:'うみ',e:'sea'},{w:'海外',r:'かいがい',e:'overseas'}]},
   {id:187,k:'湖',m:'lake',on:'コ',ku:'みずうみ',lv:'N4',st:12,cat:'nature',rad:'水',mn:'Water + old = lake',ex:[{w:'湖',r:'みずうみ',e:'lake'},{w:'琵琶湖',r:'びわこ',e:'Lake Biwa'}]},
   {id:188,k:'島',m:'island',on:'トウ',ku:'しま',lv:'N4',st:10,cat:'nature',rad:'山',mn:'Bird over mountain = island',ex:[{w:'島',r:'しま',e:'island'},{w:'半島',r:'はんとう',e:'peninsula'}]},
-  {id:189,k:'森',m:'forest',on:'シン',ku:'もり',lv:'N4',st:12,cat:'nature',rad:'木',mn:'Three trees = dense forest',ex:[{w:'森',r:'もり',e:'forest'},{w:'森林',r:'しんりん',e:'forest'}]},
-  {id:190,k:'林',m:'grove',on:'リン',ku:'はやし',lv:'N4',st:8,cat:'nature',rad:'木',mn:'Two trees = grove',ex:[{w:'林',r:'はやし',e:'grove'},{w:'農林',r:'のうりん',e:'agriculture and forestry'}]},
+  {id:189,k:'森',m:'forest',on:'シン',ku:'もり',lv:'N5',st:12,cat:'nature',rad:'木',mn:'Three trees = dense forest',ex:[{w:'森',r:'もり',e:'forest'},{w:'森林',r:'しんりん',e:'forest'}]},
+  {id:190,k:'林',m:'grove',on:'リン',ku:'はやし',lv:'N5',st:8,cat:'nature',rad:'木',mn:'Two trees = grove',ex:[{w:'林',r:'はやし',e:'grove'},{w:'農林',r:'のうりん',e:'agriculture and forestry'}]},
   {id:191,k:'岩',m:'rock',on:'ガン',ku:'いわ',lv:'N4',st:8,cat:'nature',rad:'山',mn:'Mountain + stone = rock',ex:[{w:'岩',r:'いわ',e:'rock'},{w:'岩石',r:'がんせき',e:'rocks'}]},
-  {id:192,k:'石',m:'stone',on:'セキ・シャク・コク',ku:'いし',lv:'N4',st:5,cat:'nature',rad:'石',mn:'Cliff + stone = stone',ex:[{w:'石',r:'いし',e:'stone'},{w:'宝石',r:'ほうせき',e:'jewel'}]},
+  {id:192,k:'石',m:'stone',on:'セキ・シャク・コク',ku:'いし',lv:'N5',st:5,cat:'nature',rad:'石',mn:'Cliff + stone = stone',ex:[{w:'石',r:'いし',e:'stone'},{w:'宝石',r:'ほうせき',e:'jewel'}]},
   {id:193,k:'晴',m:'clear weather',on:'セイ',ku:'は-',lv:'N4',st:12,cat:'nature',rad:'日',mn:'Sun + azure = clear sky',ex:[{w:'晴れ',r:'はれ',e:'clear weather'},{w:'晴天',r:'せいてん',e:'fine weather'}]},
   {id:194,k:'曇',m:'cloudy',on:'ドン',ku:'くも-',lv:'N4',st:16,cat:'nature',rad:'日',mn:'Sun under clouds = cloudy',ex:[{w:'曇り',r:'くもり',e:'cloudy'},{w:'曇る',r:'くもる',e:'to become cloudy'}]},
   {id:195,k:'風',m:'wind',on:'フウ・フ',ku:'かぜ・かざ-',lv:'N4',st:9,cat:'nature',rad:'風',mn:'Insect in sail = wind',ex:[{w:'風',r:'かぜ',e:'wind'},{w:'台風',r:'たいふう',e:'typhoon'}]},
@@ -209,29 +209,29 @@ const KD = [
   {id:206,k:'番',m:'turn / number',on:'バン',ku:'',lv:'N4',st:12,cat:'number',rad:'田',mn:'Rice field + hand = watch turn',ex:[{w:'番号',r:'ばんごう',e:'number'},{w:'一番',r:'いちばん',e:'number one'}]},
   {id:207,k:'回',m:'times / rotate',on:'カイ・エ',ku:'まわ-',lv:'N4',st:6,cat:'number',rad:'囗',mn:'Swirl in box = rotate/times',ex:[{w:'回る',r:'まわる',e:'to rotate'},{w:'今回',r:'こんかい',e:'this time'}]},
   {id:208,k:'度',m:'degree / time',on:'ド・ト',ku:'たび',lv:'N4',st:9,cat:'number',rad:'广',mn:'Hand + arrow = measure',ex:[{w:'温度',r:'おんど',e:'temperature'},{w:'今度',r:'こんど',e:'this time / next time'}]},
-  {id:209,k:'以',m:'by means of',on:'イ',ku:'',lv:'N4',st:5,cat:'other',rad:'人',mn:'Person + plow = by means of',ex:[{w:'以上',r:'いじょう',e:'above / more than'},{w:'以外',r:'いがい',e:'other than'}]},
+  {id:209,k:'以',m:'by means of',on:'イ',ku:'',lv:'N3',st:5,cat:'other',rad:'人',mn:'Person + plow = by means of',ex:[{w:'以上',r:'いじょう',e:'above / more than'},{w:'以外',r:'いがい',e:'other than'}]},
   {id:210,k:'お',m:'honorific prefix',on:'',ku:'',lv:'N4',st:0,cat:'other',rad:'',mn:'Respectful prefix',ex:[{w:'お金',r:'おかね',e:'money'},{w:'お願い',r:'おねがい',e:'please'}]},
   {id:211,k:'ご',m:'honorific prefix',on:'',ku:'',lv:'N4',st:0,cat:'other',rad:'',mn:'Respectful prefix (Sino)',ex:[{w:'ご飯',r:'ごはん',e:'rice / meal'},{w:'ご両親',r:'ごりょうしん',e:'parents'}]},
-  {id:212,k:'政',m:'politics / government',on:'セイ・ショウ',ku:'まつりごと',lv:'N3',st:9,cat:'society',rad:'攴',mn:'Beat + correct = govern',ex:[{w:'政治',r:'せいじ',e:'politics'},{w:'政府',r:'せいふ',e:'government'}]},
-  {id:213,k:'議',m:'discuss / deliberate',on:'ギ',ku:'',lv:'N3',st:20,cat:'society',rad:'言',mn:'Words + righteousness',ex:[{w:'会議',r:'かいぎ',e:'meeting'},{w:'議員',r:'ぎいん',e:'assemblyman'}]},
+  {id:212,k:'政',m:'politics / government',on:'セイ・ショウ',ku:'まつりごと',lv:'N2',st:9,cat:'society',rad:'攴',mn:'Beat + correct = govern',ex:[{w:'政治',r:'せいじ',e:'politics'},{w:'政府',r:'せいふ',e:'government'}]},
+  {id:213,k:'議',m:'discuss / deliberate',on:'ギ',ku:'',lv:'N2',st:20,cat:'society',rad:'言',mn:'Words + righteousness',ex:[{w:'会議',r:'かいぎ',e:'meeting'},{w:'議員',r:'ぎいん',e:'assemblyman'}]},
   {id:214,k:'民',m:'people / nation',on:'ミン',ku:'たみ',lv:'N3',st:5,cat:'society',rad:'氏',mn:'Eye pierced = subject/people',ex:[{w:'国民',r:'こくみん',e:'citizens'},{w:'民主',r:'みんしゅ',e:'democratic'}]},
   {id:215,k:'連',m:'connect / series',on:'レン',ku:'つら- つ-',lv:'N3',st:10,cat:'society',rad:'辶',mn:'Cart + road = connect',ex:[{w:'連絡',r:'れんらく',e:'contact'},{w:'関連',r:'かんれん',e:'relation'}]},
   {id:216,k:'対',m:'versus / pair',on:'タイ・ツイ',ku:'',lv:'N3',st:7,cat:'society',rad:'寸',mn:'Cottage + inch = correspond',ex:[{w:'対話',r:'たいわ',e:'dialogue'},{w:'反対',r:'はんたい',e:'opposition'}]},
   {id:217,k:'部',m:'part / section',on:'ブ',ku:'',lv:'N3',st:11,cat:'society',rad:'邑',mn:'Standing + city = section',ex:[{w:'部分',r:'ぶぶん',e:'part'},{w:'部長',r:'ぶちょう',e:'department chief'}]},
-  {id:218,k:'合',m:'combine / suit',on:'ゴウ・ガッ',ku:'あ-',lv:'N3',st:6,cat:'action',rad:'口',mn:'Lid on pot = combine',ex:[{w:'合う',r:'あう',e:'to fit'},{w:'場合',r:'ばあい',e:'case / situation'}]},
+  {id:218,k:'合',m:'combine / suit',on:'ゴウ・ガッ',ku:'あ-',lv:'N4',st:6,cat:'action',rad:'口',mn:'Lid on pot = combine',ex:[{w:'合う',r:'あう',e:'to fit'},{w:'場合',r:'ばあい',e:'case / situation'}]},
   {id:220,k:'内',m:'inside / within',on:'ナイ・ダイ',ku:'うち',lv:'N3',st:4,cat:'direction',rad:'入',mn:'Person inside space = within',ex:[{w:'内容',r:'ないよう',e:'content'},{w:'国内',r:'こくない',e:'domestic'}]},
   {id:221,k:'相',m:'mutual / phase',on:'ソウ・ショウ',ku:'あい',lv:'N3',st:9,cat:'other',rad:'目',mn:'Eye on tree = observe/mutual',ex:[{w:'相談',r:'そうだん',e:'consultation'},{w:'首相',r:'しゅしょう',e:'prime minister'}]},
   {id:222,k:'表',m:'surface / express',on:'ヒョウ',ku:'おもて・あらわ-',lv:'N3',st:8,cat:'other',rad:'衣',mn:'Fur coat surface',ex:[{w:'表す',r:'あらわす',e:'to express'},{w:'発表',r:'はっぴょう',e:'presentation'}]},
-  {id:223,k:'制',m:'control / system',on:'セイ',ku:'',lv:'N3',st:8,cat:'society',rad:'刀',mn:'Knife + garment = system',ex:[{w:'制度',r:'せいど',e:'system'},{w:'規制',r:'きせい',e:'regulation'}]},
-  {id:224,k:'組',m:'group / assemble',on:'ソ',ku:'く-',lv:'N3',st:11,cat:'society',rad:'糸',mn:'Thread + stack = assemble',ex:[{w:'組む',r:'くむ',e:'to assemble'},{w:'組合',r:'くみあい',e:'union'}]},
+  {id:223,k:'制',m:'control / system',on:'セイ',ku:'',lv:'N2',st:8,cat:'society',rad:'刀',mn:'Knife + garment = system',ex:[{w:'制度',r:'せいど',e:'system'},{w:'規制',r:'きせい',e:'regulation'}]},
+  {id:224,k:'組',m:'group / assemble',on:'ソ',ku:'く-',lv:'N4',st:11,cat:'society',rad:'糸',mn:'Thread + stack = assemble',ex:[{w:'組む',r:'くむ',e:'to assemble'},{w:'組合',r:'くみあい',e:'union'}]},
   {id:225,k:'特',m:'special',on:'トク',ku:'',lv:'N3',st:10,cat:'description',rad:'牛',mn:'Peculiar ox = special',ex:[{w:'特別',r:'とくべつ',e:'special'},{w:'特徴',r:'とくちょう',e:'characteristic'}]},
-  {id:226,k:'活',m:'lively / activity',on:'カツ',ku:'い-',lv:'N3',st:9,cat:'action',rad:'水',mn:'Water + tongue = activity',ex:[{w:'活動',r:'かつどう',e:'activity'},{w:'生活',r:'せいかつ',e:'life / lifestyle'}]},
+  {id:226,k:'活',m:'lively / activity',on:'カツ',ku:'い-',lv:'N4',st:9,cat:'action',rad:'水',mn:'Water + tongue = activity',ex:[{w:'活動',r:'かつどう',e:'activity'},{w:'生活',r:'せいかつ',e:'life / lifestyle'}]},
   {id:227,k:'情',m:'feeling / circumstances',on:'ジョウ・セイ',ku:'なさ-',lv:'N3',st:11,cat:'feeling',rad:'心',mn:'Heart + clean = feeling',ex:[{w:'感情',r:'かんじょう',e:'emotion'},{w:'情報',r:'じょうほう',e:'information'}]},
   {id:228,k:'経',m:'pass through / sutra',on:'ケイ・キョウ',ku:'へ-',lv:'N3',st:11,cat:'other',rad:'糸',mn:'Thread + river = pass through',ex:[{w:'経済',r:'けいざい',e:'economy'},{w:'経験',r:'けいけん',e:'experience'}]},
   {id:229,k:'最',m:'most / extreme',on:'サイ',ku:'もっと-',lv:'N3',st:12,cat:'description',rad:'日',mn:'Take + ear = utmost',ex:[{w:'最も',r:'もっとも',e:'most'},{w:'最後',r:'さいご',e:'last'}]},
   {id:230,k:'現',m:'present / appear',on:'ゲン',ku:'あらわ-',lv:'N3',st:11,cat:'time',rad:'玉',mn:'Gem appearing = present',ex:[{w:'現在',r:'げんざい',e:'present'},{w:'現れる',r:'あらわれる',e:'to appear'}]},
   {id:232,k:'関',m:'barrier / relate',on:'カン',ku:'せき・かか-',lv:'N3',st:14,cat:'other',rad:'門',mn:'Gate + thread = barrier',ex:[{w:'関係',r:'かんけい',e:'relationship'},{w:'関心',r:'かんしん',e:'interest'}]},
-  {id:233,k:'点',m:'point / score',on:'テン',ku:'',lv:'N3',st:9,cat:'other',rad:'黒',mn:'Black + divination = point',ex:[{w:'点数',r:'てんすう',e:'score'},{w:'欠点',r:'けってん',e:'defect'}]},
+  {id:233,k:'点',m:'point / score',on:'テン',ku:'',lv:'N4',st:9,cat:'other',rad:'黒',mn:'Black + divination = point',ex:[{w:'点数',r:'てんすう',e:'score'},{w:'欠点',r:'けってん',e:'defect'}]},
   {id:234,k:'報',m:'report / reward',on:'ホウ',ku:'むく-',lv:'N3',st:12,cat:'other',rad:'土',mn:'Kneel + hand = report',ex:[{w:'情報',r:'じょうほう',e:'information'},{w:'報告',r:'ほうこく',e:'report'}]},
   {id:237,k:'産',m:'produce / birth',on:'サン',ku:'う-',lv:'N3',st:11,cat:'action',rad:'生',mn:'Giving birth on cliff',ex:[{w:'産業',r:'さんぎょう',e:'industry'},{w:'出産',r:'しゅっさん',e:'childbirth'}]},
   {id:238,k:'動',m:'move',on:'ドウ',ku:'うご-',lv:'N3',st:11,cat:'action',rad:'力',mn:'Heavy + strength = move',ex:[{w:'動く',r:'うごく',e:'to move'},{w:'運動',r:'うんどう',e:'exercise'}]},
@@ -241,15 +241,15 @@ const KD = [
   {id:242,k:'送',m:'send',on:'ソウ',ku:'おく-',lv:'N3',st:9,cat:'action',rad:'辶',mn:'Hands throwing = send',ex:[{w:'送る',r:'おくる',e:'to send'},{w:'放送',r:'ほうそう',e:'broadcast'}]},
   {id:243,k:'受',m:'receive',on:'ジュ',ku:'う-',lv:'N3',st:8,cat:'action',rad:'又',mn:'Hand receiving from hand',ex:[{w:'受ける',r:'うける',e:'to receive'},{w:'受付',r:'うけつけ',e:'reception'}]},
   {id:244,k:'感',m:'feeling / sense',on:'カン',ku:'',lv:'N3',st:13,cat:'feeling',rad:'心',mn:'Spear + mouth + heart = feel',ex:[{w:'感じる',r:'かんじる',e:'to feel'},{w:'感謝',r:'かんしゃ',e:'gratitude'}]},
-  {id:245,k:'考',m:'think / consider',on:'コウ',ku:'かんが-',lv:'N3',st:6,cat:'mind',rad:'耂',mn:'Old person pondering',ex:[{w:'考える',r:'かんがえる',e:'to think'},{w:'思考',r:'しこう',e:'thought'}]},
+  {id:245,k:'考',m:'think / consider',on:'コウ',ku:'かんが-',lv:'N4',st:6,cat:'mind',rad:'耂',mn:'Old person pondering',ex:[{w:'考える',r:'かんがえる',e:'to think'},{w:'思考',r:'しこう',e:'thought'}]},
   {id:246,k:'全',m:'complete / entire',on:'ゼン',ku:'まった- すべ-',lv:'N3',st:6,cat:'description',rad:'入',mn:'Person + king = complete',ex:[{w:'全部',r:'ぜんぶ',e:'all'},{w:'安全',r:'あんぜん',e:'safety'}]},
   {id:247,k:'加',m:'add',on:'カ',ku:'くわ-',lv:'N3',st:5,cat:'action',rad:'力',mn:'Mouth + strength = add',ex:[{w:'加える',r:'くわえる',e:'to add'},{w:'参加',r:'さんか',e:'participation'}]},
-  {id:248,k:'形',m:'shape / form',on:'ケイ・ギョウ',ku:'かたち・かた',lv:'N3',st:7,cat:'description',rad:'彡',mn:'Object + decoration = form',ex:[{w:'形',r:'かたち',e:'shape'},{w:'人形',r:'にんぎょう',e:'doll'}]},
-  {id:249,k:'術',m:'art / technique',on:'ジュツ',ku:'',lv:'N3',st:11,cat:'art',rad:'行',mn:'Walking + plant = technique',ex:[{w:'手術',r:'しゅじゅつ',e:'surgery'},{w:'芸術',r:'げいじゅつ',e:'art'}]},
+  {id:248,k:'形',m:'shape / form',on:'ケイ・ギョウ',ku:'かたち・かた',lv:'N4',st:7,cat:'description',rad:'彡',mn:'Object + decoration = form',ex:[{w:'形',r:'かたち',e:'shape'},{w:'人形',r:'にんぎょう',e:'doll'}]},
+  {id:249,k:'術',m:'art / technique',on:'ジュツ',ku:'',lv:'N2',st:11,cat:'art',rad:'行',mn:'Walking + plant = technique',ex:[{w:'手術',r:'しゅじゅつ',e:'surgery'},{w:'芸術',r:'げいじゅつ',e:'art'}]},
   {id:250,k:'機',m:'machine / opportunity',on:'キ',ku:'はた',lv:'N3',st:16,cat:'tech',rad:'木',mn:'Wood + threads = machine',ex:[{w:'機会',r:'きかい',e:'opportunity'},{w:'飛行機',r:'ひこうき',e:'airplane'}]},
   {id:252,k:'運',m:'transport / luck',on:'ウン',ku:'はこ-',lv:'N3',st:12,cat:'action',rad:'辶',mn:'Army + road = transport',ex:[{w:'運ぶ',r:'はこぶ',e:'to carry'},{w:'運動',r:'うんどう',e:'exercise'}]},
   {id:253,k:'転',m:'roll / turn',on:'テン',ku:'ころ-',lv:'N3',st:11,cat:'action',rad:'車',mn:'Car + specialist = roll',ex:[{w:'転ぶ',r:'ころぶ',e:'to fall'},{w:'自転車',r:'じてんしゃ',e:'bicycle'}]},
-  {id:254,k:'去',m:'go away / past',on:'キョ・コ',ku:'さ-',lv:'N3',st:5,cat:'action',rad:'土',mn:'Mouth going away',ex:[{w:'去る',r:'さる',e:'to leave'},{w:'過去',r:'かこ',e:'the past'}]},
+  {id:254,k:'去',m:'go away / past',on:'キョ・コ',ku:'さ-',lv:'N4',st:5,cat:'action',rad:'土',mn:'Mouth going away',ex:[{w:'去る',r:'さる',e:'to leave'},{w:'過去',r:'かこ',e:'the past'}]},
   {id:255,k:'始',m:'begin',on:'シ',ku:'はじ-',lv:'N3',st:8,cat:'action',rad:'女',mn:'Woman + platform = begin',ex:[{w:'始める',r:'はじめる',e:'to begin'},{w:'開始',r:'かいし',e:'start'}]},
   {id:256,k:'終',m:'end',on:'シュウ',ku:'お-',lv:'N3',st:11,cat:'action',rad:'糸',mn:'Thread + winter = end',ex:[{w:'終わる',r:'おわる',e:'to end'},{w:'最終',r:'さいしゅう',e:'final'}]},
   {id:257,k:'続',m:'continue',on:'ゾク',ku:'つづ-',lv:'N3',st:13,cat:'action',rad:'糸',mn:'Thread + sell = continue',ex:[{w:'続く',r:'つづく',e:'to continue'},{w:'継続',r:'けいぞく',e:'continuation'}]},
@@ -264,18 +264,18 @@ const KD = [
   {id:266,k:'際',m:'border / occasion',on:'サイ',ku:'きわ',lv:'N3',st:14,cat:'other',rad:'阜',mn:'Mound + sacrifice = edge',ex:[{w:'国際',r:'こくさい',e:'international'},{w:'実際',r:'じっさい',e:'actually'}]},
   {id:267,k:'格',m:'standard / rank',on:'カク・コウ',ku:'',lv:'N3',st:10,cat:'other',rad:'木',mn:'Wood + footstep = rank',ex:[{w:'格好',r:'かっこう',e:'appearance'},{w:'性格',r:'せいかく',e:'personality'}]},
   {id:268,k:'化',m:'change / convert',on:'カ・ケ',ku:'ば-',lv:'N3',st:4,cat:'action',rad:'人',mn:'Upright + inverted person',ex:[{w:'化学',r:'かがく',e:'chemistry'},{w:'文化',r:'ぶんか',e:'culture'}]},
-  {id:270,k:'当',m:'appropriate / hit',on:'トウ',ku:'あた-',lv:'N3',st:6,cat:'other',rad:'彐',mn:'Pig head = appropriate',ex:[{w:'当たる',r:'あたる',e:'to hit'},{w:'本当',r:'ほんとう',e:'true'}]},
+  {id:270,k:'当',m:'appropriate / hit',on:'トウ',ku:'あた-',lv:'N4',st:6,cat:'other',rad:'彐',mn:'Pig head = appropriate',ex:[{w:'当たる',r:'あたる',e:'to hit'},{w:'本当',r:'ほんとう',e:'true'}]},
   {id:271,k:'次',m:'next',on:'ジ・シ',ku:'つぎ・つ-',lv:'N3',st:6,cat:'time',rad:'欠',mn:'Open mouth + yawn = next',ex:[{w:'次',r:'つぎ',e:'next'},{w:'次第',r:'しだい',e:'depending on'}]},
   {id:272,k:'共',m:'together / both',on:'キョウ',ku:'とも',lv:'N3',st:6,cat:'other',rad:'八',mn:'Two hands together',ex:[{w:'共通',r:'きょうつう',e:'common'},{w:'共に',r:'ともに',e:'together'}]},
   {id:273,k:'協',m:'cooperate',on:'キョウ',ku:'',lv:'N3',st:8,cat:'action',rad:'十',mn:'Ten + strength = cooperate',ex:[{w:'協力',r:'きょうりょく',e:'cooperation'},{w:'協会',r:'きょうかい',e:'association'}]},
   {id:274,k:'各',m:'each',on:'カク',ku:'おのおの',lv:'N3',st:6,cat:'other',rad:'夂',mn:'Foot + mouth = each one',ex:[{w:'各自',r:'かくじ',e:'each person'},{w:'各地',r:'かくち',e:'various places'}]},
   {id:279,k:'局',m:'bureau / situation',on:'キョク',ku:'',lv:'N3',st:7,cat:'place',rad:'尸',mn:'Bent + mouth = situation',ex:[{w:'放送局',r:'ほうそうきょく',e:'broadcasting station'},{w:'局長',r:'きょくちょう',e:'bureau chief'}]},
   {id:280,k:'給',m:'supply / salary',on:'キュウ',ku:'',lv:'N3',st:12,cat:'work',rad:'糸',mn:'Thread + combine = supply',ex:[{w:'給料',r:'きゅうりょう',e:'salary'},{w:'給食',r:'きゅうしょく',e:'school lunch'}]},
-  {id:281,k:'記',m:'write down / record',on:'キ',ku:'しる-',lv:'N3',st:10,cat:'school',rad:'言',mn:'Words + oneself = record',ex:[{w:'記録',r:'きろく',e:'record'},{w:'日記',r:'にっき',e:'diary'}]},
+  {id:281,k:'記',m:'write down / record',on:'キ',ku:'しる-',lv:'N4',st:10,cat:'school',rad:'言',mn:'Words + oneself = record',ex:[{w:'記録',r:'きろく',e:'record'},{w:'日記',r:'にっき',e:'diary'}]},
   {id:283,k:'別',m:'separate / different',on:'ベツ',ku:'わか-',lv:'N3',st:7,cat:'other',rad:'刀',mn:'Bone + knife = separate',ex:[{w:'特別',r:'とくべつ',e:'special'},{w:'区別',r:'くべつ',e:'distinction'}]},
   {id:284,k:'求',m:'seek / demand',on:'キュウ',ku:'もと-',lv:'N3',st:7,cat:'action',rad:'水',mn:'Fur coat = seek',ex:[{w:'要求',r:'ようきゅう',e:'demand'},{w:'求める',r:'もとめる',e:'to seek'}]},
   {id:285,k:'果',m:'result / fruit',on:'カ',ku:'は- くだ-',lv:'N3',st:8,cat:'nature',rad:'木',mn:'Tree bearing fruit',ex:[{w:'結果',r:'けっか',e:'result'},{w:'果物',r:'くだもの',e:'fruit'}]},
-  {id:286,k:'文',m:'writing / sentence',on:'ブン・モン',ku:'ふみ',lv:'N3',st:4,cat:'school',rad:'文',mn:'Crossed patterns = writing',ex:[{w:'文章',r:'ぶんしょう',e:'writing'},{w:'作文',r:'さくぶん',e:'essay'}]},
+  {id:286,k:'文',m:'writing / sentence',on:'ブン・モン',ku:'ふみ',lv:'N5',st:4,cat:'school',rad:'文',mn:'Crossed patterns = writing',ex:[{w:'文章',r:'ぶんしょう',e:'writing'},{w:'作文',r:'さくぶん',e:'essay'}]},
   {id:287,k:'私',m:'I / private',on:'シ',ku:'わたし・わたくし',lv:'N3',st:7,cat:'people',rad:'禾',mn:'Grain for oneself = private',ex:[{w:'私',r:'わたし',e:'I'},{w:'私立',r:'しりつ',e:'private (school)'}]},
   {id:288,k:'皆',m:'everyone',on:'カイ',ku:'みんな・みな',lv:'N3',st:9,cat:'people',rad:'比',mn:'Comparison + white = everyone',ex:[{w:'皆',r:'みんな',e:'everyone'},{w:'皆さん',r:'みなさん',e:'everyone (polite)'}]},
   {id:289,k:'彼',m:'he / that',on:'カレ・カノ',ku:'かれ・かの-',lv:'N3',st:8,cat:'people',rad:'彳',mn:'Walking + skin = he',ex:[{w:'彼',r:'かれ',e:'he'},{w:'彼女',r:'かのじょ',e:'she'}]},
@@ -298,7 +298,7 @@ const KD = [
   {id:307,k:'頼',m:'rely / ask',on:'ライ',ku:'たの- たよ-',lv:'N3',st:16,cat:'feeling',rad:'頁',mn:'Bundle + head = rely',ex:[{w:'頼む',r:'たのむ',e:'to ask a favor'},{w:'信頼',r:'しんらい',e:'trust'}]},
   {id:308,k:'比',m:'compare',on:'ヒ',ku:'くら-',lv:'N3',st:4,cat:'other',rad:'比',mn:'Two kneeling persons = compare',ex:[{w:'比べる',r:'くらべる',e:'to compare'},{w:'比較',r:'ひかく',e:'comparison'}]},
   {id:309,k:'例',m:'example',on:'レイ',ku:'たと-',lv:'N3',st:8,cat:'other',rad:'人',mn:'Person + arrange = example',ex:[{w:'例えば',r:'たとえば',e:'for example'},{w:'例外',r:'れいがい',e:'exception'}]},
-  {id:310,k:'証',m:'proof / certificate',on:'ショウ',ku:'あかし',lv:'N3',st:12,cat:'other',rad:'言',mn:'Words + ascend = proof',ex:[{w:'証明',r:'しょうめい',e:'proof'},{w:'免許証',r:'めんきょしょう',e:'license'}]},
+  {id:310,k:'証',m:'proof / certificate',on:'ショウ',ku:'あかし',lv:'N2',st:12,cat:'other',rad:'言',mn:'Words + ascend = proof',ex:[{w:'証明',r:'しょうめい',e:'proof'},{w:'免許証',r:'めんきょしょう',e:'license'}]},
   {id:311,k:'法',m:'law / method',on:'ホウ・ハッ',ku:'',lv:'N3',st:8,cat:'society',rad:'水',mn:'Water + go = law',ex:[{w:'方法',r:'ほうほう',e:'method'},{w:'法律',r:'ほうりつ',e:'law'}]},
   {id:312,k:'律',m:'rule / law',on:'リツ・リチ',ku:'',lv:'N3',st:9,cat:'society',rad:'彳',mn:'Walking + pen = law',ex:[{w:'法律',r:'ほうりつ',e:'law'},{w:'規律',r:'きりつ',e:'discipline'}]},
   {id:313,k:'税',m:'tax',on:'ゼイ',ku:'',lv:'N3',st:12,cat:'society',rad:'禾',mn:'Grain + exchange = tax',ex:[{w:'消費税',r:'しょうひぜい',e:'consumption tax'},{w:'税金',r:'ぜいきん',e:'tax'}]},
@@ -336,7 +336,7 @@ const KD = [
   {id:348,k:'汚',m:'dirty',on:'オ',ku:'よご- きたな-',lv:'N3',st:6,cat:'description',rad:'水',mn:'Water + crow = dirty',ex:[{w:'汚い',r:'きたない',e:'dirty'},{w:'汚れ',r:'よごれ',e:'dirt'}]},
   {id:349,k:'深',m:'deep',on:'シン',ku:'ふか-',lv:'N3',st:11,cat:'description',rad:'水',mn:'Water + penetrating = deep',ex:[{w:'深い',r:'ふかい',e:'deep'},{w:'深夜',r:'しんや',e:'late night'}]},
   {id:350,k:'浅',m:'shallow',on:'セン',ku:'あさ-',lv:'N3',st:9,cat:'description',rad:'水',mn:'Water + remaining = shallow',ex:[{w:'浅い',r:'あさい',e:'shallow'},{w:'浅草',r:'あさくさ',e:'Asakusa'}]},
-  {id:351,k:'広',m:'wide / spacious',on:'コウ',ku:'ひろ-',lv:'N3',st:5,cat:'description',rad:'广',mn:'Shelter stretching wide',ex:[{w:'広い',r:'ひろい',e:'wide'},{w:'広場',r:'ひろば',e:'plaza'}]},
+  {id:351,k:'広',m:'wide / spacious',on:'コウ',ku:'ひろ-',lv:'N4',st:5,cat:'description',rad:'广',mn:'Shelter stretching wide',ex:[{w:'広い',r:'ひろい',e:'wide'},{w:'広場',r:'ひろば',e:'plaza'}]},
   {id:352,k:'狭',m:'narrow',on:'キョウ',ku:'せま-',lv:'N3',st:9,cat:'description',rad:'犬',mn:'Dog + pinched = narrow',ex:[{w:'狭い',r:'せまい',e:'narrow'},{w:'狭義',r:'きょうぎ',e:'strict sense'}]},
   {id:353,k:'温',m:'warm',on:'オン',ku:'あたた-',lv:'N3',st:12,cat:'description',rad:'水',mn:'Water + bowl of food = warm',ex:[{w:'温かい',r:'あたたかい',e:'warm'},{w:'温度',r:'おんど',e:'temperature'}]},
   {id:354,k:'冷',m:'cold',on:'レイ',ku:'つめ- ひ-',lv:'N3',st:7,cat:'description',rad:'冫',mn:'Ice + command = cold',ex:[{w:'冷たい',r:'つめたい',e:'cold (to touch)'},{w:'冷蔵庫',r:'れいぞうこ',e:'refrigerator'}]},
@@ -361,7 +361,7 @@ const KD = [
   {id:375,k:'価',m:'value / price',on:'カ',ku:'',lv:'N3',st:8,cat:'other',rad:'人',mn:'Person + price = value',ex:[{w:'価格',r:'かかく',e:'price'},{w:'物価',r:'ぶっか',e:'prices'}]},
   {id:376,k:'均',m:'equal / average',on:'キン',ku:'',lv:'N3',st:7,cat:'other',rad:'土',mn:'Earth + even out = even',ex:[{w:'平均',r:'へいきん',e:'average'},{w:'均等',r:'きんとう',e:'equality'}]},
   {id:377,k:'差',m:'difference',on:'サ',ku:'さ-',lv:'N3',st:10,cat:'other',rad:'工',mn:'Work + measure = difference',ex:[{w:'差',r:'さ',e:'difference'},{w:'差別',r:'さべつ',e:'discrimination'}]},
-  {id:378,k:'通',m:'pass through / commute',on:'ツウ・ツ',ku:'とお- かよ-',lv:'N3',st:10,cat:'action',rad:'辶',mn:'Road + arrive = pass through',ex:[{w:'通る',r:'とおる',e:'to pass'},{w:'交通',r:'こうつう',e:'traffic'}]},
+  {id:378,k:'通',m:'pass through / commute',on:'ツウ・ツ',ku:'とお- かよ-',lv:'N4',st:10,cat:'action',rad:'辶',mn:'Road + arrive = pass through',ex:[{w:'通る',r:'とおる',e:'to pass'},{w:'交通',r:'こうつう',e:'traffic'}]},
   {id:379,k:'過',m:'pass / excess',on:'カ',ku:'す- あやま-',lv:'N3',st:12,cat:'action',rad:'辶',mn:'Skull + road = pass',ex:[{w:'過ぎる',r:'すぎる',e:'to exceed'},{w:'通過',r:'つうか',e:'passing'}]},
   {id:383,k:'含',m:'include',on:'ガン',ku:'ふく-',lv:'N3',st:7,cat:'action',rad:'口',mn:'Enclosed in mouth = include',ex:[{w:'含む',r:'ふくむ',e:'to include'},{w:'含有',r:'がんゆう',e:'content'}]},
   {id:384,k:'従',m:'follow / obey',on:'ジュウ・ショウ',ku:'したが-',lv:'N3',st:10,cat:'action',rad:'彳',mn:'Walk + follow = obey',ex:[{w:'従う',r:'したがう',e:'to follow'},{w:'従業員',r:'じゅうぎょういん',e:'employee'}]},
@@ -406,11 +406,11 @@ const KD = [
   {id:425,k:'叫',m:'shout',on:'キョウ',ku:'さけ-',lv:'N2',st:6,cat:'action',rad:'口',mn:'Mouth + fork = shout',ex:[{w:'叫ぶ',r:'さけぶ',e:'to shout'},{w:'絶叫',r:'ぜっきょう',e:'scream'}]},
   {id:426,k:'吸',m:'inhale / absorb',on:'キュウ',ku:'す-',lv:'N2',st:6,cat:'action',rad:'口',mn:'Mouth + reach = inhale',ex:[{w:'吸う',r:'すう',e:'to inhale'},{w:'吸収',r:'きゅうしゅう',e:'absorption'}]},
   {id:427,k:'唐',m:'Tang dynasty / foreign',on:'トウ',ku:'から',lv:'N2',st:10,cat:'other',rad:'口',mn:'Mouth + wide = Tang',ex:[{w:'唐辛子',r:'とうがらし',e:'chili pepper'},{w:'唐突',r:'とうとつ',e:'abrupt'}]},
-  {id:428,k:'喜',m:'joy / delight',on:'キ',ku:'よろこ-',lv:'N2',st:12,cat:'feeling',rad:'口',mn:'Drum + mouth = joy',ex:[{w:'喜ぶ',r:'よろこぶ',e:'to be delighted'},{w:'喜び',r:'よろこび',e:'joy'}]},
+  {id:428,k:'喜',m:'joy / delight',on:'キ',ku:'よろこ-',lv:'N3',st:12,cat:'feeling',rad:'口',mn:'Drum + mouth = joy',ex:[{w:'喜ぶ',r:'よろこぶ',e:'to be delighted'},{w:'喜び',r:'よろこび',e:'joy'}]},
   {id:429,k:'善',m:'good / virtue',on:'ゼン',ku:'よ-',lv:'N2',st:12,cat:'other',rad:'口',mn:'Sheep + two mouths = good',ex:[{w:'善意',r:'ぜんい',e:'good intentions'},{w:'慈善',r:'じぜん',e:'charity'}]},
   {id:430,k:'嘆',m:'sigh / lament',on:'タン',ku:'なげ-',lv:'N2',st:13,cat:'feeling',rad:'口',mn:'Mouth + difficult = lament',ex:[{w:'嘆く',r:'なげく',e:'to lament'},{w:'感嘆',r:'かんたん',e:'admiration'}]},
   {id:431,k:'囲',m:'surround',on:'イ',ku:'かこ-',lv:'N2',st:7,cat:'action',rad:'囗',mn:'Box + surround = encircle',ex:[{w:'囲む',r:'かこむ',e:'to surround'},{w:'範囲',r:'はんい',e:'range'}]},
-  {id:433,k:'在',m:'exist / be present',on:'ザイ',ku:'あ-',lv:'N2',st:6,cat:'other',rad:'土',mn:'Grass + earth = exist',ex:[{w:'存在',r:'そんざい',e:'existence'},{w:'現在',r:'げんざい',e:'present'}]},
+  {id:433,k:'在',m:'exist / be present',on:'ザイ',ku:'あ-',lv:'N3',st:6,cat:'other',rad:'土',mn:'Grass + earth = exist',ex:[{w:'存在',r:'そんざい',e:'existence'},{w:'現在',r:'げんざい',e:'present'}]},
   {id:434,k:'坂',m:'slope',on:'ハン',ku:'さか',lv:'N2',st:7,cat:'place',rad:'土',mn:'Earth + anti = slope',ex:[{w:'坂',r:'さか',e:'slope'},{w:'急坂',r:'きゅうはん',e:'steep slope'}]},
   {id:435,k:'城',m:'castle',on:'ジョウ',ku:'しろ',lv:'N2',st:9,cat:'place',rad:'土',mn:'Earth + succeed = castle',ex:[{w:'城',r:'しろ',e:'castle'},{w:'城下町',r:'じょうかまち',e:'castle town'}]},
   {id:436,k:'域',m:'area / region',on:'イキ',ku:'',lv:'N2',st:11,cat:'place',rad:'土',mn:'Earth + weapon = region',ex:[{w:'地域',r:'ちいき',e:'area/region'},{w:'領域',r:'りょういき',e:'territory'}]},
@@ -418,7 +418,7 @@ const KD = [
   {id:438,k:'堂',m:'hall / grand',on:'ドウ',ku:'',lv:'N2',st:11,cat:'place',rad:'土',mn:'High + earth = hall',ex:[{w:'食堂',r:'しょくどう',e:'cafeteria'},{w:'国会議事堂',r:'こっかいぎじどう',e:'Parliament building'}]},
   {id:439,k:'境',m:'boundary',on:'キョウ・ケイ',ku:'さかい',lv:'N2',st:14,cat:'place',rad:'土',mn:'Earth + end = boundary',ex:[{w:'境',r:'さかい',e:'boundary'},{w:'環境',r:'かんきょう',e:'environment'}]},
   {id:440,k:'壁',m:'wall',on:'ヘキ',ku:'かべ',lv:'N2',st:16,cat:'place',rad:'土',mn:'Earth + king\'s choice = wall',ex:[{w:'壁',r:'かべ',e:'wall'},{w:'障壁',r:'しょうへき',e:'barrier'}]},
-  {id:441,k:'圧',m:'pressure',on:'アツ',ku:'お-',lv:'N2',st:5,cat:'other',rad:'土',mn:'Cliff + earth = pressure',ex:[{w:'圧力',r:'あつりょく',e:'pressure'},{w:'気圧',r:'きあつ',e:'atmospheric pressure'}]},
+  {id:441,k:'圧',m:'pressure',on:'アツ',ku:'お-',lv:'N3',st:5,cat:'other',rad:'土',mn:'Cliff + earth = pressure',ex:[{w:'圧力',r:'あつりょく',e:'pressure'},{w:'気圧',r:'きあつ',e:'atmospheric pressure'}]},
   {id:442,k:'奪',m:'seize / take away',on:'ダツ',ku:'うば-',lv:'N2',st:14,cat:'action',rad:'大',mn:'Large bird seizing = snatch',ex:[{w:'奪う',r:'うばう',e:'to seize'},{w:'剥奪',r:'はくだつ',e:'deprivation'}]},
   {id:443,k:'契',m:'contract / promise',on:'ケイ',ku:'ちぎ-',lv:'N2',st:9,cat:'other',rad:'大',mn:'Notch + big = contract',ex:[{w:'契約',r:'けいやく',e:'contract'},{w:'契機',r:'けいき',e:'opportunity'}]},
   {id:444,k:'孤',m:'isolated / lone',on:'コ',ku:'',lv:'N2',st:8,cat:'description',rad:'子',mn:'Child + melon = isolated',ex:[{w:'孤独',r:'こどく',e:'loneliness'},{w:'孤立',r:'こりつ',e:'isolation'}]},
@@ -440,7 +440,7 @@ const KD = [
   {id:460,k:'延',m:'extend',on:'エン',ku:'の-',lv:'N2',st:8,cat:'action',rad:'廴',mn:'Road + extend',ex:[{w:'延びる',r:'のびる',e:'to extend'},{w:'延長',r:'えんちょう',e:'extension'}]},
   {id:461,k:'弁',m:'dialect / petal / defend',on:'ベン',ku:'',lv:'N2',st:5,cat:'other',rad:'廾',mn:'Separate + hands = speech',ex:[{w:'弁護士',r:'べんごし',e:'lawyer'},{w:'方言・弁',r:'ほうげん・べん',e:'dialect'}]},
   {id:463,k:'彩',m:'color / brilliance',on:'サイ',ku:'いろど-',lv:'N2',st:11,cat:'art',rad:'彡',mn:'Pluck + decoration = color',ex:[{w:'色彩',r:'しきさい',e:'color'},{w:'多彩',r:'たさい',e:'colorful'}]},
-  {id:464,k:'役',m:'role / service',on:'ヤク・エキ',ku:'',lv:'N2',st:7,cat:'other',rad:'彳',mn:'Walk + hand = service',ex:[{w:'役割',r:'やくわり',e:'role'},{w:'役者',r:'やくしゃ',e:'actor'}]},
+  {id:464,k:'役',m:'role / service',on:'ヤク・エキ',ku:'',lv:'N3',st:7,cat:'other',rad:'彳',mn:'Walk + hand = service',ex:[{w:'役割',r:'やくわり',e:'role'},{w:'役者',r:'やくしゃ',e:'actor'}]},
   {id:465,k:'征',m:'conquer',on:'セイ',ku:'',lv:'N2',st:8,cat:'action',rad:'彳',mn:'Walk + right = conquer',ex:[{w:'遠征',r:'えんせい',e:'expedition'},{w:'征服',r:'せいふく',e:'conquest'}]},
   {id:466,k:'徒',m:'on foot / follower',on:'ト',ku:'',lv:'N2',st:10,cat:'other',rad:'彳',mn:'Walk + soil = on foot',ex:[{w:'徒歩',r:'とほ',e:'on foot'},{w:'生徒',r:'せいと',e:'student'}]},
   {id:467,k:'御',m:'honorable / control',on:'ゴ・ギョ',ku:'おん',lv:'N2',st:12,cat:'other',rad:'彳',mn:'Walk + serve = control',ex:[{w:'御',r:'おん',e:'honorific'},{w:'制御',r:'せいぎょ',e:'control'}]},
@@ -464,7 +464,7 @@ const KD = [
   {id:485,k:'既',m:'already',on:'キ',ku:'すで-',lv:'N2',st:10,cat:'other',rad:'旡',mn:'Person done eating = already',ex:[{w:'既に',r:'すでに',e:'already'},{w:'既存',r:'きそん',e:'existing'}]},
   {id:486,k:'昇',m:'rise',on:'ショウ',ku:'のぼ-',lv:'N2',st:8,cat:'action',rad:'日',mn:'Sun rising = ascend',ex:[{w:'昇る',r:'のぼる',e:'to rise'},{w:'昇進',r:'しょうしん',e:'promotion'}]},
   {id:487,k:'暮',m:'dusk / live',on:'ボ',ku:'く-',lv:'N2',st:14,cat:'time',rad:'日',mn:'Sun going to grass = dusk',ex:[{w:'暮らす',r:'くらす',e:'to live'},{w:'夕暮れ',r:'ゆうぐれ',e:'dusk'}]},
-  {id:488,k:'期',m:'period / expect',on:'キ・ゴ',ku:'',lv:'N2',st:12,cat:'time',rad:'月',mn:'Month + organize = period',ex:[{w:'期間',r:'きかん',e:'period'},{w:'予期',r:'よき',e:'expectation'}]},
+  {id:488,k:'期',m:'period / expect',on:'キ・ゴ',ku:'',lv:'N3',st:12,cat:'time',rad:'月',mn:'Month + organize = period',ex:[{w:'期間',r:'きかん',e:'period'},{w:'予期',r:'よき',e:'expectation'}]},
   {id:489,k:'柱',m:'pillar',on:'チュウ',ku:'はしら',lv:'N2',st:9,cat:'place',rad:'木',mn:'Wood + master = pillar',ex:[{w:'柱',r:'はしら',e:'pillar'},{w:'電柱',r:'でんちゅう',e:'telephone pole'}]},
   {id:490,k:'構',m:'construct / structure',on:'コウ',ku:'かま-',lv:'N2',st:14,cat:'action',rad:'木',mn:'Wood + communicate = structure',ex:[{w:'構造',r:'こうぞう',e:'structure'},{w:'構成',r:'こうせい',e:'composition'}]},
   {id:491,k:'模',m:'pattern / imitate',on:'モ・ボ',ku:'',lv:'N2',st:14,cat:'art',rad:'木',mn:'Wood + nothing = pattern',ex:[{w:'模様',r:'もよう',e:'pattern'},{w:'規模',r:'きぼ',e:'scale'}]},
@@ -473,7 +473,7 @@ const KD = [
   {id:494,k:'欲',m:'desire',on:'ヨク',ku:'ほ-',lv:'N2',st:11,cat:'feeling',rad:'欠',mn:'Valley + yawn = desire',ex:[{w:'欲しい',r:'ほしい',e:'to want'},{w:'食欲',r:'しょくよく',e:'appetite'}]},
   {id:495,k:'歓',m:'joy / welcome',on:'カン',ku:'',lv:'N2',st:15,cat:'feeling',rad:'欠',mn:'Bird\'s joy = welcome',ex:[{w:'歓迎',r:'かんげい',e:'welcome'},{w:'歓声',r:'かんせい',e:'cheer'}]},
   {id:496,k:'歴',m:'history / career',on:'レキ',ku:'',lv:'N2',st:14,cat:'other',rad:'止',mn:'Many + stop = history',ex:[{w:'歴史',r:'れきし',e:'history'},{w:'経歴',r:'けいれき',e:'career'}]},
-  {id:497,k:'段',m:'step / level',on:'ダン',ku:'',lv:'N2',st:9,cat:'other',rad:'殳',mn:'Hand + weapon = step',ex:[{w:'段階',r:'だんかい',e:'stage'},{w:'手段',r:'しゅだん',e:'means'}]},
+  {id:497,k:'段',m:'step / level',on:'ダン',ku:'',lv:'N3',st:9,cat:'other',rad:'殳',mn:'Hand + weapon = step',ex:[{w:'段階',r:'だんかい',e:'stage'},{w:'手段',r:'しゅだん',e:'means'}]},
   {id:498,k:'永',m:'eternal',on:'エイ',ku:'なが-',lv:'N2',st:5,cat:'time',rad:'水',mn:'Long flowing water = eternal',ex:[{w:'永遠',r:'えいえん',e:'eternity'},{w:'永久',r:'えいきゅう',e:'permanence'}]},
   {id:499,k:'泡',m:'bubble / foam',on:'ホウ',ku:'あわ',lv:'N2',st:8,cat:'nature',rad:'水',mn:'Water + wrap = bubble',ex:[{w:'泡',r:'あわ',e:'bubble'},{w:'泡立てる',r:'あわだてる',e:'to foam'}]},
   {id:500,k:'洗',m:'wash',on:'セン',ku:'あら-',lv:'N2',st:9,cat:'action',rad:'水',mn:'Water + first = wash',ex:[{w:'洗う',r:'あらう',e:'to wash'},{w:'洗濯',r:'せんたく',e:'laundry'}]},
@@ -490,15 +490,15 @@ const KD = [
   {id:511,k:'爆',m:'explode',on:'バク',ku:'',lv:'N2',st:19,cat:'action',rad:'火',mn:'Fire + burst = explode',ex:[{w:'爆発',r:'ばくはつ',e:'explosion'},{w:'核爆弾',r:'かくばくだん',e:'nuclear bomb'}]},
   {id:512,k:'牧',m:'pasture / herd',on:'ボク',ku:'まき',lv:'N2',st:8,cat:'nature',rad:'牛',mn:'Ox + beat = herd',ex:[{w:'牧場',r:'まきば',e:'pasture'},{w:'牧師',r:'ぼくし',e:'pastor'}]},
   {id:513,k:'犯',m:'crime / commit',on:'ハン',ku:'おか-',lv:'N2',st:5,cat:'other',rad:'犬',mn:'Dog + bend = crime',ex:[{w:'犯罪',r:'はんざい',e:'crime'},{w:'犯人',r:'はんにん',e:'criminal'}]},
-  {id:514,k:'独',m:'alone',on:'ドク',ku:'ひと-',lv:'N2',st:9,cat:'description',rad:'犬',mn:'Dog + worm = alone',ex:[{w:'独り',r:'ひとり',e:'alone'},{w:'独立',r:'どくりつ',e:'independence'}]},
+  {id:514,k:'独',m:'alone',on:'ドク',ku:'ひと-',lv:'N3',st:9,cat:'description',rad:'犬',mn:'Dog + worm = alone',ex:[{w:'独り',r:'ひとり',e:'alone'},{w:'独立',r:'どくりつ',e:'independence'}]},
   {id:515,k:'率',m:'rate / lead',on:'ソツ・リツ',ku:'ひき-',lv:'N2',st:11,cat:'other',rad:'玄',mn:'Thread + net = rate',ex:[{w:'率',r:'りつ',e:'rate'},{w:'効率',r:'こうりつ',e:'efficiency'}]},
   {id:517,k:'珍',m:'rare / unusual',on:'チン',ku:'めずら-',lv:'N2',st:9,cat:'description',rad:'玉',mn:'Gem + hair = rare',ex:[{w:'珍しい',r:'めずらしい',e:'rare'},{w:'珍品',r:'ちんぴん',e:'rarity'}]},
   {id:519,k:'略',m:'abbreviate / strategy',on:'リャク',ku:'',lv:'N2',st:11,cat:'other',rad:'田',mn:'Rice field + each = strategy',ex:[{w:'略す',r:'りゃくす',e:'to abbreviate'},{w:'戦略',r:'せんりゃく',e:'strategy'}]},
   {id:520,k:'異',m:'different / unusual',on:'イ',ku:'こと',lv:'N2',st:11,cat:'description',rad:'田',mn:'Different field = unusual',ex:[{w:'異なる',r:'ことなる',e:'to differ'},{w:'異常',r:'いじょう',e:'abnormal'}]},
-  {id:521,k:'疑',m:'doubt',on:'ギ',ku:'うたが-',lv:'N2',st:14,cat:'feeling',rad:'疋',mn:'Stop + spear = doubt',ex:[{w:'疑う',r:'うたがう',e:'to doubt'},{w:'疑問',r:'ぎもん',e:'doubt/question'}]},
+  {id:521,k:'疑',m:'doubt',on:'ギ',ku:'うたが-',lv:'N3',st:14,cat:'feeling',rad:'疋',mn:'Stop + spear = doubt',ex:[{w:'疑う',r:'うたがう',e:'to doubt'},{w:'疑問',r:'ぎもん',e:'doubt/question'}]},
   {id:522,k:'症',m:'symptom',on:'ショウ',ku:'',lv:'N2',st:10,cat:'health',rad:'疒',mn:'Sickbed + straight = symptom',ex:[{w:'症状',r:'しょうじょう',e:'symptoms'},{w:'炎症',r:'えんしょう',e:'inflammation'}]},
   {id:523,k:'療',m:'treat / heal',on:'リョウ',ku:'',lv:'N2',st:17,cat:'health',rad:'疒',mn:'Sickbed + bright = treat',ex:[{w:'治療',r:'ちりょう',e:'treatment'},{w:'医療',r:'いりょう',e:'medical care'}]},
-  {id:525,k:'省',m:'ministry / reflect',on:'セイ・ショウ',ku:'はぶ-',lv:'N2',st:9,cat:'society',rad:'目',mn:'Eye + small = reflect',ex:[{w:'反省',r:'はんせい',e:'reflection'},{w:'省エネ',r:'しょうエネ',e:'energy saving'}]},
+  {id:525,k:'省',m:'ministry / reflect',on:'セイ・ショウ',ku:'はぶ-',lv:'N3',st:9,cat:'society',rad:'目',mn:'Eye + small = reflect',ex:[{w:'反省',r:'はんせい',e:'reflection'},{w:'省エネ',r:'しょうエネ',e:'energy saving'}]},
   {id:526,k:'眺',m:'gaze / view',on:'チョウ',ku:'なが-',lv:'N2',st:11,cat:'action',rad:'目',mn:'Eye + far = gaze',ex:[{w:'眺める',r:'ながめる',e:'to gaze'},{w:'眺め',r:'ながめ',e:'view'}]},
   {id:527,k:'磁',m:'magnet',on:'ジ',ku:'',lv:'N2',st:14,cat:'other',rad:'石',mn:'Stone + cloth = magnet',ex:[{w:'磁石',r:'じしゃく',e:'magnet'},{w:'電磁',r:'でんじ',e:'electromagnetic'}]},
   {id:529,k:'礎',m:'foundation stone',on:'ソ',ku:'いしずえ',lv:'N2',st:18,cat:'other',rad:'石',mn:'Stone + place = foundation',ex:[{w:'基礎',r:'きそ',e:'foundation'},{w:'礎石',r:'そせき',e:'cornerstone'}]},
@@ -510,13 +510,13 @@ const KD = [
   {id:535,k:'緊',m:'tense / urgent',on:'キン',ku:'',lv:'N2',st:15,cat:'description',rad:'糸',mn:'Captured + thread = tense',ex:[{w:'緊張',r:'きんちょう',e:'tension'},{w:'緊急',r:'きんきゅう',e:'urgent'}]},
   {id:536,k:'繰',m:'reel / repeat',on:'ソウ',ku:'く-',lv:'N2',st:19,cat:'action',rad:'糸',mn:'Thread + nest = reel',ex:[{w:'繰り返す',r:'くりかえす',e:'to repeat'},{w:'繰り越す',r:'くりこす',e:'to carry over'}]},
   {id:537,k:'縮',m:'shrink',on:'シュク',ku:'ちぢ-',lv:'N2',st:17,cat:'action',rad:'糸',mn:'Thread + lodging = shrink',ex:[{w:'縮む',r:'ちぢむ',e:'to shrink'},{w:'短縮',r:'たんしゅく',e:'shortening'}]},
-  {id:538,k:'結',m:'tie / result',on:'ケツ',ku:'むす- ゆ-',lv:'N2',st:12,cat:'action',rad:'糸',mn:'Thread + auspicious = tie',ex:[{w:'結ぶ',r:'むすぶ',e:'to tie'},{w:'結果',r:'けっか',e:'result'}]},
+  {id:538,k:'結',m:'tie / result',on:'ケツ',ku:'むす- ゆ-',lv:'N3',st:12,cat:'action',rad:'糸',mn:'Thread + auspicious = tie',ex:[{w:'結ぶ',r:'むすぶ',e:'to tie'},{w:'結果',r:'けっか',e:'result'}]},
   {id:539,k:'絶',m:'cut off / absolute',on:'ゼツ',ku:'た-',lv:'N2',st:12,cat:'action',rad:'糸',mn:'Thread + color = cut off',ex:[{w:'絶対',r:'ぜったい',e:'absolute'},{w:'絶える',r:'たえる',e:'to cease'}]},
   {id:540,k:'総',m:'general / all',on:'ソウ',ku:'すべ-',lv:'N2',st:14,cat:'other',rad:'糸',mn:'Thread + heart = general',ex:[{w:'総合',r:'そうごう',e:'comprehensive'},{w:'総理',r:'そうり',e:'prime minister'}]},
   {id:541,k:'織',m:'weave / organization',on:'ショク・シキ',ku:'お-',lv:'N2',st:18,cat:'action',rad:'糸',mn:'Thread + flag = weave',ex:[{w:'組織',r:'そしき',e:'organization'},{w:'織る',r:'おる',e:'to weave'}]},
   {id:542,k:'罰',m:'punish',on:'バツ・バチ',ku:'',lv:'N2',st:14,cat:'other',rad:'网',mn:'Net + knife = punish',ex:[{w:'罰',r:'ばつ',e:'punishment'},{w:'罰金',r:'ばっきん',e:'fine'}]},
   {id:543,k:'翻',m:'translate / flap',on:'ホン',ku:'ひるがえ-',lv:'N2',st:18,cat:'action',rad:'羽',mn:'Wings + number = translate',ex:[{w:'翻訳',r:'ほんやく',e:'translation'},{w:'翻る',r:'ひるがえる',e:'to flutter'}]},
-  {id:544,k:'老',m:'old / elderly',on:'ロウ',ku:'お-',lv:'N2',st:6,cat:'people',rad:'老',mn:'Hunched elder with cane',ex:[{w:'老人',r:'ろうじん',e:'elderly person'},{w:'老化',r:'ろうか',e:'aging'}]},
+  {id:544,k:'老',m:'old / elderly',on:'ロウ',ku:'お-',lv:'N3',st:6,cat:'people',rad:'老',mn:'Hunched elder with cane',ex:[{w:'老人',r:'ろうじん',e:'elderly person'},{w:'老化',r:'ろうか',e:'aging'}]},
   {id:545,k:'肩',m:'shoulder',on:'ケン',ku:'かた',lv:'N2',st:8,cat:'body',rad:'月',mn:'Door + body = shoulder',ex:[{w:'肩',r:'かた',e:'shoulder'},{w:'肩書',r:'かたがき',e:'title'}]},
   {id:546,k:'背',m:'back / height',on:'ハイ',ku:'せ・そむ-',lv:'N2',st:9,cat:'body',rad:'月',mn:'North + body = back',ex:[{w:'背',r:'せ',e:'back'},{w:'背中',r:'せなか',e:'back (of body)'}]},
   {id:547,k:'胃',m:'stomach',on:'イ',ku:'',lv:'N2',st:9,cat:'body',rad:'月',mn:'Field + body = stomach',ex:[{w:'胃',r:'い',e:'stomach'},{w:'胃腸',r:'いちょう',e:'stomach and intestines'}]},
@@ -530,7 +530,7 @@ const KD = [
   {id:555,k:'荒',m:'rough / desolate',on:'コウ',ku:'あら-',lv:'N2',st:9,cat:'nature',rad:'艸',mn:'River + grass = rough',ex:[{w:'荒い',r:'あらい',e:'rough'},{w:'荒れる',r:'あれる',e:'to be rough'}]},
   {id:556,k:'蒸',m:'steam',on:'ジョウ',ku:'む-',lv:'N2',st:13,cat:'action',rad:'艸',mn:'Grass + fire = steam',ex:[{w:'蒸す',r:'むす',e:'to steam'},{w:'蒸気',r:'じょうき',e:'steam'}]},
   {id:557,k:'蓄',m:'accumulate',on:'チク',ku:'たくわ-',lv:'N2',st:13,cat:'action',rad:'艸',mn:'Grass + flow = accumulate',ex:[{w:'蓄える',r:'たくわえる',e:'to save up'},{w:'蓄積',r:'ちくせき',e:'accumulation'}]},
-  {id:558,k:'被',m:'cover / suffer',on:'ヒ',ku:'かぶ- こうむ-',lv:'N2',st:10,cat:'action',rad:'衣',mn:'Garment + skin = cover',ex:[{w:'被る',r:'かぶる',e:'to wear/suffer'},{w:'被害',r:'ひがい',e:'damage'}]},
+  {id:558,k:'被',m:'cover / suffer',on:'ヒ',ku:'かぶ- こうむ-',lv:'N3',st:10,cat:'action',rad:'衣',mn:'Garment + skin = cover',ex:[{w:'被る',r:'かぶる',e:'to wear/suffer'},{w:'被害',r:'ひがい',e:'damage'}]},
   {id:559,k:'複',m:'complex / double',on:'フク',ku:'',lv:'N2',st:14,cat:'description',rad:'衣',mn:'Garment + return = double',ex:[{w:'複雑',r:'ふくざつ',e:'complex'},{w:'複数',r:'ふくすう',e:'plural'}]},
   {id:560,k:'補',m:'supplement',on:'ホ',ku:'おぎな-',lv:'N2',st:12,cat:'action',rad:'衣',mn:'Garment + announce = supplement',ex:[{w:'補う',r:'おぎなう',e:'to supplement'},{w:'補助',r:'ほじょ',e:'assistance'}]},
   {id:561,k:'訴',m:'sue / appeal',on:'ソ',ku:'うった-',lv:'N2',st:12,cat:'action',rad:'言',mn:'Words + flow = appeal',ex:[{w:'訴える',r:'うったえる',e:'to appeal'},{w:'起訴',r:'きそ',e:'indictment'}]},
@@ -560,9 +560,9 @@ const KD = [
   {id:586,k:'載',m:'load / publish',on:'サイ',ku:'の- のせ-',lv:'N2',st:13,cat:'action',rad:'車',mn:'Vehicle + year = load',ex:[{w:'掲載',r:'けいさい',e:'publication'},{w:'記載',r:'きさい',e:'description'}]},
   {id:587,k:'逃',m:'escape',on:'トウ',ku:'に-',lv:'N2',st:9,cat:'action',rad:'辶',mn:'Spoon + road = escape',ex:[{w:'逃げる',r:'にげる',e:'to escape'},{w:'逃亡',r:'とうぼう',e:'flight'}]},
   {id:588,k:'迷',m:'lost / confused',on:'メイ',ku:'まよ-',lv:'N2',st:9,cat:'action',rad:'辶',mn:'Rice + road = lost',ex:[{w:'迷う',r:'まよう',e:'to be lost'},{w:'迷惑',r:'めいわく',e:'nuisance'}]},
-  {id:589,k:'追',m:'chase / pursue',on:'ツイ',ku:'お-',lv:'N2',st:9,cat:'action',rad:'辶',mn:'Mound + road = chase',ex:[{w:'追う',r:'おう',e:'to chase'},{w:'追加',r:'ついか',e:'addition'}]},
-  {id:590,k:'選',m:'select / choose',on:'セン',ku:'えら-',lv:'N2',st:15,cat:'action',rad:'辶',mn:'Bend + road = select',ex:[{w:'選ぶ',r:'えらぶ',e:'to choose'},{w:'選挙',r:'せんきょ',e:'election'}]},
-  {id:591,k:'遊',m:'play / wander',on:'ユウ',ku:'あそ-',lv:'N2',st:12,cat:'action',rad:'辶',mn:'Child + flag + road = play',ex:[{w:'遊ぶ',r:'あそぶ',e:'to play'},{w:'遊園地',r:'ゆうえんち',e:'amusement park'}]},
+  {id:589,k:'追',m:'chase / pursue',on:'ツイ',ku:'お-',lv:'N3',st:9,cat:'action',rad:'辶',mn:'Mound + road = chase',ex:[{w:'追う',r:'おう',e:'to chase'},{w:'追加',r:'ついか',e:'addition'}]},
+  {id:590,k:'選',m:'select / choose',on:'セン',ku:'えら-',lv:'N3',st:15,cat:'action',rad:'辶',mn:'Bend + road = select',ex:[{w:'選ぶ',r:'えらぶ',e:'to choose'},{w:'選挙',r:'せんきょ',e:'election'}]},
+  {id:591,k:'遊',m:'play / wander',on:'ユウ',ku:'あそ-',lv:'N3',st:12,cat:'action',rad:'辶',mn:'Child + flag + road = play',ex:[{w:'遊ぶ',r:'あそぶ',e:'to play'},{w:'遊園地',r:'ゆうえんち',e:'amusement park'}]},
   {id:592,k:'遺',m:'leave behind',on:'イ・ユイ',ku:'',lv:'N2',st:15,cat:'other',rad:'辶',mn:'Valuables + road = leave behind',ex:[{w:'遺産',r:'いさん',e:'heritage'},{w:'遺言',r:'ゆいごん',e:'will/testament'}]},
   {id:593,k:'酸',m:'sour / acid',on:'サン',ku:'す-',lv:'N2',st:14,cat:'nature',rad:'酉',mn:'Wine + wriggle = acid',ex:[{w:'酸っぱい',r:'すっぱい',e:'sour'},{w:'酸素',r:'さんそ',e:'oxygen'}]},
   {id:594,k:'釈',m:'explain / release',on:'シャク',ku:'',lv:'N2',st:11,cat:'other',rad:'釆',mn:'Measure + divide = explain',ex:[{w:'解釈',r:'かいしゃく',e:'interpretation'},{w:'釈放',r:'しゃくほう',e:'release'}]},
@@ -590,7 +590,7 @@ const KD = [
   {id:620,k:'威',m:'authority / intimidate',on:'イ',ku:'',lv:'N1',st:9,cat:'other',rad:'女',mn:'Woman + weapon = authority',ex:[{w:'権威',r:'けんい',e:'authority'},{w:'威圧',r:'いあつ',e:'intimidation'}]},
   {id:621,k:'為',m:'for sake of / do',on:'イ',ku:'ため・な-',lv:'N1',st:9,cat:'other',rad:'爪',mn:'Hand + elephant = do',ex:[{w:'為になる',r:'ためになる',e:'beneficial'},{w:'行為',r:'こうい',e:'act'}]},
   {id:622,k:'緯',m:'latitude / weft',on:'イ',ku:'',lv:'N1',st:16,cat:'other',rad:'糸',mn:'Thread + stomach = weft',ex:[{w:'北緯',r:'ほくい',e:'north latitude'},{w:'経緯',r:'いきさつ',e:'circumstances'}]},
-  {id:625,k:'育',m:'raise / nurture',on:'イク',ku:'そだ-',lv:'N1',st:8,cat:'action',rad:'月',mn:'Child + body = nurture',ex:[{w:'教育',r:'きょういく',e:'education'},{w:'育てる',r:'そだてる',e:'to raise'}]},
+  {id:625,k:'育',m:'raise / nurture',on:'イク',ku:'そだ-',lv:'N3',st:8,cat:'action',rad:'月',mn:'Child + body = nurture',ex:[{w:'教育',r:'きょういく',e:'education'},{w:'育てる',r:'そだてる',e:'to raise'}]},
   {id:627,k:'壱',m:'one (formal)',on:'イチ',ku:'',lv:'N1',st:7,cat:'number',rad:'士',mn:'Formal character for one',ex:[{w:'壱万円',r:'いちまんえん',e:'¥10,000'},{w:'壱番',r:'いちばん',e:'number one'}]},
   {id:628,k:'逸',m:'deviate / superior',on:'イツ',ku:'そ-',lv:'N1',st:11,cat:'other',rad:'辶',mn:'Rabbit on road = escape',ex:[{w:'逸脱',r:'いつだつ',e:'deviation'},{w:'逸品',r:'いっぴん',e:'masterpiece'}]},
   {id:629,k:'稲',m:'rice plant',on:'トウ',ku:'いね・いな-',lv:'N1',st:14,cat:'nature',rad:'禾',mn:'Grain + reaching = rice',ex:[{w:'稲',r:'いね',e:'rice plant'},{w:'稲作',r:'いなさく',e:'rice farming'}]},
@@ -615,7 +615,7 @@ const KD = [
   {id:655,k:'寡',m:'few / widow',on:'カ',ku:'やもめ',lv:'N1',st:14,cat:'other',rad:'宀',mn:'Roof + head = few',ex:[{w:'寡黙',r:'かもく',e:'taciturn'},{w:'寡婦',r:'かふ',e:'widow'}]},
   {id:657,k:'嫁',m:'bride / marry',on:'カ',ku:'よめ・とつ-',lv:'N1',st:13,cat:'people',rad:'女',mn:'Woman + house = bride',ex:[{w:'嫁',r:'よめ',e:'bride'},{w:'花嫁',r:'はなよめ',e:'bride'}]},
   {id:659,k:'介',m:'mediate / shell',on:'カイ',ku:'',lv:'N1',st:4,cat:'other',rad:'人',mn:'Two people facing = mediate',ex:[{w:'介護',r:'かいご',e:'nursing care'},{w:'紹介',r:'しょうかい',e:'introduction'}]},
-  {id:661,k:'改',m:'reform',on:'カイ',ku:'あらた-',lv:'N1',st:7,cat:'action',rad:'攴',mn:'Staff + beat = reform',ex:[{w:'改革',r:'かいかく',e:'reform'},{w:'改める',r:'あらためる',e:'to reform'}]},
+  {id:661,k:'改',m:'reform',on:'カイ',ku:'あらた-',lv:'N3',st:7,cat:'action',rad:'攴',mn:'Staff + beat = reform',ex:[{w:'改革',r:'かいかく',e:'reform'},{w:'改める',r:'あらためる',e:'to reform'}]},
   {id:662,k:'概',m:'outline / approximately',on:'ガイ',ku:'おおむ-',lv:'N1',st:14,cat:'other',rad:'木',mn:'Wood + how = general',ex:[{w:'概念',r:'がいねん',e:'concept'},{w:'概要',r:'がいよう',e:'outline'}]},
   {id:664,k:'悔',m:'regret',on:'カイ',ku:'く- こう-',lv:'N1',st:9,cat:'feeling',rad:'心',mn:'Heart + each = regret',ex:[{w:'悔やむ',r:'くやむ',e:'to regret'},{w:'後悔',r:'こうかい',e:'regret'}]},
   {id:665,k:'拐',m:'kidnap',on:'カイ',ku:'',lv:'N1',st:8,cat:'action',rad:'手',mn:'Hand + cross = abduct',ex:[{w:'誘拐',r:'ゆうかい',e:'kidnapping'},{w:'拐帯',r:'かいたい',e:'embezzlement'}]},
@@ -624,14 +624,14 @@ const KD = [
   {id:669,k:'慨',m:'indignant / lament',on:'ガイ',ku:'',lv:'N1',st:13,cat:'feeling',rad:'心',mn:'Heart + concept = indignant',ex:[{w:'慨嘆',r:'がいたん',e:'lamentation'},{w:'憤慨',r:'ふんがい',e:'indignation'}]},
   {id:670,k:'核',m:'nucleus / core',on:'カク',ku:'',lv:'N1',st:10,cat:'other',rad:'木',mn:'Wood + river = nucleus',ex:[{w:'核心',r:'かくしん',e:'core'},{w:'核融合',r:'かくゆうごう',e:'nuclear fusion'}]},
   {id:671,k:'殻',m:'shell / husk',on:'カク',ku:'から',lv:'N1',st:11,cat:'nature',rad:'殳',mn:'Shell + beat = husk',ex:[{w:'貝殻',r:'かいがら',e:'seashell'},{w:'卵殻',r:'らんかく',e:'eggshell'}]},
-  {id:672,k:'覚',m:'perceive / remember',on:'カク',ku:'おぼ- さ-',lv:'N1',st:12,cat:'action',rad:'見',mn:'Roof + see = perceive',ex:[{w:'覚える',r:'おぼえる',e:'to remember'},{w:'感覚',r:'かんかく',e:'sense'}]},
+  {id:672,k:'覚',m:'perceive / remember',on:'カク',ku:'おぼ- さ-',lv:'N3',st:12,cat:'action',rad:'見',mn:'Roof + see = perceive',ex:[{w:'覚える',r:'おぼえる',e:'to remember'},{w:'感覚',r:'かんかく',e:'sense'}]},
   {id:673,k:'赫',m:'bright red',on:'カク',ku:'',lv:'N1',st:14,cat:'color',rad:'赤',mn:'Two fires = crimson',ex:[{w:'赫々',r:'かくかく',e:'brilliant'},{w:'赫怒',r:'かくど',e:'intense anger'}]},
   {id:674,k:'較',m:'compare',on:'カク',ku:'',lv:'N1',st:13,cat:'other',rad:'車',mn:'Vehicle + mix = compare',ex:[{w:'比較',r:'ひかく',e:'comparison'},{w:'較べる',r:'くらべる',e:'to compare'}]},
   {id:675,k:'確',m:'certain / definite',on:'カク',ku:'たし-',lv:'N1',st:15,cat:'description',rad:'石',mn:'Stone + bird = certain',ex:[{w:'確認',r:'かくにん',e:'confirmation'},{w:'確かめる',r:'たしかめる',e:'to confirm'}]},
   {id:676,k:'穫',m:'harvest',on:'カク',ku:'',lv:'N1',st:18,cat:'action',rad:'禾',mn:'Grain + bird = harvest',ex:[{w:'収穫',r:'しゅうかく',e:'harvest'},{w:'収穫祭',r:'しゅうかくさい',e:'harvest festival'}]},
   {id:677,k:'嚇',m:'threaten',on:'カク',ku:'おど-',lv:'N1',st:17,cat:'action',rad:'口',mn:'Mouth + fire = intimidate',ex:[{w:'威嚇',r:'いかく',e:'intimidation'},{w:'恫嚇',r:'どうかく',e:'threat'}]},
   {id:678,k:'括',m:'bundle / include',on:'カツ',ku:'くく-',lv:'N1',st:9,cat:'action',rad:'手',mn:'Hand + tongue = bundle',ex:[{w:'括る',r:'くくる',e:'to bundle'},{w:'一括',r:'いっかつ',e:'lump/batch'}]},
-  {id:679,k:'滑',m:'smooth / slide',on:'カツ',ku:'すべ- なめ-',lv:'N1',st:13,cat:'action',rad:'水',mn:'Water + bone = smooth',ex:[{w:'滑る',r:'すべる',e:'to slide'},{w:'円滑',r:'えんかつ',e:'smooth'}]},
+  {id:679,k:'滑',m:'smooth / slide',on:'カツ',ku:'すべ- なめ-',lv:'N2',st:13,cat:'action',rad:'水',mn:'Water + bone = smooth',ex:[{w:'滑る',r:'すべる',e:'to slide'},{w:'円滑',r:'えんかつ',e:'smooth'}]},
   {id:680,k:'渇',m:'thirst',on:'カツ',ku:'かわ-',lv:'N1',st:11,cat:'health',rad:'水',mn:'Water + lacking = thirst',ex:[{w:'渇く',r:'かわく',e:'to thirst'},{w:'渇望',r:'かつぼう',e:'craving'}]},
   {id:681,k:'喝',m:'scold / shout',on:'カツ',ku:'',lv:'N1',st:12,cat:'action',rad:'口',mn:'Mouth + dry = shout',ex:[{w:'一喝',r:'いっかつ',e:'sharp rebuke'},{w:'喝破',r:'かっぱ',e:'refutation'}]},
   {id:682,k:'褐',m:'brown',on:'カツ',ku:'',lv:'N1',st:13,cat:'color',rad:'衣',mn:'Garment + dry = brown',ex:[{w:'褐色',r:'かっしょく',e:'brown color'},{w:'赤褐色',r:'せきかっしょく',e:'reddish brown'}]},
@@ -648,7 +648,7 @@ const KD = [
   {id:694,k:'敢',m:'daring',on:'カン',ku:'',lv:'N1',st:12,cat:'description',rad:'攴',mn:'Staff + ancient = daring',ex:[{w:'果敢',r:'かかん',e:'bold'},{w:'勇敢',r:'ゆうかん',e:'brave'}]},
   {id:695,k:'棺',m:'coffin',on:'カン',ku:'',lv:'N1',st:12,cat:'other',rad:'木',mn:'Wood + official = coffin',ex:[{w:'棺',r:'かん',e:'coffin'},{w:'棺桶',r:'かんおけ',e:'coffin'}]},
   {id:697,k:'汗',m:'sweat',on:'カン',ku:'あせ',lv:'N1',st:6,cat:'body',rad:'水',mn:'Water + dry = sweat',ex:[{w:'汗',r:'あせ',e:'sweat'},{w:'発汗',r:'はっかん',e:'perspiration'}]},
-  {id:698,k:'漢',m:'Chinese / man',on:'カン',ku:'おとこ',lv:'N1',st:13,cat:'other',rad:'水',mn:'Water + grown = Han/man',ex:[{w:'漢字',r:'かんじ',e:'kanji'},{w:'漢方',r:'かんぽう',e:'Chinese medicine'}]},
+  {id:698,k:'漢',m:'Chinese / man',on:'カン',ku:'おとこ',lv:'N3',st:13,cat:'other',rad:'水',mn:'Water + grown = Han/man',ex:[{w:'漢字',r:'かんじ',e:'kanji'},{w:'漢方',r:'かんぽう',e:'Chinese medicine'}]},
   {id:699,k:'環',m:'ring / circle',on:'カン',ku:'',lv:'N1',st:17,cat:'other',rad:'玉',mn:'Ring of jade',ex:[{w:'環境',r:'かんきょう',e:'environment'},{w:'循環',r:'じゅんかん',e:'circulation'}]},
   {id:700,k:'缶',m:'can / tin',on:'カン',ku:'',lv:'N1',st:6,cat:'other',rad:'缶',mn:'Container with lid = can',ex:[{w:'缶',r:'かん',e:'can'},{w:'缶詰',r:'かんづめ',e:'canned food'}]},
   {id:701,k:'艦',m:'warship',on:'カン',ku:'',lv:'N1',st:21,cat:'other',rad:'舟',mn:'Boat + see = warship',ex:[{w:'艦隊',r:'かんたい',e:'fleet'},{w:'潜水艦',r:'せんすいかん',e:'submarine'}]},
@@ -895,24 +895,24 @@ const KD = [
   {id:997,k:'戻',m:'return / revert',on:'レイ',ku:'もど-',lv:'N4',st:7,cat:'action',rad:'戸',mn:'Door + dog = return',ex:[{w:'戻る',r:'もどる',e:'to return'},{w:'戻す',r:'もどす',e:'to put back'}]},
   {id:998,k:'笑',m:'laugh / smile',on:'ショウ',ku:'わら-・え-',lv:'N4',st:10,cat:'feeling',rad:'竹',mn:'Bamboo + heaven = laugh',ex:[{w:'笑う',r:'わらう',e:'to laugh'},{w:'笑顔',r:'えがお',e:'smiling face'}]},
   {id:999,k:'泣',m:'cry / weep',on:'キュウ',ku:'な-',lv:'N4',st:8,cat:'feeling',rad:'水',mn:'Water + stand = cry',ex:[{w:'泣く',r:'なく',e:'to cry'},{w:'泣き声',r:'なきごえ',e:'crying voice'}]},
-  {id:1000,k:'踊',m:'dance',on:'ヨウ',ku:'おど-',lv:'N4',st:14,cat:'art',rad:'足',mn:'Foot + brave = dance',ex:[{w:'踊る',r:'おどる',e:'to dance'},{w:'踊り',r:'おどり',e:'dance'}]},
-  {id:1004,k:'払',m:'pay',on:'フツ',ku:'はら-',lv:'N4',st:5,cat:'action',rad:'手',mn:'Hand + remove = pay',ex:[{w:'払う',r:'はらう',e:'to pay'},{w:'支払い',r:'しはらい',e:'payment'}]},
+  {id:1000,k:'踊',m:'dance',on:'ヨウ',ku:'おど-',lv:'N3',st:14,cat:'art',rad:'足',mn:'Foot + brave = dance',ex:[{w:'踊る',r:'おどる',e:'to dance'},{w:'踊り',r:'おどり',e:'dance'}]},
+  {id:1004,k:'払',m:'pay',on:'フツ',ku:'はら-',lv:'N3',st:5,cat:'action',rad:'手',mn:'Hand + remove = pay',ex:[{w:'払う',r:'はらう',e:'to pay'},{w:'支払い',r:'しはらい',e:'payment'}]},
   {id:1010,k:'緑',m:'green',on:'リョク',ku:'みどり',lv:'N4',st:14,cat:'color',rad:'糸',mn:'Thread + record = green',ex:[{w:'緑',r:'みどり',e:'green'},{w:'緑色',r:'みどりいろ',e:'green color'}]},
-  {id:1011,k:'橙',m:'orange (color)',on:'トウ',ku:'だいだい',lv:'N4',st:16,cat:'color',rad:'木',mn:'Wood + lamp = orange',ex:[{w:'橙色',r:'だいだいいろ',e:'orange color'},{w:'橙',r:'だいだい',e:'bitter orange'}]},
-  {id:1012,k:'紫',m:'purple',on:'シ',ku:'むらさき',lv:'N4',st:12,cat:'color',rad:'糸',mn:'Thread + this = purple',ex:[{w:'紫',r:'むらさき',e:'purple'},{w:'紫外線',r:'しがいせん',e:'ultraviolet rays'}]},
+  {id:1011,k:'橙',m:'orange (color)',on:'トウ',ku:'だいだい',lv:'N2',st:16,cat:'color',rad:'木',mn:'Wood + lamp = orange',ex:[{w:'橙色',r:'だいだいいろ',e:'orange color'},{w:'橙',r:'だいだい',e:'bitter orange'}]},
+  {id:1012,k:'紫',m:'purple',on:'シ',ku:'むらさき',lv:'N2',st:12,cat:'color',rad:'糸',mn:'Thread + this = purple',ex:[{w:'紫',r:'むらさき',e:'purple'},{w:'紫外線',r:'しがいせん',e:'ultraviolet rays'}]},
   {id:1013,k:'茶',m:'tea / brown',on:'チャ・サ',ku:'',lv:'N4',st:9,cat:'food',rad:'艸',mn:'Grass + tree = tea',ex:[{w:'お茶',r:'おちゃ',e:'tea'},{w:'茶色',r:'ちゃいろ',e:'brown'}]},
-  {id:1014,k:'漫',m:'comic / random',on:'マン',ku:'',lv:'N4',st:14,cat:'art',rad:'水',mn:'Water + long = random',ex:[{w:'漫画',r:'まんが',e:'manga / comics'},{w:'漫才',r:'まんざい',e:'comedy duo'}]},
-  {id:1016,k:'演',m:'perform / act',on:'エン',ku:'',lv:'N4',st:14,cat:'art',rad:'水',mn:'Water + wide = perform',ex:[{w:'演じる',r:'えんじる',e:'to perform'},{w:'演奏',r:'えんそう',e:'musical performance'}]},
+  {id:1014,k:'漫',m:'comic / random',on:'マン',ku:'',lv:'N2',st:14,cat:'art',rad:'水',mn:'Water + long = random',ex:[{w:'漫画',r:'まんが',e:'manga / comics'},{w:'漫才',r:'まんざい',e:'comedy duo'}]},
+  {id:1016,k:'演',m:'perform / act',on:'エン',ku:'',lv:'N2',st:14,cat:'art',rad:'水',mn:'Water + wide = perform',ex:[{w:'演じる',r:'えんじる',e:'to perform'},{w:'演奏',r:'えんそう',e:'musical performance'}]},
   {id:1017,k:'曲',m:'music / bend',on:'キョク',ku:'ま-',lv:'N4',st:6,cat:'art',rad:'曰',mn:'Winding box = bend',ex:[{w:'曲',r:'きょく',e:'music piece'},{w:'作曲',r:'さっきょく',e:'composing music'}]},
-  {id:1021,k:'残',m:'remain / cruel',on:'ザン',ku:'のこ-',lv:'N4',st:10,cat:'other',rad:'歹',mn:'Bone + spear = remain',ex:[{w:'残る',r:'のこる',e:'to remain'},{w:'残念',r:'ざんねん',e:'regret'}]},
+  {id:1021,k:'残',m:'remain / cruel',on:'ザン',ku:'のこ-',lv:'N3',st:10,cat:'other',rad:'歹',mn:'Bone + spear = remain',ex:[{w:'残る',r:'のこる',e:'to remain'},{w:'残念',r:'ざんねん',e:'regret'}]},
   {id:1025,k:'親',m:'parent / close',on:'シン',ku:'おや・した-',lv:'N4',st:16,cat:'person',rad:'見',mn:'Stand + tree + see = parent',ex:[{w:'親',r:'おや',e:'parent'},{w:'親切',r:'しんせつ',e:'kindness'}]},
-  {id:1026,k:'祖',m:'ancestor',on:'ソ',ku:'',lv:'N4',st:9,cat:'person',rad:'示',mn:'Altar + earth = ancestor',ex:[{w:'祖父',r:'そふ',e:'grandfather'},{w:'祖母',r:'そぼ',e:'grandmother'}]},
-  {id:1027,k:'孫',m:'grandchild',on:'ソン',ku:'まご',lv:'N4',st:10,cat:'person',rad:'子',mn:'Child + thread = grandchild',ex:[{w:'孫',r:'まご',e:'grandchild'},{w:'子孫',r:'しそん',e:'descendants'}]},
-  {id:1028,k:'夢',m:'dream',on:'ム',ku:'ゆめ',lv:'N4',st:13,cat:'feeling',rad:'夕',mn:'Evening + cover = dream',ex:[{w:'夢',r:'ゆめ',e:'dream'},{w:'夢中',r:'むちゅう',e:'absorbed / crazy about'}]},
-  {id:1029,k:'涙',m:'tears',on:'ルイ',ku:'なみだ',lv:'N4',st:10,cat:'feeling',rad:'水',mn:'Water + 戻 = tears',ex:[{w:'涙',r:'なみだ',e:'tears'},{w:'涙声',r:'なみだごえ',e:'tearful voice'}]},
-  {id:1031,k:'探',m:'search / seek',on:'タン',ku:'さが-・さぐ-',lv:'N4',st:11,cat:'action',rad:'手',mn:'Hand + deep = search',ex:[{w:'探す',r:'さがす',e:'to search'},{w:'探偵',r:'たんてい',e:'detective'}]},
-  {id:1034,k:'慌',m:'panic / confused',on:'コウ',ku:'あわ-',lv:'N4',st:12,cat:'feeling',rad:'心',mn:'Heart + bright = panic',ex:[{w:'慌てる',r:'あわてる',e:'to panic'},{w:'慌ただしい',r:'あわただしい',e:'hectic'}]},
-  {id:1039,k:'偉',m:'great / admirable',on:'イ',ku:'えら-',lv:'N4',st:12,cat:'description',rad:'人',mn:'Person + strange = great',ex:[{w:'偉い',r:'えらい',e:'great / admirable'},{w:'偉大',r:'いだい',e:'greatness'}]},
+  {id:1026,k:'祖',m:'ancestor',on:'ソ',ku:'',lv:'N3',st:9,cat:'person',rad:'示',mn:'Altar + earth = ancestor',ex:[{w:'祖父',r:'そふ',e:'grandfather'},{w:'祖母',r:'そぼ',e:'grandmother'}]},
+  {id:1027,k:'孫',m:'grandchild',on:'ソン',ku:'まご',lv:'N3',st:10,cat:'person',rad:'子',mn:'Child + thread = grandchild',ex:[{w:'孫',r:'まご',e:'grandchild'},{w:'子孫',r:'しそん',e:'descendants'}]},
+  {id:1028,k:'夢',m:'dream',on:'ム',ku:'ゆめ',lv:'N3',st:13,cat:'feeling',rad:'夕',mn:'Evening + cover = dream',ex:[{w:'夢',r:'ゆめ',e:'dream'},{w:'夢中',r:'むちゅう',e:'absorbed / crazy about'}]},
+  {id:1029,k:'涙',m:'tears',on:'ルイ',ku:'なみだ',lv:'N2',st:10,cat:'feeling',rad:'水',mn:'Water + 戻 = tears',ex:[{w:'涙',r:'なみだ',e:'tears'},{w:'涙声',r:'なみだごえ',e:'tearful voice'}]},
+  {id:1031,k:'探',m:'search / seek',on:'タン',ku:'さが-・さぐ-',lv:'N3',st:11,cat:'action',rad:'手',mn:'Hand + deep = search',ex:[{w:'探す',r:'さがす',e:'to search'},{w:'探偵',r:'たんてい',e:'detective'}]},
+  {id:1034,k:'慌',m:'panic / confused',on:'コウ',ku:'あわ-',lv:'N2',st:12,cat:'feeling',rad:'心',mn:'Heart + bright = panic',ex:[{w:'慌てる',r:'あわてる',e:'to panic'},{w:'慌ただしい',r:'あわただしい',e:'hectic'}]},
+  {id:1039,k:'偉',m:'great / admirable',on:'イ',ku:'えら-',lv:'N3',st:12,cat:'description',rad:'人',mn:'Person + strange = great',ex:[{w:'偉い',r:'えらい',e:'great / admirable'},{w:'偉大',r:'いだい',e:'greatness'}]},
   {id:1047,k:'宇',m:'eave / universe',on:'ウ',ku:'',lv:'N3',st:6,cat:'other',rad:'宀',mn:'Roof + around = universe',ex:[{w:'宇宙',r:'うちゅう',e:'universe'},{w:'宇宙人',r:'うちゅうじん',e:'alien'}]},
   {id:1052,k:'億',m:'100 million',on:'オク',ku:'',lv:'N3',st:15,cat:'number',rad:'人',mn:'Person + idea = 100 million',ex:[{w:'億',r:'おく',e:'100 million'},{w:'何億',r:'なんおく',e:'hundreds of millions'}]},
   {id:1053,k:'卸',m:'wholesale',on:'シャ',ku:'おろ-',lv:'N3',st:9,cat:'other',rad:'卩',mn:'Seal + self = wholesale',ex:[{w:'卸す',r:'おろす',e:'to wholesale'},{w:'卸売り',r:'おろしうり',e:'wholesale'}]},
@@ -965,7 +965,7 @@ const KD = [
   {id:1154,k:'監',m:'oversee / supervise',on:'カン',ku:'',lv:'N2',st:15,cat:'action',rad:'皿',mn:'Dish + person kneeling = oversee',ex:[{w:'監督',r:'かんとく',e:'supervision / director'},{w:'監視',r:'かんし',e:'surveillance'}]},
   {id:1155,k:'慣',m:'accustomed to',on:'カン',ku:'な-',lv:'N2',st:14,cat:'action',rad:'心',mn:'Heart + pierce = accustomed',ex:[{w:'慣れる',r:'なれる',e:'to get used to'},{w:'習慣',r:'しゅうかん',e:'habit'}]},
   {id:1158,k:'貫',m:'pierce / penetrate',on:'カン',ku:'つらぬ-',lv:'N2',st:11,cat:'action',rad:'貝',mn:'Shell + mother = pierce',ex:[{w:'貫く',r:'つらぬく',e:'to pierce through'},{w:'一貫',r:'いっかん',e:'consistency'}]},
-  {id:1159,k:'岸',m:'shore / bank',on:'ガン',ku:'きし',lv:'N2',st:8,cat:'place',rad:'山',mn:'Mountain + cliff + rock = shore',ex:[{w:'岸',r:'きし',e:'shore / bank'},{w:'海岸',r:'かいがん',e:'coast'}]},
+  {id:1159,k:'岸',m:'shore / bank',on:'ガン',ku:'きし',lv:'N3',st:8,cat:'place',rad:'山',mn:'Mountain + cliff + rock = shore',ex:[{w:'岸',r:'きし',e:'shore / bank'},{w:'海岸',r:'かいがん',e:'coast'}]},
   {id:1160,k:'菊',m:'chrysanthemum',on:'キク',ku:'',lv:'N2',st:11,cat:'nature',rad:'艸',mn:'Grass + rice = chrysanthemum',ex:[{w:'菊',r:'きく',e:'chrysanthemum'},{w:'菊花',r:'きっか',e:'chrysanthemum flower'}]},
   {id:1168,k:'禦',m:'resist / repel',on:'ギョ',ku:'',lv:'N2',st:17,cat:'action',rad:'示',mn:'Altar + horse = resist',ex:[{w:'防禦',r:'ぼうぎょ',e:'defense'},{w:'禦ぐ',r:'ふせぐ',e:'to defend'}]},
   {id:1173,k:'刑',m:'punishment',on:'ケイ',ku:'',lv:'N2',st:6,cat:'other',rad:'刀',mn:'Knife + open = punishment',ex:[{w:'刑事',r:'けいじ',e:'detective / criminal'},{w:'刑罰',r:'けいばつ',e:'punishment'}]},
@@ -1001,7 +1001,7 @@ const KD = [
   {id:1225,k:'酢',m:'vinegar',on:'サク',ku:'す',lv:'N2',st:12,cat:'food',rad:'酉',mn:'Wine + former = vinegar',ex:[{w:'酢',r:'す',e:'vinegar'},{w:'酢酸',r:'さくさん',e:'acetic acid'}]},
   {id:1226,k:'据',m:'place / set',on:'キョ',ku:'す-',lv:'N2',st:11,cat:'action',rad:'手',mn:'Hand + pig = place',ex:[{w:'据える',r:'すえる',e:'to place'},{w:'据置き',r:'すえおき',e:'leaving as is'}]},
   {id:1227,k:'煤',m:'soot',on:'バイ',ku:'すす',lv:'N2',st:13,cat:'other',rad:'火',mn:'Fire + every = soot',ex:[{w:'煤',r:'すす',e:'soot'},{w:'煤煙',r:'ばいえん',e:'smoke and soot'}]},
-  {id:1228,k:'成',m:'become / achieve',on:'セイ・ジョウ',ku:'な-',lv:'N2',st:6,cat:'action',rad:'戈',mn:'Spear + mouth = become',ex:[{w:'成る',r:'なる',e:'to become'},{w:'成功',r:'せいこう',e:'success'}]},
+  {id:1228,k:'成',m:'become / achieve',on:'セイ・ジョウ',ku:'な-',lv:'N3',st:6,cat:'action',rad:'戈',mn:'Spear + mouth = become',ex:[{w:'成る',r:'なる',e:'to become'},{w:'成功',r:'せいこう',e:'success'}]},
   {id:1229,k:'誓',m:'vow / oath',on:'セイ',ku:'ちか-',lv:'N2',st:14,cat:'action',rad:'言',mn:'Words + fold = vow',ex:[{w:'誓う',r:'ちかう',e:'to vow'},{w:'宣誓',r:'せんせい',e:'oath'}]},
   {id:1230,k:'是',m:'right / correct',on:'ゼ',ku:'',lv:'N2',st:9,cat:'description',rad:'日',mn:'Sun + spoon = correct',ex:[{w:'是非',r:'ぜひ',e:'by all means'},{w:'是正',r:'ぜせい',e:'correction'}]},
   {id:1231,k:'摂',m:'take in / govern',on:'セツ',ku:'と-',lv:'N2',st:13,cat:'action',rad:'手',mn:'Hand + ear = take in',ex:[{w:'摂取',r:'せっしゅ',e:'intake'},{w:'摂政',r:'せっしょう',e:'regent'}]},
@@ -1291,7 +1291,7 @@ const KD = [
   {id:1676,k:'折',m:'fold / bend',on:'セツ',ku:'お-',lv:'N1',st:7,cat:'action',rad:'手',mn:'Hand + axe = fold',ex:[{w:'折る',r:'おる',e:'to fold'},{w:'骨折',r:'こっせつ',e:'fracture'}]},
   {id:1677,k:'尾',m:'tail / end',on:'ビ',ku:'お',lv:'N1',st:7,cat:'other',rad:'尸',mn:'Body + hair = tail',ex:[{w:'尾',r:'お',e:'tail'},{w:'尾根',r:'おね',e:'ridge'}]},
   {id:1680,k:'苛',m:'harsh / torment',on:'カ',ku:'いじ-',lv:'N1',st:8,cat:'description',rad:'艸',mn:'Grass + can = harsh',ex:[{w:'苛める',r:'いじめる',e:'to bully'},{w:'苛酷',r:'かこく',e:'harsh'}]},
-  {id:1682,k:'貝',m:'shell',on:'バイ',ku:'かい',lv:'N1',st:7,cat:'nature',rad:'目',mn:'Eye + legs = shell',ex:[{w:'貝',r:'かい',e:'shell'},{w:'貝殻',r:'かいがら',e:'shell'}]},
+  {id:1682,k:'貝',m:'shell',on:'バイ',ku:'かい',lv:'N5',st:7,cat:'nature',rad:'目',mn:'Eye + legs = shell',ex:[{w:'貝',r:'かい',e:'shell'},{w:'貝殻',r:'かいがら',e:'shell'}]},
   {id:1683,k:'柿',m:'persimmon',on:'シ',ku:'かき',lv:'N1',st:9,cat:'food',rad:'木',mn:'Wood + city = persimmon',ex:[{w:'柿',r:'かき',e:'persimmon'},{w:'柿の木',r:'かきのき',e:'persimmon tree'}]},
   {id:1685,k:'柩',m:'coffin',on:'キュウ',ku:'ひつぎ',lv:'N1',st:9,cat:'other',rad:'木',mn:'Wood + prisoner = coffin',ex:[{w:'柩',r:'ひつぎ',e:'coffin'},{w:'霊柩車',r:'れいきゅうしゃ',e:'hearse'}]},
   {id:1686,k:'頬',m:'cheek',on:'キョウ',ku:'ほお',lv:'N1',st:15,cat:'body',rad:'頁',mn:'Page + bound = cheek',ex:[{w:'頬',r:'ほお',e:'cheek'},{w:'頬杖',r:'ほおづえ',e:'resting chin on hand'}]},
@@ -1365,7 +1365,7 @@ const KD = [
   {id:1772,k:'軋',m:'creak / discord',on:'アツ',ku:'きし-',lv:'N1',st:8,cat:'other',rad:'車',mn:'Cart + clash = creak',ex:[{w:'軋む',r:'きしむ',e:'to creak'},{w:'軋轢',r:'あつれき',e:'friction'}]},
   {id:1774,k:'膿',m:'pus',on:'ノウ',ku:'うみ',lv:'N1',st:17,cat:'health',rad:'月',mn:'Body + dense = pus',ex:[{w:'膿',r:'うみ',e:'pus'},{w:'膿む',r:'うむ',e:'to fester'}]},
   {id:1776,k:'暢',m:'stretch / joyful',on:'チョウ',ku:'',lv:'N1',st:14,cat:'description',rad:'日',mn:'Sun + extend = joyful',ex:[{w:'暢気',r:'のんき',e:'carefree'},{w:'伸暢',r:'しんちょう',e:'stretching'}]},
-  {id:1777,k:'鳥',m:'bird',on:'チョウ',ku:'とり',lv:'N1',st:11,cat:'nature',rad:'鳥',mn:'Bird shape = bird',ex:[{w:'鳥',r:'とり',e:'bird'},{w:'鳥居',r:'とりい',e:'torii gate'}]},
+  {id:1777,k:'鳥',m:'bird',on:'チョウ',ku:'とり',lv:'N4',st:11,cat:'nature',rad:'鳥',mn:'Bird shape = bird',ex:[{w:'鳥',r:'とり',e:'bird'},{w:'鳥居',r:'とりい',e:'torii gate'}]},
   {id:1779,k:'脹',m:'swell',on:'チョウ',ku:'ふく-',lv:'N1',st:12,cat:'health',rad:'月',mn:'Body + spread = swell',ex:[{w:'膨脹',r:'ぼうちょう',e:'expansion'},{w:'脹れる',r:'ふくれる',e:'to swell'}]},
   {id:1780,k:'鶏',m:'chicken',on:'ケイ',ku:'にわとり',lv:'N1',st:19,cat:'nature',rad:'鳥',mn:'Bird + system = chicken',ex:[{w:'鶏',r:'にわとり',e:'chicken'},{w:'鶏卵',r:'けいらん',e:'egg'}]},
   {id:1781,k:'壷',m:'jar / pot',on:'コ',ku:'つぼ',lv:'N1',st:12,cat:'other',rad:'土',mn:'Earth + container = jar',ex:[{w:'壷',r:'つぼ',e:'jar'},{w:'急所',r:'きゅうしょ',e:'vital spot'}]},
@@ -1600,14 +1600,14 @@ const KD = [
   {id:2057,k:'蹌',m:'stagger / totter',on:'ソウ',ku:'よろめ-',lv:'N1',st:17,cat:'action',rad:'足',mn:'Foot + storehouse = stagger',ex:[{w:'蹌踉',r:'そうろう',e:'staggering'},{w:'蹌踉めく',r:'よろめく',e:'to stagger'}]},
   {id:2058,k:'躓',m:'stumble / trip',on:'チ',ku:'つまず-',lv:'N1',st:20,cat:'action',rad:'足',mn:'Foot + wisdom = stumble',ex:[{w:'躓く',r:'つまずく',e:'to stumble'},{w:'躓き',r:'つまずき',e:'stumble / setback'}]},
   {id:2059,k:'猫',m:'cat',on:'ビョウ',ku:'ねこ',lv:'N1',st:11,cat:'nature',rad:'犬',mn:'Dog + seedling = cat',ex:[{w:'猫',r:'ねこ',e:'cat'},{w:'猫背',r:'ねこぜ',e:'hunched back'}]},
-  {id:2060,k:'犬',m:'dog',on:'ケン',ku:'いぬ',lv:'N1',st:4,cat:'nature',rad:'犬',mn:'Dog shape = dog',ex:[{w:'犬',r:'いぬ',e:'dog'},{w:'番犬',r:'ばんけん',e:'guard dog'}]},
+  {id:2060,k:'犬',m:'dog',on:'ケン',ku:'いぬ',lv:'N5',st:4,cat:'nature',rad:'犬',mn:'Dog shape = dog',ex:[{w:'犬',r:'いぬ',e:'dog'},{w:'番犬',r:'ばんけん',e:'guard dog'}]},
   {id:2061,k:'兎',m:'rabbit',on:'ト',ku:'うさぎ',lv:'N1',st:8,cat:'nature',rad:'兎',mn:'Rabbit shape = rabbit',ex:[{w:'兎',r:'うさぎ',e:'rabbit'},{w:'兎に角',r:'とにかく',e:'anyway'}]},
   {id:2062,k:'鹿',m:'deer',on:'ロク',ku:'しか',lv:'N1',st:11,cat:'nature',rad:'鹿',mn:'Deer shape = deer',ex:[{w:'鹿',r:'しか',e:'deer'},{w:'鹿児島',r:'かごしま',e:'Kagoshima'}]},
   {id:2063,k:'猪',m:'wild boar',on:'チョ',ku:'いのしし',lv:'N1',st:11,cat:'nature',rad:'犬',mn:'Dog + pig = wild boar',ex:[{w:'猪',r:'いのしし',e:'wild boar'},{w:'猪突猛進',r:'ちょとつもうしん',e:'rushing headlong'}]},
   {id:2064,k:'豚',m:'pig',on:'トン',ku:'ぶた',lv:'N1',st:11,cat:'nature',rad:'豕',mn:'Pig + meat = pig',ex:[{w:'豚',r:'ぶた',e:'pig'},{w:'豚肉',r:'ぶたにく',e:'pork'}]},
   {id:2065,k:'羊',m:'sheep',on:'ヨウ',ku:'ひつじ',lv:'N1',st:6,cat:'nature',rad:'羊',mn:'Sheep horns = sheep',ex:[{w:'羊',r:'ひつじ',e:'sheep'},{w:'羊毛',r:'ようもう',e:'wool'}]},
-  {id:2066,k:'馬',m:'horse',on:'バ',ku:'うま',lv:'N1',st:10,cat:'nature',rad:'馬',mn:'Horse shape = horse',ex:[{w:'馬',r:'うま',e:'horse'},{w:'馬力',r:'ばりき',e:'horsepower'}]},
-  {id:2067,k:'牛',m:'cow',on:'ギュウ',ku:'うし',lv:'N1',st:4,cat:'nature',rad:'牛',mn:'Cow horns = cow',ex:[{w:'牛',r:'うし',e:'cow'},{w:'牛乳',r:'ぎゅうにゅう',e:'milk'}]},
+  {id:2066,k:'馬',m:'horse',on:'バ',ku:'うま',lv:'N4',st:10,cat:'nature',rad:'馬',mn:'Horse shape = horse',ex:[{w:'馬',r:'うま',e:'horse'},{w:'馬力',r:'ばりき',e:'horsepower'}]},
+  {id:2067,k:'牛',m:'cow',on:'ギュウ',ku:'うし',lv:'N4',st:4,cat:'nature',rad:'牛',mn:'Cow horns = cow',ex:[{w:'牛',r:'うし',e:'cow'},{w:'牛乳',r:'ぎゅうにゅう',e:'milk'}]},
   {id:2068,k:'猿',m:'monkey',on:'エン',ku:'さる',lv:'N1',st:13,cat:'nature',rad:'犬',mn:'Dog + ape = monkey',ex:[{w:'猿',r:'さる',e:'monkey'},{w:'猿知恵',r:'さるぢえ',e:'shallow wisdom'}]},
   {id:2069,k:'鷗',m:'seagull',on:'オウ',ku:'かもめ',lv:'N1',st:22,cat:'nature',rad:'鳥',mn:'Bird + area = seagull',ex:[{w:'鷗',r:'かもめ',e:'seagull'},{w:'鷗外',r:'おうがい',e:'Ogai (author\'s name)'}]},
   {id:2070,k:'雛',m:'chick / doll',on:'スウ',ku:'ひな',lv:'N1',st:18,cat:'nature',rad:'隹',mn:'Bird + ugly = chick',ex:[{w:'雛',r:'ひな',e:'chick / doll'},{w:'雛祭り',r:'ひなまつり',e:'Doll Festival'}]},
@@ -1670,7 +1670,7 @@ const KD = [
 {id:2142,k:'振',m:'shake / swing',on:'シン',ku:'ふ-',lv:'N1',st:10,cat:'action',rad:'手',mn:'Hand shaking = swing',ex:[]},
 {id:2143,k:'舞',m:'dance / flutter',on:'ブ',ku:'ま-',lv:'N1',st:15,cat:'art',rad:'舛',mn:'Sleeves flowing = dance',ex:[]},
 {id:2144,k:'響',m:'echo / resound',on:'キョウ',ku:'ひび-',lv:'N1',st:20,cat:'art',rad:'音',mn:'Sound bouncing around = echo',ex:[]},
-{id:2145,k:'染',m:'dye / stain',on:'セン',ku:'そ- し-',lv:'N3',st:9,cat:'action',rad:'木',mn:'Water + nine = dye',ex:[{w:'染める',r:'そめる',e:'to dye'},{w:'汚染',r:'おせん',e:'pollution'}]},
+{id:2145,k:'染',m:'dye / stain',on:'セン',ku:'そ- し-',lv:'N2',st:9,cat:'action',rad:'木',mn:'Water + nine = dye',ex:[{w:'染める',r:'そめる',e:'to dye'},{w:'汚染',r:'おせん',e:'pollution'}]},
 {id:2146,k:'臨',m:'face / attend',on:'リン',ku:'のぞ-',lv:'N3',st:18,cat:'action',rad:'臣',mn:'Servant watching = attend',ex:[{w:'臨む',r:'のぞむ',e:'to face'},{w:'臨時',r:'りんじ',e:'temporary'}]},
 {id:2147,k:'栓',m:'stopper / plug',on:'セン',ku:'',lv:'N1',st:10,cat:'other',rad:'木',mn:'Wood blocking = stopper',ex:[]},
 {id:2148,k:'桶',m:'tub / bucket',on:'トウ',ku:'おけ',lv:'N1',st:11,cat:'other',rad:'木',mn:'Wood shaped for holding = tub',ex:[]},
@@ -1689,7 +1689,7 @@ const KD = [
 {id:2161,k:'湧',m:'gush / spring up',on:'ユウ',ku:'わ-',lv:'N1',st:12,cat:'action',rad:'水',mn:'Water bubbling up = gush',ex:[{w:'湧く',r:'わく',e:'to gush'},{w:'湧水',r:'ゆうすい',e:'spring water'}]},
 {id:2162,k:'霧',m:'fog / mist',on:'ム',ku:'きり',lv:'N1',st:19,cat:'nature',rad:'雨',mn:'Rain hanging low = fog',ex:[]},
 {id:2163,k:'雷',m:'thunder',on:'ライ',ku:'かみなり',lv:'N2',st:13,cat:'nature',rad:'雨',mn:'Rain + field = thunder',ex:[{w:'雷',r:'かみなり',e:'thunder'},{w:'雷雨',r:'らいう',e:'thunderstorm'}]},
-{id:2164,k:'麦',m:'wheat / barley',on:'バク',ku:'むぎ',lv:'N1',st:7,cat:'nature',rad:'麦',mn:'Grain with roots = wheat',ex:[]},
+{id:2164,k:'麦',m:'wheat / barley',on:'バク',ku:'むぎ',lv:'N4',st:7,cat:'nature',rad:'麦',mn:'Grain with roots = wheat',ex:[]},
 {id:2165,k:'豆',m:'bean / soybean',on:'トウ・ズ',ku:'まめ',lv:'N1',st:7,cat:'food',rad:'豆',mn:'Vessel with food = bean',ex:[]},
 {id:2166,k:'茸',m:'mushroom',on:'ジョウ',ku:'きのこ',lv:'N1',st:9,cat:'food',rad:'艸',mn:'Plant on wood = mushroom',ex:[]},
 {id:2167,k:'鳳',m:'male phoenix',on:'ホウ',ku:'おおとり',lv:'N1',st:9,cat:'nature',rad:'鳥',mn:'Wind + bird = phoenix',ex:[{w:'鳳凰',r:'ほうおう',e:'phoenix'},{w:'鳳仙花',r:'ほうせんか',e:'balsam flower'}]},
@@ -1772,17 +1772,17 @@ const KD = [
 {id:2244,k:'止',m:'stop',on:'シ',ku:'と-',lv:'N4',st:4,cat:'action',rad:'止',mn:'Foot planted = stop',ex:[{w:'止まる',r:'とまる',e:'to stop'},{w:'中止',r:'ちゅうし',e:'cancellation'}]},
 {id:2245,k:'待',m:'wait',on:'タイ',ku:'ま-',lv:'N4',st:9,cat:'action',rad:'彳',mn:'Person standing at crossroads = wait',ex:[{w:'待つ',r:'まつ',e:'to wait'},{w:'期待',r:'きたい',e:'expectation'}]},
 {id:2246,k:'閉',m:'close / shut',on:'ヘイ',ku:'し- と-',lv:'N4',st:11,cat:'action',rad:'門',mn:'Gate secured = closed',ex:[{w:'閉める',r:'しめる',e:'to close'},{w:'閉店',r:'へいてん',e:'closing'}]},
-{id:2247,k:'浴',m:'bathe',on:'ヨク',ku:'あ-',lv:'N4',st:10,cat:'action',rad:'水',mn:'Water + valley = bathe',ex:[{w:'入浴',r:'にゅうよく',e:'bathing'},{w:'日光浴',r:'にっこうよく',e:'sunbathing'}]},
+{id:2247,k:'浴',m:'bathe',on:'ヨク',ku:'あ-',lv:'N3',st:10,cat:'action',rad:'水',mn:'Water + valley = bathe',ex:[{w:'入浴',r:'にゅうよく',e:'bathing'},{w:'日光浴',r:'にっこうよく',e:'sunbathing'}]},
 {id:2248,k:'観',m:'observe / view',on:'カン',ku:'',lv:'N3',st:18,cat:'action',rad:'見',mn:'Stork + see = observe',ex:[{w:'観察',r:'かんさつ',e:'observation'},{w:'観光',r:'かんこう',e:'sightseeing'}]},
 {id:2249,k:'想',m:'thought / idea',on:'ソウ・ソ',ku:'',lv:'N3',st:13,cat:'feeling',rad:'心',mn:'Tree + heart = idea',ex:[{w:'想像',r:'そうぞう',e:'imagination'},{w:'思想',r:'しそう',e:'thought/ideology'}]},
 {id:2250,k:'念',m:'thought / wish',on:'ネン',ku:'',lv:'N3',st:8,cat:'feeling',rad:'心',mn:'Now + heart = thought',ex:[{w:'記念',r:'きねん',e:'commemoration'},{w:'念',r:'ねん',e:'thought/wish'}]},
 {id:2251,k:'熱',m:'heat / fever',on:'ネツ',ku:'あつ-',lv:'N3',st:15,cat:'description',rad:'火',mn:'Earth + fire = heat',ex:[{w:'熱い',r:'あつい',e:'hot'},{w:'熱心',r:'ねっしん',e:'enthusiastic'}]},
 {id:2252,k:'固',m:'hard / firm',on:'コ',ku:'かた-',lv:'N3',st:8,cat:'description',rad:'囗',mn:'Old thing enclosed = solid',ex:[{w:'固い',r:'かたい',e:'hard'},{w:'固定',r:'こてい',e:'fixed'}]},
 {id:2253,k:'並',m:'line up / ordinary',on:'ヘイ',ku:'なら-',lv:'N3',st:8,cat:'action',rad:'一',mn:'Two people side by side = line up',ex:[{w:'並ぶ',r:'ならぶ',e:'to line up'},{w:'並行',r:'へいこう',e:'parallel'}]},
-{id:2254,k:'拾',m:'pick up / ten (formal)',on:'シュウ・ジュウ',ku:'ひろ-',lv:'N4',st:9,cat:'action',rad:'手',mn:'Hand picking up = collect',ex:[{w:'拾う',r:'ひろう',e:'to pick up'},{w:'収拾',r:'しゅうしゅう',e:'control/settlement'}]},
+{id:2254,k:'拾',m:'pick up / ten (formal)',on:'シュウ・ジュウ',ku:'ひろ-',lv:'N3',st:9,cat:'action',rad:'手',mn:'Hand picking up = collect',ex:[{w:'拾う',r:'ひろう',e:'to pick up'},{w:'収拾',r:'しゅうしゅう',e:'control/settlement'}]},
 {id:2255,k:'凍',m:'freeze',on:'トウ',ku:'こお- こご-',lv:'N3',st:10,cat:'action',rad:'冫',mn:'Ice + east = freeze',ex:[{w:'凍る',r:'こおる',e:'to freeze'},{w:'冷凍',r:'れいとう',e:'freezing'}]},
 {id:2256,k:'描',m:'draw / depict',on:'ビョウ',ku:'えが- か-',lv:'N2',st:11,cat:'action',rad:'手',mn:'Hand + cat = sketch',ex:[{w:'描く',r:'えがく',e:'to draw'},{w:'描写',r:'びょうしゃ',e:'depiction'}]},
-{id:2257,k:'糸',m:'thread / string',on:'シ',ku:'いと',lv:'N3',st:6,cat:'other',rad:'糸',mn:'Twisted silk threads = thread',ex:[{w:'糸',r:'いと',e:'thread'},{w:'毛糸',r:'けいと',e:'yarn'}]},
+{id:2257,k:'糸',m:'thread / string',on:'シ',ku:'いと',lv:'N5',st:6,cat:'other',rad:'糸',mn:'Twisted silk threads = thread',ex:[{w:'糸',r:'いと',e:'thread'},{w:'毛糸',r:'けいと',e:'yarn'}]},
 {id:2258,k:'針',m:'needle / hand (clock)',on:'シン',ku:'はり',lv:'N2',st:10,cat:'other',rad:'金',mn:'Metal + ten = needle',ex:[{w:'針',r:'はり',e:'needle'},{w:'時針',r:'じしん',e:'hour hand'}]},
 {id:2259,k:'骨',m:'bone',on:'コツ',ku:'ほね',lv:'N3',st:10,cat:'body',rad:'骨',mn:'Bones enclosed in flesh',ex:[{w:'骨',r:'ほね',e:'bone'},{w:'骨折',r:'こっせつ',e:'fracture'}]},
 {id:2260,k:'歯',m:'tooth',on:'シ',ku:'は',lv:'N3',st:12,cat:'body',rad:'歯',mn:'Teeth in smile',ex:[{w:'歯',r:'は',e:'tooth'},{w:'歯医者',r:'はいしゃ',e:'dentist'}]},
@@ -1824,13 +1824,13 @@ const KD = [
 {id:2296,k:'曙',m:'dawn / daybreak',on:'ショ',ku:'あけぼの',lv:'N1',st:17,cat:'time',rad:'日',mn:'Sun + large = dawn',ex:[{w:'曙',r:'あけぼの',e:'dawn'},{w:'曙光',r:'しょこう',e:'dawn light'}]},
 {id:2297,k:'${data.k}',m:'${data.m}',on:'${data.on}',ku:'${data.ku}',lv:'N1',st:10,cat:'${data.cat}',rad:'${data.rad}',mn:'${data.mn}',ex:[]},
 {id:2298,k:'飯',m:'cooked rice / meal',on:'ハン',ku:'めし',lv:'N3',st:12,cat:'food',rad:'食',mn:'Food + return = meal',ex:[{w:'ご飯',r:'ごはん',e:'cooked rice'},{w:'朝飯',r:'あさめし',e:'breakfast'}]},
-{id:2299,k:'肉',m:'meat / flesh',on:'ニク',ku:'',lv:'N3',st:6,cat:'food',rad:'肉',mn:'Sliced meat = flesh',ex:[{w:'肉',r:'にく',e:'meat'},{w:'牛肉',r:'ぎゅうにく',e:'beef'}]},
+{id:2299,k:'肉',m:'meat / flesh',on:'ニク',ku:'',lv:'N4',st:6,cat:'food',rad:'肉',mn:'Sliced meat = flesh',ex:[{w:'肉',r:'にく',e:'meat'},{w:'牛肉',r:'ぎゅうにく',e:'beef'}]},
 {id:2300,k:'魚',m:'fish',on:'ギョ',ku:'さかな・うお',lv:'N3',st:11,cat:'food',rad:'魚',mn:'Pictograph of fish',ex:[{w:'魚',r:'さかな',e:'fish'},{w:'金魚',r:'きんぎょ',e:'goldfish'}]},
-{id:2301,k:'招',m:'invite',on:'ショウ',ku:'まね-',lv:'N4',st:8,cat:'action',rad:'手',mn:'Hand + call = invite',ex:[{w:'招く',r:'まねく',e:'to invite'},{w:'招待',r:'しょうたい',e:'invitation'}]},
+{id:2301,k:'招',m:'invite',on:'ショウ',ku:'まね-',lv:'N3',st:8,cat:'action',rad:'手',mn:'Hand + call = invite',ex:[{w:'招く',r:'まねく',e:'to invite'},{w:'招待',r:'しょうたい',e:'invitation'}]},
 {id:2302,k:'揺',m:'shake / rock',on:'ヨウ',ku:'ゆ-',lv:'N2',st:12,cat:'action',rad:'手',mn:'Hand + pottery = shake',ex:[{w:'揺れる',r:'ゆれる',e:'to sway'},{w:'動揺',r:'どうよう',e:'agitation'}]},
 {id:2303,k:'飛',m:'fly',on:'ヒ',ku:'と-',lv:'N3',st:9,cat:'action',rad:'飛',mn:'Wings spread = fly',ex:[{w:'飛ぶ',r:'とぶ',e:'to fly'},{w:'飛行機',r:'ひこうき',e:'airplane'}]},
-{id:2304,k:'投',m:'throw',on:'トウ',ku:'な-',lv:'N4',st:7,cat:'action',rad:'手',mn:'Hand + throw = toss',ex:[{w:'投げる',r:'なげる',e:'to throw'},{w:'投資',r:'とうし',e:'investment'}]},
-{id:2305,k:'打',m:'hit / strike',on:'ダ',ku:'う-',lv:'N4',st:5,cat:'action',rad:'手',mn:'Hand + nail = strike',ex:[{w:'打つ',r:'うつ',e:'to hit'},{w:'打撃',r:'だげき',e:'blow/hit'}]},
+{id:2304,k:'投',m:'throw',on:'トウ',ku:'な-',lv:'N3',st:7,cat:'action',rad:'手',mn:'Hand + throw = toss',ex:[{w:'投げる',r:'なげる',e:'to throw'},{w:'投資',r:'とうし',e:'investment'}]},
+{id:2305,k:'打',m:'hit / strike',on:'ダ',ku:'う-',lv:'N3',st:5,cat:'action',rad:'手',mn:'Hand + nail = strike',ex:[{w:'打つ',r:'うつ',e:'to hit'},{w:'打撃',r:'だげき',e:'blow/hit'}]},
 {id:2306,k:'掴',m:'grab / seize',on:'カク',ku:'つか-',lv:'N2',st:11,cat:'action',rad:'手',mn:'Hand + country = grab',ex:[{w:'掴む',r:'つかむ',e:'to grasp'},{w:'掴まえる',r:'つかまえる',e:'to catch'}]},
 {id:2307,k:'替',m:'replace / substitute',on:'タイ',ku:'か-',lv:'N2',st:12,cat:'action',rad:'曰',mn:'Two + sun = replace',ex:[{w:'替える',r:'かえる',e:'to replace'},{w:'両替',r:'りょうがえ',e:'currency exchange'}]},
 {id:2308,k:'競',m:'compete',on:'キョウ',ku:'きそ- せ-',lv:'N3',st:20,cat:'action',rad:'立',mn:'Two people standing = compete',ex:[{w:'競う',r:'きそう',e:'to compete'},{w:'競争',r:'きょうそう',e:'competition'}]},
@@ -1894,7 +1894,7 @@ const KD = [
 {id:2366,k:'罵',m:'abuse / curse',on:'バ',ku:'ののし-',lv:'N1',st:15,cat:'action',rad:'网',mn:'Net + horse = abuse',ex:[{w:'罵る',r:'ののしる',e:'to abuse'},{w:'罵倒',r:'ばとう',e:'verbal abuse'}]},
 {id:2367,k:'詈',m:'curse / abuse',on:'リ',ku:'ののし-',lv:'N1',st:11,cat:'action',rad:'言',mn:'Net + words = curse',ex:[{w:'詈る',r:'ののしる',e:'to curse'},{w:'詈言',r:'りごん',e:'abusive language'}]},
 {id:2368,k:'誣',m:'false accusation',on:'フ',ku:'し-',lv:'N1',st:14,cat:'action',rad:'言',mn:'Words + not = false accusation',ex:[{w:'誣告',r:'ふこく',e:'false accusation'},{w:'誣言',r:'ふげん',e:'false statement'}]},
-{id:2369,k:'抱',m:'embrace / hold',on:'ホウ',ku:'だ- いだ-',lv:'N4',st:8,cat:'action',rad:'手',mn:'Hand + wrap = embrace',ex:[{w:'抱く',r:'だく',e:'to embrace'},{w:'抱負',r:'ほうふ',e:'ambition'}]},
+{id:2369,k:'抱',m:'embrace / hold',on:'ホウ',ku:'だ- いだ-',lv:'N2',st:8,cat:'action',rad:'手',mn:'Hand + wrap = embrace',ex:[{w:'抱く',r:'だく',e:'to embrace'},{w:'抱負',r:'ほうふ',e:'ambition'}]},
 {id:2370,k:'擁',m:'embrace / protect',on:'ヨウ',ku:'いだ-',lv:'N2',st:16,cat:'action',rad:'手',mn:'Hand + bird = embrace',ex:[{w:'擁護',r:'ようご',e:'protection'},{w:'擁立',r:'ようりつ',e:'supporting candidacy'}]},
 {id:2371,k:'洒',m:'stylish / cleanse',on:'サ・シャ',ku:'',lv:'N1',st:9,cat:'description',rad:'水',mn:'Water + west = cleanse/stylish',ex:[{w:'洒落',r:'しゃれ',e:'stylish/pun'},{w:'洒脱',r:'しゃだつ',e:'witty and free'}]},
 {id:2372,k:'妍',m:'beautiful',on:'ケン',ku:'',lv:'N1',st:9,cat:'description',rad:'女',mn:'Woman + open = beautiful',ex:[{w:'妍しい',r:'うつくしい',e:'beautiful'},{w:'妍姿',r:'けんし',e:'beautiful figure'}]},
@@ -1927,7 +1927,7 @@ const KD = [
 {id:2399,k:'菫',m:'violet / pansy',on:'キン',ku:'すみれ',lv:'N1',st:11,cat:'nature',rad:'艸',mn:'Grass + hammer = violet',ex:[{w:'菫',r:'すみれ',e:'violet/pansy'},{w:'菫色',r:'すみれいろ',e:'violet color'}]},
 {id:2400,k:'萩',m:'bush clover',on:'シュウ',ku:'はぎ',lv:'N1',st:12,cat:'nature',rad:'艸',mn:'Autumn grass = bush clover',ex:[{w:'萩',r:'はぎ',e:'bush clover'},{w:'萩の花',r:'はぎのはな',e:'clover flower'}]},
 {id:2401,k:'牡丹',m:'peony',on:'ボタン',ku:'',lv:'N1',st:0,cat:'nature',rad:'艸',mn:'Rich flowering plant = peony',ex:[{w:'牡丹',r:'ぼたん',e:'peony'},{w:'牡丹雪',r:'ぼたんゆき',e:'large snowflakes'}]},
-{id:2402,k:'竹',m:'bamboo',on:'チク',ku:'たけ',lv:'N3',st:6,cat:'nature',rad:'竹',mn:'Two stalks of bamboo',ex:[{w:'竹',r:'たけ',e:'bamboo'},{w:'竹刀',r:'しない',e:'bamboo sword'}]},
+{id:2402,k:'竹',m:'bamboo',on:'チク',ku:'たけ',lv:'N5',st:6,cat:'nature',rad:'竹',mn:'Two stalks of bamboo',ex:[{w:'竹',r:'たけ',e:'bamboo'},{w:'竹刀',r:'しない',e:'bamboo sword'}]},
 {id:2403,k:'松',m:'pine tree',on:'ショウ',ku:'まつ',lv:'N3',st:8,cat:'nature',rad:'木',mn:'Tree + public = pine',ex:[{w:'松',r:'まつ',e:'pine tree'},{w:'松茸',r:'まつたけ',e:'matsutake mushroom'}]},
 {id:2404,k:'柳',m:'willow',on:'リュウ',ku:'やなぎ',lv:'N1',st:9,cat:'nature',rad:'木',mn:'Tree + procession = willow',ex:[{w:'柳',r:'やなぎ',e:'willow'},{w:'枝垂れ柳',r:'しだれやなぎ',e:'weeping willow'}]},
 {id:2405,k:'瓢',m:'gourd / calabash',on:'ヒョウ',ku:'ひさご',lv:'N1',st:16,cat:'other',rad:'瓜',mn:'Gourd hanging from vine',ex:[{w:'瓢箪',r:'ひょうたん',e:'gourd'},{w:'瓢虫',r:'てんとうむし',e:'ladybug'}]},
@@ -3412,7 +3412,9 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
   useEffect(()=>()=>{ if(rafRef.current) cancelAnimationFrame(rafRef.current); },[]);
 
   const handleTouchStart = e=>{
-    // If touch is on or inside a speaker button, ignore completely
+    // If touch is on or inside a speaker button, ignore completely.
+    // Also check the module-level flag for Android where stopPropagation can leak.
+    if(_spkTouch) return;
     if(e.target && e.target.closest && e.target.closest('[data-speaker]')) return;
     touchRef.current = {x:e.touches[0].clientX, y:e.touches[0].clientY};
     if(animState.current.busy) return;
@@ -3438,6 +3440,8 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
     }
   };
   const handleTouchEnd = e=>{
+    // Also bail if a speaker was recently touched (Android safety net)
+    if(_spkTouch) { touchRef.current = null; dragRef.current = {active:false,x:0,startY:0,wasDragged:false}; return; }
     if(!touchRef.current) return;
     // Don't flip if touch ended on (or near) a speaker button or interactive element.
     // IMPORTANT: e.target is the touchstart element, NOT where the finger lifted.
@@ -3580,6 +3584,8 @@ function StudyView({ deck, deckIdx, card, cs, flipped, setFlipped, navigate, mar
           // If a touch-tap already flipped the card, the browser fires a synthetic
           // click right after — suppress it so we don't flip back immediately.
           if(suppressClickRef.current){ suppressClickRef.current = false; return; }
+          // If a speaker was just tapped, ignore this click entirely (Android)
+          if(_spkTouch) return;
           // Don't flip if clicking speaker, star button, or any other interactive element.
           // Check both e.target (may be touchstart origin) and actual element at pointer position.
           const elAt = document.elementFromPoint(e.clientX, e.clientY);
@@ -4251,7 +4257,7 @@ function SRSView({ cardStates, setCardStates, bp, theme = 'sky' }) {
 /* ═══════════════════════════════════════════════════════════════════════════
    BROWSE VIEW
 ═══════════════════════════════════════════════════════════════════════════ */
-function BrowseView({ cardStates, bp }) {
+function BrowseView({ cardStates, bp, onGoToKanji }) {
   const [q,     setQ]      = useState('');
   const [filt,  setFilt]   = useState('all');
   const [catFilt,setCat]   = useState('all');
@@ -4373,6 +4379,15 @@ function BrowseView({ cardStates, bp }) {
                   </div>
                 ))}
               </div>
+              {onGoToKanji&&(
+                <button onClick={()=>onGoToKanji(selK)}
+                  style={{ background:`linear-gradient(135deg,${C.aurora}CC,${C.teal}99)`,
+                    color:'#fff', border:'none', borderRadius:12, padding:'8px 18px',
+                    fontSize:12, fontWeight:800, cursor:'pointer', marginTop:8,
+                    boxShadow:`0 4px 16px ${C.aurora}50`, letterSpacing:0.5 }}>
+                  📖 Study in Flashcards →
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -5545,6 +5560,16 @@ function VoicePickerPanel() {
   );
 }
 
+// Module-level flag: set when a speaker button is being touched on Android,
+// so the card's touch handlers can bail out even if stopPropagation leaks.
+let _spkTouch = false;
+let _spkTimer  = null;
+function _markSpeakerTouch() {
+  _spkTouch = true;
+  clearTimeout(_spkTimer);
+  _spkTimer = setTimeout(() => { _spkTouch = false; }, 800);
+}
+
 function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
   const [active, setActive] = useState(false);
   const fire = (e) => {
@@ -5558,8 +5583,19 @@ function SpeakerBtn({ text, lang='ja-JP', size=16, color, style={} }) {
     <button
       data-speaker="1"
       onClick={fire}
-      onTouchStart={e => { e.stopPropagation(); e.preventDefault(); }}
-      onTouchEnd={e => { e.stopPropagation(); e.preventDefault(); fire(e); }}
+      onTouchStart={e => {
+        // Do NOT call e.preventDefault() here — on Android Chrome it kills
+        // the "user gesture" context that speechSynthesis.speak() needs.
+        e.stopPropagation();
+        _markSpeakerTouch();
+      }}
+      onTouchEnd={e => {
+        e.stopPropagation();
+        e.preventDefault();   // prevent synthetic click (fine on touchend)
+        setActive(true);
+        speak(text);
+        setTimeout(() => setActive(false), 1400);
+      }}
       style={{
         background: active ? `${color||'#60A5C8'}30` : 'transparent',
         border: `1px solid ${active ? (color||'#60A5C8')+'80' : 'transparent'}`,
@@ -5747,6 +5783,7 @@ export default function KanjiApp() {
     else d=[...levelKD];
     if(!d.length) d=[...levelKD];
     if(shuffle) d=[...d].sort(()=>Math.random()-0.5);
+    else d=[...d].sort((a,b)=>a.cat<b.cat?-1:a.cat>b.cat?1:0);
     return d;
   },[mode,cardStates,shuffle,levelKD]);
 
@@ -5794,6 +5831,23 @@ export default function KanjiApp() {
     setSessCorrect(0); setSessWrong(0); setSessOk(0);
   };
 
+
+  const goToKanji = (k) => {
+    const lvKD = KD.filter(x => x.lv === k.lv);
+    let d;
+    if(mode==='starred') d=lvKD.filter(x=>cardStates[x.id]?.starred);
+    else if(mode==='unknown') d=lvKD.filter(x=>['new','hard'].includes(cardStates[x.id]?.status));
+    else if(mode==='known') d=lvKD.filter(x=>cardStates[x.id]?.status==='known');
+    else d=[...lvKD];
+    if(!d.length) d=[...lvKD];
+    d=[...d].sort((a,b)=>a.cat<b.cat?-1:a.cat>b.cat?1:0);
+    const idx=d.findIndex(x=>x.id===k.id);
+    setKanjiLevel(k.lv);
+    setShowKanjiLevelSelect(false);
+    setDeckIdx(idx>=0?idx:0);
+    setFlipped(false);
+    setTab('study');
+  };
   const totalKnown=Object.values(cardStates).filter(s=>s.status==='known').length;
 
   if(splash) return <SplashScreen onDone={()=>setSplash(false)}/>
@@ -5894,7 +5948,7 @@ export default function KanjiApp() {
             {tab==='quiz'    && <QuizView bp={bp}/>}
             {tab==='write'   && <WriteView bp={bp}/>}
             {tab==='srs'     && <SRSView cardStates={cardStates} setCardStates={setCardStates} bp={bp} theme={theme}/>}
-            {tab==='browse'  && <BrowseView cardStates={cardStates} bp={bp}/>}
+            {tab==='browse'  && <BrowseView cardStates={cardStates} bp={bp} onGoToKanji={goToKanji}/>}
             {tab==='stats'   && <StatsView cardStates={cardStates} sessCorrect={sessCorrect}
               sessWrong={sessWrong} sessOk={sessOk} seen={seen} sessionTime={sessionTime} bp={bp}/>}
             {tab==='achieve' && <AchievementsView cardStates={cardStates} bp={bp}/>}
